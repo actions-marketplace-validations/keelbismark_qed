@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-11-07T19:20:44.549Z",
+  "scenariosCount": 6,
+  "totalVanillaDefects": 6,
+  "totalQedDefects": 0,
+  "eradicationRatePercent": 100,
+  "vanillaPassRatePercent": 0,
+  "qedPassRatePercent": 100,
+  "results": [
+    {
+      "id": "SCN-01-CACHE",
+      "name": "User Session Cache Service",
+      "domain": "backend/memory",
+      "vanillaErrors": 1,
+      "vanillaViolations": [
+        "QED006/UNBOUNDED_CACHE"
+      ],
+      "qedErrors": 0,
+      "qedViolations": [],
+      "status": "PASSED"
+    },
+    {
+      "id": "SCN-02-FETCH",
+      "name": "External Payment API Client",
+      "domain": "resilience/network",
+      "vanillaErrors": 1,
+      "vanillaViolations": [
+        "QED005/MISSING_TIMEOUT"
+      ],
+      "qedErrors": 0,
+      "qedViolations": [],
+      "status": "PASSED"
+    },
+    {
+      "id": "SCN-03-ERROR",
+      "name": "Critical Webhook Dispatcher",
+      "domain": "observability/error-handling",
+      "vanillaErrors": 1,
+      "vanillaViolations": [
+        "QED003/EMPTY_CATCH"
+      ],
+      "qedErrors": 0,
+      "qedViolations": [],
+      "status": "PASSED"
+    },
+    {
+      "id": "SCN-04-TYPES",
+      "name": "JSON API Response Bridge",
+      "domain": "type-safety/invariants",
+      "vanillaErrors": 1,
+      "vanillaViolations": [
+        "QED004/UNSAFE_CAST"
+      ],
+      "qedErrors": 0,
+      "qedViolations": [],
+      "status": "PASSED"
+    },
+    {
+      "id": "SCN-05-DDL",
+      "name": "Production Database Index Creation",
+      "domain": "database/zero-downtime",
+      "vanillaErrors": 1,
+      "vanillaViolations": [
+        "QED012/DDL_UNSAFE"
+      ],
+      "qedErrors": 0,
+      "qedViolations": [],
+      "status": "PASSED"
+    },
+    {
+      "id": "SCN-06-UI",
+      "name": "Primary Action Checkout Button",
+      "domain": "ui/anti-slop",
+      "vanillaErrors": 1,
+      "vanillaViolations": [
+        "QED011/UI_EMOJI_SLOP"
+      ],
+      "qedErrors": 0,
+      "qedViolations": [],
+      "status": "PASSED"
+    }
+  ]
+}

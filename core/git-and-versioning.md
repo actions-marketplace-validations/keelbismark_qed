@@ -57,6 +57,21 @@ Refs: #123
 * **Why**: Subtle shell differences (e.g. bash `$'\/\/'` quoting vs powershell interpolation) cannot be verified by analogy.
 * **Enforcement**: If the alternative shell runtime is present locally (Git Bash / WSL on Windows, pwsh on Linux), the multi-platform test runner (`node bin/qed-engine.js test`) must execute both before any commit or push leaves the machine.
 
+### G. The Zero-Polling Invariant (Reactive Wakeup vs Polling Loops)
+* **The Rule**: When launching asynchronous, long-running processes or background CI/CD tasks, human engineers and autonomous coding agents MUST NOT poll the task status in active loops or repeatedly ingest raw command log streams.
+* **Why**: Polling loops flood communication channels, burn tens of thousands of context tokens on duplicate log data, and trigger forced context truncation. Modern platforms provide reactive wakeup events upon task completion.
+* **Enforcement**: Launch background task -> yield execution / await system notification. When inspecting logs of finished tasks, read targeted error tails rather than ingesting entire multi-thousand line stdout dumps.
+
+### H. The Doctor Verification Gate (`qed doctor`)
+* **The Rule**: Before claiming that an engineering milestone, release, or deployment is complete, the repository must pass `node bin/qed-engine.js doctor`.
+* **What it mechanically validates**:
+  1. Git repository integrity and zero unstaged / dirty files.
+  2. Active installation of both `pre-commit` and `pre-push` mechanical hooks.
+  3. 100% clean passage of the mechanical verification gate (`qed check`).
+  4. Availability of cross-platform shell interpreters.
+  5. Active AST / lexical engine status.
+  6. Verified Green status of the remote CI pipeline on the current branch.
+
 ---
 
 ## 2. Part II: Pragmatic Versioning (Context-Driven Schemes)

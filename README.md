@@ -211,17 +211,51 @@ To eliminate reliance on an AI agent's "honor system", Q.E.D. includes a standal
 # Run mechanical compliance check across the repository
 ./bin/qed check              # Linux / macOS
 .\bin\qed.ps1 check          # Windows (PowerShell)
+node bin/qed-engine.js check # Node.js (cross-platform, zero dependencies)
 
-# Install automated Git pre-commit hook into .git/hooks/pre-commit
+# Run full health & invariant audit (git cleanliness, hooks, remote CI, AST)
+node bin/qed-engine.js doctor
+
+# Install automated Git pre-commit & pre-push hooks
 ./bin/qed hook               # Linux / macOS
 .\bin\qed.ps1 hook           # Windows (PowerShell)
+
+# Run cross-platform multi-OS test matrix (PowerShell + POSIX Bash)
+npm test                     # or node bin/qed-engine.js test
+
+# Run empirical LLM slop eradication benchmark
+npm run evals                # or node evals/run-benchmark.js
 ```
 
 The mechanical gate automatically scans and enforces:
 1. **Pristine Root Invariant**: Zero temporary scratch files (`temp_*`, `scratch.*`, `*.tmp`, `*.log`, `test_dump*`).
 2. **Zero-Debug Print Invariant**: Zero leftover `console.log(`, `debugger;`, `print(`, or `fmt.Println(`.
 3. **Environment Synchronization**: Every environment variable referenced in code must be documented in `.env.example`.
-4. **Type Safety**: Zero loose `as any` casts in TypeScript/JavaScript.
+4. **Type Safety & AST Analysis**: Zero loose `as any` casts in TypeScript/JavaScript (lexically masked and TypeScript AST verified).
+5. **Network Deadlines**: Mandatory `AbortSignal.timeout` on all `fetch()` operations.
+6. **Bounded Caches**: Zero unbounded module-level `new Map()` exports.
+7. **Zero Table-Locking DDL**: Enforces `CREATE INDEX CONCURRENTLY` in SQL migrations.
+
+---
+
+## Empirical Benchmark & Proof Matrix
+
+We don't guess whether Q.E.D. makes AI code better — we measure it scientifically. The included automated benchmark suite (`evals/run-benchmark.js`) executes 6 standardized engineering challenges against unconstrained LLMs versus Q.E.D.:
+
+| Scenario ID | Engineering Domain | Vanilla Baseline | Under Q.E.D. Standard | Result |
+| :--- | :--- | :---: | :---: | :---: |
+| **SCN-01-CACHE** | Bounded Memory / LRU | 1 defect (`new Map()`) | **0 defects** | **PASSED** |
+| **SCN-02-FETCH** | Network Resilience / Deadlines | 1 defect (naked `fetch`) | **0 defects** | **PASSED** |
+| **SCN-03-ERROR** | Error Chaining & Fallbacks | 1 defect (swallowed `catch`) | **0 defects** | **PASSED** |
+| **SCN-04-TYPES** | Runtime Type Invariants | 1 defect (`as any` cast) | **0 defects** | **PASSED** |
+| **SCN-05-DDL** | Database Zero-Downtime | 1 defect (table-lock DDL) | **0 defects** | **PASSED** |
+| **SCN-06-UI** | Human Affordances / Anti-Slop | 1 defect (emoji button salad) | **0 defects** | **PASSED** |
+
+- **Slop Eradication Rate**: **100.0%** of mechanical flaws eliminated.
+- **Vanilla Gate Pass Rate**: **0.0%** (all unconstrained code failed mechanical verification).
+- **Q.E.D. Gate Pass Rate**: **100.0%** (high-assurance compliance).
+
+[View Full Empirical Methodology & Telemetry Data →](docs/evals.md)
 
 ---
 

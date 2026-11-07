@@ -12,6 +12,7 @@
     "adapters",
     "docs",
     "schema",
+    "evals",
     "install.sh",
     "install.ps1",
     "LICENSE",
@@ -23,8 +24,12 @@
     "lint": "node bin/qed-engine.js check",
     "check": "node bin/qed-engine.js check",
     "test": "node bin/qed-engine.js test",
+    "doctor": "node bin/qed-engine.js doctor",
     "ci": "node bin/qed-engine.js ci-watch",
-    "tokens": "node bin/qed-engine.js tokens"
+    "tokens": "node bin/qed-engine.js tokens",
+    "evals": "node evals/run-benchmark.js",
+    "pack:check": "npm pack --dry-run",
+    "prepublishOnly": "node bin/qed-engine.js check && node bin/qed-engine.js test"
   },
   "keywords": [
     "qed",

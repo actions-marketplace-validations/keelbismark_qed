@@ -241,6 +241,11 @@ try {
         "my_dump_test.bak" = "temporary memory dump"
     } -ExpectedRule "QED001" -ShouldPass $false
 
+    # 29. Lexical Masker: keywords inside strings and comments are ignored
+    Assert-LinterRule -TestName "Lexical Masker: string & comment keyword immunity" -Files @{
+        "src/docs.ts" = "export const guide = 'Never use as any or console.log in production';`n// Tip: also avoid catch {} without cause"
+    } -ExpectedRule "" -ShouldPass $true
+
 } finally {
     Remove-Item -Path $fixtureDir -Recurse -Force -ErrorAction SilentlyContinue
 }

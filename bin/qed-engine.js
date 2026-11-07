@@ -110,7 +110,7 @@ function matchesGlob(relPath, pattern) {
 function isTestOrFixturePath(filePath) {
   const norm = filePath.replace(/\\/g, "/");
   return (
-    /(?:^|\/)(?:tests?|__tests__|fixtures?|samples?|scripts?)\//i.test(norm) ||
+    /(?:^|\/)(?:tests?|__tests__|fixtures?|samples?|scripts?|evals?|benchmarks?)\//i.test(norm) ||
     /\.(?:test|spec)\.[a-z0-9]+$/i.test(norm)
   );
 }
@@ -128,6 +128,173 @@ function ruleMatchesSet(ruleSet, targetRule) {
     }
   }
   return false;
+}
+
+/**
+ * maskCodeStringsAndComments:
+ * Lexical masking engine. Replaces string literals ("...", '...', `...`)
+ * and non-directive comments with space characters while preserving exact newlines,
+ * line numbers, and character offsets. Eliminates false positives when rule keywords
+ * appear inside documentation strings, comments, or UI copy.
+ */
+function maskCodeStringsAndComments(source, ext = ".ts") {
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
+  let inBacktick = false;
+  let inSingleLineComment = false;
+  let inMultiLineComment = false;
+  let isEscaped = false;
+
+  const chars = source.split("");
+  const len = chars.length;
+
+  for (let i = 0; i < len; i++) {
+    const c = chars[i];
+    const next = i + 1 < len ? chars[i + 1] : "";
+
+    if (inSingleLineComment) {
+      if (c === "\n" || c === "\r") {
+        inSingleLineComment = false;
+      } else {
+        chars[i] = " ";
+      }
+      continue;
+    }
+
+    if (inMultiLineComment) {
+      if (c === "*" && next === "/") {
+        chars[i] = " ";
+        chars[i + 1] = " ";
+        i++;
+        inMultiLineComment = false;
+      } else if (c !== "\n" && c !== "\r") {
+        chars[i] = " ";
+      }
+      continue;
+    }
+
+    if (inSingleQuote) {
+      if (isEscaped) {
+        isEscaped = false;
+        chars[i] = " ";
+      } else if (c === "\\") {
+        isEscaped = true;
+        chars[i] = " ";
+      } else if (c === "'") {
+        inSingleQuote = false;
+        chars[i] = " ";
+      } else if (c !== "\n" && c !== "\r") {
+        chars[i] = " ";
+      }
+      continue;
+    }
+
+    if (inDoubleQuote) {
+      if (isEscaped) {
+        isEscaped = false;
+        chars[i] = " ";
+      } else if (c === "\\") {
+        isEscaped = true;
+        chars[i] = " ";
+      } else if (c === '"') {
+        inDoubleQuote = false;
+        chars[i] = " ";
+      } else if (c !== "\n" && c !== "\r") {
+        chars[i] = " ";
+      }
+      continue;
+    }
+
+    if (inBacktick) {
+      if (isEscaped) {
+        isEscaped = false;
+        chars[i] = " ";
+      } else if (c === "\\") {
+        isEscaped = true;
+        chars[i] = " ";
+      } else if (c === "`") {
+        inBacktick = false;
+        chars[i] = " ";
+      } else if (c !== "\n" && c !== "\r") {
+        chars[i] = " ";
+      }
+      continue;
+    }
+
+    // Check for comment starts
+    if (c === "/" && next === "/" && (ext === ".ts" || ext === ".js" || ext === ".tsx" || ext === ".jsx" || ext === ".go" || ext === ".rs")) {
+      const remainder = source.substring(i);
+      const firstLine = remainder.split(/\r?\n/)[0];
+      if (/qed-(?:ignore|disable|enable)/i.test(firstLine)) {
+        i += firstLine.length - 1;
+        continue;
+      }
+      inSingleLineComment = true;
+      chars[i] = " ";
+      chars[i + 1] = " ";
+      i++;
+      continue;
+    }
+
+    if (c === "/" && next === "*" && (ext === ".ts" || ext === ".js" || ext === ".tsx" || ext === ".jsx" || ext === ".go" || ext === ".rs" || ext === ".sql")) {
+      const remainder = source.substring(i);
+      const closeIdx = remainder.indexOf("*/");
+      const block = closeIdx !== -1 ? remainder.substring(0, closeIdx + 2) : remainder;
+      if (/qed-(?:ignore|disable|enable)/i.test(block)) {
+        i += block.length - 1;
+        continue;
+      }
+      inMultiLineComment = true;
+      chars[i] = " ";
+      chars[i + 1] = " ";
+      i++;
+      continue;
+    }
+
+    if (c === "#" && (ext === ".py" || ext === ".sh" || ext === ".yaml" || ext === ".yml")) {
+      const remainder = source.substring(i);
+      const firstLine = remainder.split(/\r?\n/)[0];
+      if (/qed-(?:ignore|disable|enable)/i.test(firstLine)) {
+        i += firstLine.length - 1;
+        continue;
+      }
+      inSingleLineComment = true;
+      chars[i] = " ";
+      continue;
+    }
+
+    if (c === "-" && next === "-" && ext === ".sql") {
+      const remainder = source.substring(i);
+      const firstLine = remainder.split(/\r?\n/)[0];
+      if (/qed-(?:ignore|disable|enable)/i.test(firstLine)) {
+        i += firstLine.length - 1;
+        continue;
+      }
+      inSingleLineComment = true;
+      chars[i] = " ";
+      chars[i + 1] = " ";
+      i++;
+      continue;
+    }
+
+    if (c === "'") {
+      inSingleQuote = true;
+      chars[i] = " ";
+      continue;
+    }
+    if (c === '"') {
+      inDoubleQuote = true;
+      chars[i] = " ";
+      continue;
+    }
+    if (c === "`") {
+      inBacktick = true;
+      chars[i] = " ";
+      continue;
+    }
+  }
+
+  return chars.join("");
 }
 
 /**
@@ -230,6 +397,18 @@ class QedLinter {
     this.jsonOutput = Boolean(options.json);
     this.config = this.loadConfig(options.config);
     this.violations = [];
+    this._ts = undefined;
+  }
+
+  getTsCompiler() {
+    if (this._ts !== undefined) return this._ts;
+    try {
+      const tsPath = require.resolve("typescript", { paths: [this.targetDir, process.cwd()] });
+      this._ts = require(tsPath);
+    } catch {
+      this._ts = null;
+    }
+    return this._ts;
   }
 
   loadConfig(explicitConfigPath) {
@@ -420,6 +599,70 @@ class QedLinter {
     return results;
   }
 
+  // TypeScript Compiler AST Traverser (Active when typescript is available in project)
+  scanSourceFileWithTsAst(filePath, content, suppressions, ts) {
+    const handledRules = new Set(["QED003", "QED004", "QED005"]);
+    try {
+      const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
+
+      const visit = (node) => {
+        const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+        const lineNum = line + 1;
+
+        // QED004: AST check for `as any`
+        if (ts.isAsExpression(node) && node.type && node.type.kind === ts.SyntaxKind.AnyKeyword) {
+          if (!suppressions.isIgnored("QED004", lineNum) && !this.isRelaxedInContext("QED004", filePath)) {
+            this.addViolation(
+              "QED004/UNSAFE_CAST",
+              "[AST Verified] Loose 'as any' cast bypasses compile-time type safety.",
+              filePath,
+              lineNum,
+              node.getText(sourceFile),
+              "Use typed interfaces, unknown with type-guards, or Zod schema validation."
+            );
+          }
+        }
+
+        // QED003: AST check for empty catch block
+        if (ts.isCatchClause(node) && node.block && node.block.statements.length === 0) {
+          if (!suppressions.isIgnored("QED003", lineNum) && !this.isRelaxedInContext("QED003", filePath)) {
+            this.addViolation(
+              "QED003/EMPTY_CATCH",
+              "[AST Verified] Empty catch block silently swallows exceptions, hiding defects.",
+              filePath,
+              lineNum,
+              node.getText(sourceFile),
+              "Handle with fallback, re-throw with cause (new Error('...', { cause })), or log at boundary."
+            );
+          }
+        }
+
+        // QED005: AST check for naked single-argument fetch()
+        if (ts.isCallExpression(node)) {
+          if (ts.isIdentifier(node.expression) && node.expression.text === "fetch" && node.arguments.length === 1) {
+            if (!suppressions.isIgnored("QED005", lineNum) && !this.isRelaxedInContext("QED005", filePath)) {
+              this.addViolation(
+                "QED005/MISSING_TIMEOUT",
+                "[AST Verified] Naked fetch() without AbortSignal timeout causes hanging connections.",
+                filePath,
+                lineNum,
+                node.getText(sourceFile),
+                "Pass AbortSignal.timeout(ms) in options: fetch(url, { signal: AbortSignal.timeout(5000) })."
+              );
+            }
+          }
+        }
+
+        ts.forEachChild(node, visit);
+      };
+
+      visit(sourceFile);
+    } catch {
+      handledRules.clear();
+    }
+    return handledRules;
+  }
+
   // 2. Scan Individual Source Files
   scanSourceFile(filePath) {
     let content;
@@ -432,25 +675,38 @@ class QedLinter {
     const suppressions = new FileSuppressionMap(content);
     if (suppressions.isFileDisabled) return;
 
-    const lines = content.split(/\r?\n/);
     const ext = path.extname(filePath).toLowerCase();
     const isUI = UI_EXTENSIONS.has(ext);
 
-    // Multi-line pattern checks
-    this.checkMultiLinePatterns(filePath, content, suppressions);
+    // 1. Dynamic TypeScript AST traversal if compiler is present in target project
+    const ts = this.getTsCompiler();
+    const isTsOrJs = ext === ".ts" || ext === ".tsx" || ext === ".js" || ext === ".jsx";
+    let astHandledRules = new Set();
+    if (ts && isTsOrJs) {
+      astHandledRules = this.scanSourceFileWithTsAst(filePath, content, suppressions, ts);
+    }
+
+    // 2. Lexical masking for strings and non-directive comments
+    // Replaces string literals with whitespace while preserving line numbers and character offsets
+    const maskedContent = maskCodeStringsAndComments(content, ext);
+    const maskedLines = maskedContent.split(/\r?\n/);
+    const rawLines = content.split(/\r?\n/);
+
+    // Multi-line pattern checks (evaluated on masked content)
+    this.checkMultiLinePatterns(filePath, maskedContent, suppressions, astHandledRules);
 
     // Line-by-line checks
-    for (let i = 0; i < lines.length; i++) {
+    for (let i = 0; i < rawLines.length; i++) {
       const lineNum = i + 1;
-      const line = lines[i];
+      const line = rawLines[i];
+      const maskedLine = maskedLines[i];
 
       // Skip lines that are purely comment lines
       if (/^\s*(\/\/|#|\/\*|\*|<!--|--)/.test(line)) continue;
 
-      // QED002: Zero-Debug Print Invariant
+      // QED002: Zero-Debug Print Invariant (evaluated against masked code so console.log inside strings is ignored)
       if (!suppressions.isIgnored("QED002", lineNum) && !this.isRelaxedInContext("QED002", filePath)) {
-        // Allows console.warn, console.error, console.info; flags only debug/log
-        if (/console\.(log|debug|dir|trace)\s*\(/.test(line) && !line.includes("logger.")) {
+        if (/console\.(log|debug|dir|trace)\s*\(/.test(maskedLine) && !line.includes("logger.")) {
           this.addViolation(
             "QED002/ZERO_DEBUG",
             "Leftover console debug print statement found in production source.",
@@ -460,7 +716,7 @@ class QedLinter {
             "Use a structured logger (logger.info/debug) or remove before commit."
           );
         }
-        if (/\bdebugger\s*;/.test(line)) {
+        if (/\bdebugger\s*;/.test(maskedLine)) {
           this.addViolation(
             "QED002/ZERO_DEBUG",
             "Leftover debugger breakpoint found.",
@@ -470,7 +726,7 @@ class QedLinter {
             "Remove debugger statement."
           );
         }
-        if (ext === ".py" && /\bprint\s*\(/.test(line) && !line.includes("logger.")) {
+        if (ext === ".py" && /\bprint\s*\(/.test(maskedLine) && !line.includes("logger.")) {
           this.addViolation(
             "QED002/ZERO_DEBUG",
             "Leftover print() call found in Python source.",
@@ -482,9 +738,9 @@ class QedLinter {
         }
       }
 
-      // QED004: Anti-`as any` Cast
-      if (!suppressions.isIgnored("QED004", lineNum) && !this.isRelaxedInContext("QED004", filePath)) {
-        if ((ext === ".ts" || ext === ".tsx") && /\bas\s+any\b/.test(line)) {
+      // QED004: Anti-`as any` Cast (skipped if AST already verified this rule)
+      if (!astHandledRules.has("QED004") && !suppressions.isIgnored("QED004", lineNum) && !this.isRelaxedInContext("QED004", filePath)) {
+        if ((ext === ".ts" || ext === ".tsx") && /\bas\s+any\b/.test(maskedLine)) {
           this.addViolation(
             "QED004/UNSAFE_CAST",
             "Loose 'as any' cast bypasses compile-time type safety.",
@@ -496,9 +752,9 @@ class QedLinter {
         }
       }
 
-      // QED006: Unbounded Module-Level Cache
+      // QED006: Unbounded Module-Level Cache (evaluated against masked line)
       if (!suppressions.isIgnored("QED006", lineNum)) {
-        if (/(?:export\s+(?:const|let|var)\s+([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*=\s*new\s+Map\s*\(\s*\))/i.test(line)) {
+        if (/(?:export\s+(?:const|let|var)\s+([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*=\s*new\s+Map\s*\(\s*\))/i.test(maskedLine)) {
           this.addViolation(
             "QED006/UNBOUNDED_CACHE",
             "Exported module-level unbounded Map causes memory leaks in long-running processes.",
@@ -510,7 +766,7 @@ class QedLinter {
         }
       }
 
-      // QED007: Secret Leak Radar
+      // QED007: Secret Leak Radar (evaluated against rawLine since secrets are strings)
       if (!suppressions.isIgnored("QED007", lineNum)) {
         let secretMatch = line.match(/(?:sk-(?:proj-)?[a-zA-Z0-9-_]{20,}|ghp_[a-zA-Z0-9]{30,}|AIza[0-9A-Za-z-_]{35})/);
         if (!secretMatch && this.config.secretPatterns && this.config.secretPatterns.length > 0) {
@@ -541,7 +797,7 @@ class QedLinter {
 
       // UI-Specific Checks
       if (isUI) {
-        // QED009: Semantic Links vs <div onClick> (Checks navigational actions only)
+        // QED009: Semantic Links vs <div onClick>
         if (!suppressions.isIgnored("QED009", lineNum) && !this.isRelaxedInContext("QED009", filePath)) {
           if (
             /<(div|span|section)\s+[^>]*onClick\s*=\s*\{?[^}]*(?:navigate|router\.(?:push|replace)|window\.location|history\.(?:push|replace))/i.test(
@@ -594,10 +850,10 @@ class QedLinter {
         }
       }
 
-      // SQL / DDL Specific Checks
+      // SQL / DDL Specific Checks (checked on masked line)
       if (ext === ".sql") {
         if (!suppressions.isIgnored("QED012", lineNum)) {
-          if (/CREATE\s+INDEX\s+(?!CONCURRENTLY\b)[a-zA-Z0-9_]+\s+ON/i.test(line)) {
+          if (/CREATE\s+INDEX\s+(?!CONCURRENTLY\b)[a-zA-Z0-9_]+\s+ON/i.test(maskedLine)) {
             this.addViolation(
               "QED012/DDL_UNSAFE",
               "CREATE INDEX without CONCURRENTLY locks the table against writes.",
@@ -613,32 +869,35 @@ class QedLinter {
   }
 
   // Multi-line regex checks with suppression awareness
-  checkMultiLinePatterns(filePath, content, suppressions) {
+  checkMultiLinePatterns(filePath, maskedContent, suppressions, astHandledRules = new Set()) {
     const ext = path.extname(filePath).toLowerCase();
 
-    // QED003: Empty Catch Blocks
-    const emptyCatchRegex = /catch\s*(?:\([^)]*\))?\s*\{\s*\}/g;
-    let match;
-    while ((match = emptyCatchRegex.exec(content)) !== null) {
-      const lineNum = content.substring(0, match.index).split("\n").length;
-      if (suppressions.isIgnored("QED003", lineNum)) continue;
-      if (this.isRelaxedInContext("QED003", filePath)) continue;
+    // QED003: Empty Catch Blocks (if not handled by AST)
+    if (!astHandledRules.has("QED003")) {
+      const emptyCatchRegex = /catch\s*(?:\([^)]*\))?\s*\{\s*\}/g;
+      let match;
+      while ((match = emptyCatchRegex.exec(maskedContent)) !== null) {
+        const lineNum = maskedContent.substring(0, match.index).split("\n").length;
+        if (suppressions.isIgnored("QED003", lineNum)) continue;
+        if (this.isRelaxedInContext("QED003", filePath)) continue;
 
-      this.addViolation(
-        "QED003/EMPTY_CATCH",
-        "Empty catch block silently swallows exceptions, hiding defects.",
-        filePath,
-        lineNum,
-        match[0],
-        "Handle with fallback, re-throw with cause (new Error('...', { cause })), or log at boundary."
-      );
+        this.addViolation(
+          "QED003/EMPTY_CATCH",
+          "Empty catch block silently swallows exceptions, hiding defects.",
+          filePath,
+          lineNum,
+          match[0],
+          "Handle with fallback, re-throw with cause (new Error('...', { cause })), or log at boundary."
+        );
+      }
     }
 
     // Python empty except
     if (ext === ".py") {
       const emptyExceptRegex = /except(?:\s+[a-zA-Z0-9_]+)?\s*:\s*\n\s*pass/g;
-      while ((match = emptyExceptRegex.exec(content)) !== null) {
-        const lineNum = content.substring(0, match.index).split("\n").length;
+      let match;
+      while ((match = emptyExceptRegex.exec(maskedContent)) !== null) {
+        const lineNum = maskedContent.substring(0, match.index).split("\n").length;
         if (suppressions.isIgnored("QED003", lineNum)) continue;
         if (this.isRelaxedInContext("QED003", filePath)) continue;
 
@@ -653,11 +912,12 @@ class QedLinter {
       }
     }
 
-    // QED005: Missing Fetch Deadline (Naked single-argument fetch)
-    if (ext === ".ts" || ext === ".js" || ext === ".tsx") {
+    // QED005: Missing Fetch Deadline (if not handled by AST)
+    if (!astHandledRules.has("QED005") && (ext === ".ts" || ext === ".js" || ext === ".tsx")) {
       const nakedFetchRegex = /(?:^|[^\w$.])fetch\s*\(\s*([^,\n\)]+)\s*\)/g;
-      while ((match = nakedFetchRegex.exec(content)) !== null) {
-        const lineNum = content.substring(0, match.index).split("\n").length;
+      let match;
+      while ((match = nakedFetchRegex.exec(maskedContent)) !== null) {
+        const lineNum = maskedContent.substring(0, match.index).split("\n").length;
         if (suppressions.isIgnored("QED005", lineNum)) continue;
         if (this.isRelaxedInContext("QED005", filePath)) continue;
 
@@ -669,6 +929,29 @@ class QedLinter {
           match[0].trim(),
           "Pass AbortSignal.timeout(ms) in options: fetch(url, { signal: AbortSignal.timeout(5000) })."
         );
+      }
+    }
+
+    // QED011: Emoji Salad in UI buttons (multi-line aware)
+    if (UI_EXTENSIONS.has(ext)) {
+      const buttonEmojiRegex = /<button\b[^>]*>([\s\S]*?)<\/button>/gi;
+      let bMatch;
+      while ((bMatch = buttonEmojiRegex.exec(maskedContent)) !== null) {
+        const inner = bMatch[1];
+        const emojiMatch = inner.match(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u);
+        if (emojiMatch) {
+          const lineNum = maskedContent.substring(0, bMatch.index).split("\n").length;
+          if (!suppressions.isIgnored("QED011", lineNum)) {
+            this.addViolation(
+              "QED011/UI_EMOJI_SLOP",
+              "Gratuitous emoji used inside UI button chrome.",
+              filePath,
+              lineNum,
+              bMatch[0].split("\n").slice(0, 3).join("\n"),
+              "Replace emoji with calibrated SVG vector icons (Lucide, Heroicons) with aria-hidden."
+            );
+          }
+        }
       }
     }
   }
@@ -1121,6 +1404,126 @@ function watchCI(targetDir, extraArgs = []) {
   }
 }
 
+function runDoctor(targetDir) {
+  const { spawnSync } = require("node:child_process");
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.cyan(" Q.E.D. Repository & Runtime Health Doctor"));
+  console.log(colors.gray(" Evidence Before Assertions"));
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.gray(`Target: ${path.resolve(targetDir)}\n`));
+
+  let passed = 0;
+  let failed = 0;
+  let warnings = 0;
+
+  function report(status, title, details) {
+    if (status === "pass") {
+      console.log(`  ${colors.green("✓")} ${colors.bold(title)}${details ? colors.gray(" - " + details) : ""}`);
+      passed++;
+    } else if (status === "warn") {
+      console.log(`  ${colors.yellow("!")} ${colors.bold(title)}${details ? colors.yellow(" - " + details) : ""}`);
+      warnings++;
+    } else {
+      console.log(`  ${colors.red("✗")} ${colors.bold(title)}${details ? colors.red(" - " + details) : ""}`);
+      failed++;
+    }
+  }
+
+  // 1. Git Repository Check
+  const gitDir = path.join(targetDir, ".git");
+  if (!fs.existsSync(gitDir)) {
+    report("fail", "Git Repository", "Not a git repository");
+  } else {
+    report("pass", "Git Repository", "Root initialized");
+
+    // 2. Working Tree Cleanliness
+    const statusRes = spawnSync("git", ["status", "--porcelain"], { cwd: targetDir, encoding: "utf8" });
+    if (statusRes.status === 0) {
+      const dirty = statusRes.stdout.trim();
+      if (!dirty) {
+        report("pass", "Working Tree Cleanliness", "Zero unstaged or uncommitted changes");
+      } else {
+        const dirtyCount = dirty.split("\n").length;
+        report("warn", "Working Tree Cleanliness", `${dirtyCount} uncommitted change(s) present`);
+      }
+    }
+
+    // 3. Git Hooks Installation
+    const preCommitHook = path.join(gitDir, "hooks", "pre-commit");
+    const prePushHook = path.join(gitDir, "hooks", "pre-push");
+    if (fs.existsSync(preCommitHook) && fs.existsSync(prePushHook)) {
+      report("pass", "Mechanical Git Hooks", "Both pre-commit & pre-push installed and active");
+    } else if (fs.existsSync(preCommitHook)) {
+      report("warn", "Mechanical Git Hooks", "pre-commit installed, but pre-push missing");
+    } else {
+      report("fail", "Mechanical Git Hooks", "No git hooks installed (run 'qed hook')");
+    }
+  }
+
+  // 4. Linter Gate Verification (0 errors)
+  const linter = new QedLinter(targetDir, { strict: false });
+  const violations = linter.run();
+  const errors = violations.filter((v) => v.severity === "error");
+  if (errors.length === 0) {
+    report("pass", "Q.E.D. Verification Gate", `100% Clean (0 errors, ${violations.length} warnings)`);
+  } else {
+    report("fail", "Q.E.D. Verification Gate", `${errors.length} fatal error(s) detected`);
+  }
+
+  // 5. Cross-Platform Interpreters
+  const bash = findBashInterpreter();
+  if (bash) {
+    report("pass", "Cross-Platform Bash", `Resolved: ${bash}`);
+  } else {
+    report("warn", "Cross-Platform Bash", "No Bash interpreter found on Windows; POSIX tests cannot run locally");
+  }
+
+  // 6. AST Engine Availability
+  const tsCompiler = linter.getTsCompiler();
+  if (tsCompiler) {
+    report("pass", "AST Analysis Engine", `Active via project TypeScript (${tsCompiler.version || "compiler"})`);
+  } else {
+    report("pass", "AST Analysis Engine", "Active via native zero-dependency lexical masking engine");
+  }
+
+  // 7. Remote GitHub Actions CI Status
+  const ghProbe = spawnSync("gh", ["--version"], { encoding: "utf8" });
+  if (ghProbe.status === 0) {
+    const ciRes = spawnSync("gh", ["run", "list", "--limit", "1", "--json", "conclusion,status,databaseId,headBranch"], {
+      cwd: targetDir,
+      encoding: "utf8",
+    });
+    if (ciRes.status === 0 && ciRes.stdout) {
+      try {
+        const runs = JSON.parse(ciRes.stdout);
+        if (runs.length > 0) {
+          const latest = runs[0];
+          if (latest.conclusion === "success") {
+            report("pass", "Remote CI Pipeline", `Run #${latest.databaseId} on [${latest.headBranch}] is 100% GREEN (success)`);
+          } else if (latest.status === "in_progress" || latest.status === "queued") {
+            report("warn", "Remote CI Pipeline", `Run #${latest.databaseId} is currently ${latest.status}`);
+          } else {
+            report("fail", "Remote CI Pipeline", `Run #${latest.databaseId} FAILED (${latest.conclusion})`);
+          }
+        }
+      } catch {
+        // Parse error ignored
+      }
+    }
+  } else {
+    report("warn", "GitHub CLI (gh)", "gh CLI not installed; remote CI status probe skipped");
+  }
+
+  console.log("\n----------------------------------------------------------");
+  if (failed === 0) {
+    console.log(colors.green(`✓ Doctor: System Healthy (${passed} checks passed, ${warnings} warning(s)).`));
+    process.exit(0);
+  } else {
+    console.log(colors.red(`✗ Doctor: Issues Detected (${failed} failure(s), ${passed} passed, ${warnings} warning(s)).`));
+    process.exit(1);
+  }
+}
+
 // CLI Execution Entrypoint
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -1314,6 +1717,8 @@ exit 0
 
     console.log(colors.green(`[+] Installed Q.E.D. hooks: pre-commit & pre-push to ${hooksDir}`));
     process.exit(0);
+  } else if (command === "doctor") {
+    runDoctor(targetDir);
   } else if (command === "test") {
     runAllTests(targetDir);
   } else if (command === "ci" || command === "ci-watch") {
@@ -1325,7 +1730,7 @@ exit 0
   } else {
     console.log(colors.red(`Unknown command: ${command}`));
     console.log(
-      "Usage: node bin/qed-engine.js [check | test | ci | exec | tokens | init | hook] [target_dir] [--compact] [--json] [--strict] [--config <path>]"
+      "Usage: node bin/qed-engine.js [check | test | doctor | ci | exec | tokens | init | hook] [target_dir] [--compact] [--json] [--strict] [--config <path>]"
     );
     process.exit(1);
   }

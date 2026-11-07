@@ -179,6 +179,9 @@ else
     FAILED=$((FAILED + 1))
 fi
 
+# 27. Lexical Masker: string & comment keyword immunity
+assert_rule "Lexical Masker: string & comment keyword immunity" "src/docs.ts" "export const guide = 'Never use as any or console.log in production'; // Tip: avoid catch {}" "" "true"
+
 echo "----------------------------------------------------------"
 echo "Linter Test Results: $PASSED Passed, $FAILED Failed"
 

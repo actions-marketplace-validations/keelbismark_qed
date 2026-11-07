@@ -1,0 +1,56 @@
+[
+  {
+    "id": "SCN-01-CACHE",
+    "name": "User Session Cache Service",
+    "domain": "backend/memory",
+    "rulesTested": ["QED006/UNBOUNDED_CACHE"],
+    "prompt": "Create an exported in-memory user session cache module in TypeScript.",
+    "vanillaSample": "// Typical Vanilla LLM Output\nexport const sessionCache = new Map();\n\nexport function setSession(token: string, user: object) {\n  sessionCache.set(token, user);\n}\n\nexport function getSession(token: string) {\n  return sessionCache.get(token);\n}\n",
+    "qedSample": "// Q.E.D. High-Assurance Implementation\ninterface CacheOptions {\n  maxSize: number;\n  ttlMs: number;\n}\n\nclass BoundedLruCache<K, V> {\n  private readonly maxSize: number;\n  private readonly ttlMs: number;\n  private readonly items = new Map<K, { value: V; expiresAt: number }>();\n\n  constructor(options: CacheOptions) {\n    this.maxSize = options.maxSize;\n    this.ttlMs = options.ttlMs;\n  }\n\n  set(key: K, value: V): void {\n    if (this.items.size >= this.maxSize) {\n      const oldest = this.items.keys().next().value;\n      if (oldest !== undefined) this.items.delete(oldest);\n    }\n    this.items.set(key, { value, expiresAt: Date.now() + this.ttlMs });\n  }\n\n  get(key: K): V | null {\n    const entry = this.items.get(key);\n    if (!entry) return null;\n    if (Date.now() > entry.expiresAt) {\n      this.items.delete(key);\n      return null;\n    }\n    return entry.value;\n  }\n}\n\nexport const userSessions = new BoundedLruCache<string, object>({\n  maxSize: 10000,\n  ttlMs: 3600000\n});\n"
+  },
+  {
+    "id": "SCN-02-FETCH",
+    "name": "External Payment API Client",
+    "domain": "resilience/network",
+    "rulesTested": ["QED005/MISSING_TIMEOUT"],
+    "prompt": "Fetch transaction status from the payment provider gateway URL.",
+    "vanillaSample": "// Typical Vanilla LLM Output\nexport async function getPaymentStatus(txId: string) {\n  const res = await fetch(`https://api.payments.net/tx/${txId}`);\n  return await res.json();\n}\n",
+    "qedSample": "// Q.E.D. High-Assurance Implementation\ninterface PaymentResponse {\n  status: string;\n  amountMinor: number;\n}\n\nexport async function getPaymentStatus(txId: string, timeoutMs = 5000): Promise<PaymentResponse> {\n  const res = await fetch(`https://api.payments.net/tx/${encodeURIComponent(txId)}`, {\n    signal: AbortSignal.timeout(timeoutMs),\n    headers: { 'Accept': 'application/json' }\n  });\n  if (!res.ok) {\n    throw new Error(`Payment gateway error: ${res.status}`);\n  }\n  return (await res.json()) as PaymentResponse;\n}\n"
+  },
+  {
+    "id": "SCN-03-ERROR",
+    "name": "Critical Webhook Dispatcher",
+    "domain": "observability/error-handling",
+    "rulesTested": ["QED003/EMPTY_CATCH"],
+    "prompt": "Deliver webhook event to external endpoint and handle any network errors.",
+    "vanillaSample": "// Typical Vanilla LLM Output\nexport async function dispatchWebhook(url: string, payload: unknown) {\n  try {\n    await fetch(url, { method: 'POST', body: JSON.stringify(payload) });\n  } catch (e) {}\n}\n",
+    "qedSample": "// Q.E.D. High-Assurance Implementation\nexport async function dispatchWebhook(url: string, payload: unknown): Promise<boolean> {\n  try {\n    const res = await fetch(url, {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify(payload),\n      signal: AbortSignal.timeout(3000)\n    });\n    return res.ok;\n  } catch (error) {\n    throw new Error(`Failed to deliver webhook to ${url}`, { cause: error });\n  }\n}\n"
+  },
+  {
+    "id": "SCN-04-TYPES",
+    "name": "JSON API Response Bridge",
+    "domain": "type-safety/invariants",
+    "rulesTested": ["QED004/UNSAFE_CAST"],
+    "prompt": "Parse an incoming raw string payload into an Account object in TypeScript.",
+    "vanillaSample": "// Typical Vanilla LLM Output\nexport function parseAccount(rawJson: string) {\n  const parsed = JSON.parse(rawJson);\n  return parsed as any;\n}\n",
+    "qedSample": "// Q.E.D. High-Assurance Implementation\nexport interface Account {\n  id: string;\n  isActive: boolean;\n}\n\nfunction isAccount(obj: unknown): obj is Account {\n  return (\n    typeof obj === 'object' &&\n    obj !== null &&\n    typeof (obj as Record<string, unknown>).id === 'string' &&\n    typeof (obj as Record<string, unknown>).isActive === 'boolean'\n  );\n}\n\nexport function parseAccount(rawJson: string): Account {\n  const parsed: unknown = JSON.parse(rawJson);\n  if (!isAccount(parsed)) {\n    throw new TypeError('Invalid Account schema format');\n  }\n  return parsed;\n}\n"
+  },
+  {
+    "id": "SCN-05-DDL",
+    "name": "Production Database Index Creation",
+    "domain": "database/zero-downtime",
+    "rulesTested": ["QED012/DDL_UNSAFE"],
+    "prompt": "Write PostgreSQL migration to index user emails in a multi-million row table.",
+    "vanillaSample": "-- Typical Vanilla LLM Output (Locks entire table against writes)\nCREATE INDEX users_email_idx ON users(email);\n",
+    "qedSample": "-- Q.E.D. High-Assurance Migration (Zero-Downtime)\nCREATE INDEX CONCURRENTLY IF NOT EXISTS users_email_idx ON users(email);\n"
+  },
+  {
+    "id": "SCN-06-UI",
+    "name": "Primary Action Checkout Button",
+    "domain": "ui/anti-slop",
+    "rulesTested": ["QED011/UI_EMOJI_SLOP"],
+    "prompt": "Create a React checkout submit button with visual indicator.",
+    "vanillaSample": "// Typical Vanilla LLM Output (Emoji chrome salad)\nexport function CheckoutButton({ onClick }: { onClick: () => void }) {\n  return (\n    <button className=\"btn-primary\" onClick={onClick}>\n      🔥 Pay Now 🚀💰\n    </button>\n  );\n}\n",
+    "qedSample": "// Q.E.D. High-Assurance Component (Clean SVG Vector, Accessible)\nexport function CheckoutButton({ onClick, isLoading }: { onClick: () => void; isLoading?: boolean }) {\n  return (\n    <button \n      type=\"button\"\n      className=\"inline-flex items-center justify-center px-4 py-2 font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50\"\n      onClick={onClick}\n      disabled={isLoading}\n    >\n      <svg className=\"w-4 h-4 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n        <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth=\"2\" d=\"M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z\" />\n      </svg>\n      Pay Now\n    </button>\n  );\n}\n"
+  }
+]

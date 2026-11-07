@@ -1,0 +1,40 @@
+name: Q.E.D. Release & Publish to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Verify & Publish to npmjs.org
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Verify Mechanical Verification Gate
+        run: node bin/qed-engine.js check
+
+      - name: Run Full POSIX Verification Suites
+        run: |
+          bash tests/verify-linter.sh
+          bash tests/verify-adapters.sh
+
+      - name: Verify Package Tarball Integrity
+        run: npm pack --dry-run
+
+      - name: Publish to npm
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

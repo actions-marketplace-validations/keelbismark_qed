@@ -33,6 +33,7 @@ Every UI flow and data endpoint must explicitly handle all 4 states:
 
 - **Visual Anti-Slop & Signature Spark**: The Archaeologist Invariant: when purging slop, preserve the unique interactive spark/mechanic while stripping card boxes (unboxed by default); ban Type 2 sterile brutalism; zero Bento/3x3 monotony; zero emojis; zero fake terminal prompts; 100% human-domain utility.
 - **Workflow Ergonomics**: State-in-URL for all filters/tabs; auto-save form drafts; semantic links (`<a>`) for navigation (never `<div onClick>`); never block paste; 1-click copy with feedback; undo toasts over modal popups; validate on blur.
+- **Errors, Logs & DB Evolution**: Zero empty catches (chain `cause`); structured JSON logs with traceId & PII scrub; Expand/Contract for DB migrations (never drop columns in same release; `CREATE INDEX CONCURRENTLY`; `lock_timeout = '2s'`).
 
 ---
 

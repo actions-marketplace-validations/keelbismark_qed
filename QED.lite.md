@@ -24,6 +24,7 @@ Every UI flow and data route must handle:
 4. **Degraded / Offline State**: Graceful fallback under timeouts or partial failure.
 5. **Visual Anti-Slop & Signature Spark**: The Archaeologist Invariant: preserve unique interactive mechanics while stripping card bloat (unboxed by default); ban Type 2 sterile brutalism; form follows data topology; zero UI emojis; 100% human-domain utility.
 6. **Workflow Ergonomics**: State-in-URL (filters/tabs); auto-save form drafts; semantic links (`<a>`) for navigation; never block paste; 1-click copy with feedback; undo toasts over modal popups; validate on blur.
+7. **Errors, Telemetry & DB**: Zero empty catches (chain `cause`); structured JSON logs with traceId & PII scrub; Expand/Contract for DB migrations (never drop columns in same release; `CREATE INDEX CONCURRENTLY`; `lock_timeout = '2s'`).
 
 ## 3. Ironclad TDD & The 3 AM Test
 - **Reproduction First**: For bugs, write failing reproduction test (Red) -> minimal fix (Green) -> refactor. Features: tests before code.

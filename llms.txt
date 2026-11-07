@@ -16,6 +16,9 @@
 - [Data Fetching Standard](core/data-fetching-philosophy.md): Transport deadlines, schema boundary parsing, and Keyset pagination.
 - [Visual Anti-Slop Standard](core/visual-anti-slop-standard.md): Unboxed by default, anti-Bento, zero emoji salad, and human utility.
 - [Workflow Ergonomics Standard](core/workflow-ergonomics-and-affordances.md): State-in-URL, draft auto-save, keyboard velocity, and Undo toasts.
+- [Error Handling Standard](core/error-handling-philosophy.md): 4 operational tiers, Result<T,E>, cause chaining, and boundary masking.
+- [Observability & RCA Standard](core/observability-and-rca.md): Structured JSON logging, traceId propagation, PII scrubbing, 5 Whys.
+- [Database Evolution Standard](core/database-evolution-and-migrations.md): Expand/Contract multi-phase migrations, non-blocking DDL.
 - [Universal Constitution (Lite)](core/CONSTITUTION.lite.md): Token-optimized (<500 tokens) standard for fast models.
 - [Q.E.D. Lite Prompt](QED.lite.md): Compact drop-in agent prompt.
 - [AI Directives](AI_README.md): High-density instructions for LLM agents.

@@ -5,7 +5,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"></a>
   <a href="docs/harnesses.md"><img src="https://img.shields.io/badge/harnesses-20%20platforms-8b5cf6.svg?style=flat-square" alt="Harnesses: 20 Platforms"></a>
-  <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-13%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 13 Core Specs"></a>
+  <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-16%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 16 Core Specs"></a>
   <a href="core/CONSTITUTION.lite.md"><img src="https://img.shields.io/badge/edition-Q.E.D.%20Lite%20(<500%20tokens)-ec4899.svg?style=flat-square" alt="Edition: Q.E.D. Lite"></a>
   <a href="tests/verify-adapters.ps1"><img src="https://img.shields.io/badge/tests-36%2F36%20passing-38bdf8.svg?style=flat-square" alt="Verification: 100% Passing"></a>
   <a href="llms.txt"><img src="https://img.shields.io/badge/agent-llms.txt-f59e0b.svg?style=flat-square" alt="LLM Entrypoint: llms.txt"></a>
@@ -15,7 +15,8 @@
   <a href="#quickstart">Quickstart</a> •
   <a href="#the-problem-codebase-erosion">The Problem</a> •
   <a href="#framework-architecture">Architecture</a> •
-  <a href="#the-13-pillars-of-qed">The 13 Pillars</a> •
+  <a href="#the-16-pillars-of-qed">The 16 Pillars</a> •
+  <a href="#mechanical-verification-gate-qed-check">Mechanical Gate</a> •
   <a href="#how-it-works">Lifecycle</a> •
   <a href="#20-supported-platforms">20 Platforms</a> •
   <a href="llms.txt">llms.txt</a>
@@ -130,9 +131,9 @@ $ qed "Add idempotent debit to wallet API"
 
 ---
 
-## The 13 Pillars of Q.E.D.
+## The 16 Pillars of Q.E.D.
 
-The standard is codified in 13 formal specification documents under [`core/`](core/):
+The standard is codified in 16 formal specification documents under [`core/`](core/):
 
 | # | Pillar & Specification | Core Invariant | Risk Eliminated |
 | :-: | :--- | :--- | :--- |
@@ -146,9 +147,12 @@ The standard is codified in 13 formal specification documents under [`core/`](co
 | **7** | **[Data Fetching Philosophy](core/data-fetching-philosophy.md)** | Mandatory `AbortSignal` timeout; anti-`as` boundary parsing; Keyset pagination; Singleflight. | Hanging socket leaks, contract drift crashes, waterfall lag, IDOR. |
 | **8** | **[Visual Anti-Slop Standard](core/visual-anti-slop-standard.md)** | The Archaeologist Invariant (preserve the Signature Spark); unboxed by default; anti-Bento; zero emojis. | Type 1 synthetic plastic carnival, Type 2 sterile hospital sheet brutalism. |
 | **9** | **[Workflow Ergonomics](core/workflow-ergonomics-and-affordances.md)** | State-in-URL; auto-save drafts; native links; never block paste; 1-click copy; Undo toasts. | Lost form inputs, modal blindness, broken back-buttons, copy-paste friction. |
-| **10** | **[Git & Pragmatic Versioning](core/git-and-versioning.md)** | Git change ledger $\neq$ Versioning trust contract; Bisect Invariant; changelog split. | Broken git bisect, unearned deprecation, leaked security flaws. |
-| **11** | **[Naming & Semantics](core/naming-philosophy.md)** | Scope-proportional length; positive predicates; contract verbs (`get` vs `fetch`). | Ambiguous names (`data`, `temp`, `res`), misleading predicates. |
-| **12** | **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** | Zero debug prints; throwaway script purge; clean git status before commit. | Production debug logs, leaked tokens, commit pollution. |
+| **10** | **[Error Handling Philosophy](core/error-handling-philosophy.md)** | 4 Operational Tiers; Result<T,E>; error cause chaining; boundary masking with Correlation ID. | Silent catch rot, unmasked stack trace leaks, double logging. |
+| **11** | **[Observability, Telemetry & RCA](core/observability-and-rca.md)** | Structured JSON logging; traceId propagation; automated PII redaction; blameless 5 Whys RCA. | Unsearchable text logs, PII credential leaks, repeat production outages. |
+| **12** | **[Database Evolution & Migrations](core/database-evolution-and-migrations.md)** | Expand/Contract pattern; non-blocking DDL (`CREATE INDEX CONCURRENTLY`, `lock_timeout = '2s'`). | Locked production tables, failed deployments, corrupted data. |
+| **13** | **[Git & Pragmatic Versioning](core/git-and-versioning.md)** | Git change ledger $\neq$ Versioning trust contract; Bisect Invariant; changelog split. | Broken git bisect, unearned deprecation, leaked security flaws. |
+| **14** | **[Naming & Semantics](core/naming-philosophy.md)** | Scope-proportional length; positive predicates; contract verbs (`get` vs `fetch`). | Ambiguous names (`data`, `temp`, `res`), misleading predicates. |
+| **15** | **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** | Zero debug prints; throwaway script purge; clean git status before commit. | Production debug logs, leaked tokens, commit pollution. |
 
 ---
 
@@ -193,6 +197,28 @@ For fast or token-constrained models (**Claude 3.5 Haiku, Gemini Flash, GPT-4o-m
 ```
 
 *Distinct Lite manifests are also directly available in the repository root and harness folders (`QED.lite.md`, `core/CONSTITUTION.lite.md`, `adapters/*/GEMINI.lite.md`, `CLAUDE.lite.md`, `.cursorrules.lite`).*
+
+---
+
+## Mechanical Verification Gate (`qed check` & Pre-Commit Hook)
+
+To eliminate reliance on an AI agent's "honor system", Q.E.D. includes a standalone mechanical linter and Git pre-commit gate that automatically blocks commits containing standard violations:
+
+```bash
+# Run mechanical compliance check across the repository
+./bin/qed check              # Linux / macOS
+.\bin\qed.ps1 check          # Windows (PowerShell)
+
+# Install automated Git pre-commit hook into .git/hooks/pre-commit
+./bin/qed hook               # Linux / macOS
+.\bin\qed.ps1 hook           # Windows (PowerShell)
+```
+
+The mechanical gate automatically scans and enforces:
+1. **Pristine Root Invariant**: Zero temporary scratch files (`temp_*`, `scratch.*`, `*.tmp`, `*.log`, `test_dump*`).
+2. **Zero-Debug Print Invariant**: Zero leftover `console.log(`, `debugger;`, `print(`, or `fmt.Println(`.
+3. **Environment Synchronization**: Every environment variable referenced in code must be documented in `.env.example`.
+4. **Type Safety**: Zero loose `as any` casts in TypeScript/JavaScript.
 
 ---
 
@@ -258,6 +284,9 @@ Q.E.D. adapts to your velocity requirements:
 * **[Data Fetching Philosophy](core/data-fetching-philosophy.md)** — Transport deadlines, boundary schema validation, Keyset pagination.
 * **[Visual Anti-Slop & Human Interface](core/visual-anti-slop-standard.md)** — Unboxed by default, form follows data, zero UI emojis, anti-cyber slop.
 * **[Workflow Ergonomics & Human Affordances](core/workflow-ergonomics-and-affordances.md)** — State-in-URL, draft auto-save, focus return, Undo toasts.
+* **[Error Handling Philosophy](core/error-handling-philosophy.md)** — 4 operational tiers, Result<T,E>, cause chaining, boundary masking.
+* **[Observability & Incident RCA](core/observability-and-rca.md)** — Structured JSON logging, trace context, PII scrubbing, 5 Whys.
+* **[Database Evolution & Migrations](core/database-evolution-and-migrations.md)** — Expand/Contract, non-blocking DDL, batched backfills.
 * **[Git & Pragmatic Versioning](core/git-and-versioning.md)** — Change ledger vs. trust contract, Bisect Invariant.
 * **[Naming & Semantics](core/naming-philosophy.md)** — Scope-proportional names, positive predicates, contract verbs.
 * **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** — Zero-debug print invariant, dead code elimination.

@@ -110,6 +110,18 @@ Before writing any non-trivial code:
     - **Undo Over Modal Friction**: Reversible actions execute immediately with a 7–10s Undo toast. Modal confirmation reserved solely for catastrophic irreversible actions. Soft deletes by default with 30-day retention.
     - **Optimistic UI & Non-Shouting Validation**: 0ms optimistic updates on binary toggles (with graceful rollback). Field validation executes on `onBlur` or debounce $\ge 800\text{ms}$, never screaming on first keystroke.
     - **Incident Correlation IDs**: Every error banner must show a copyable `#req-...` correlation ID for 3-second backend log discovery.
+14. **Error Handling Philosophy Standard**:
+    - **Zero Swallowing Invariant**: Empty catch blocks are strictly banned. Catch blocks must handle with fallback, enrich with native `error.cause`, or record at the architectural boundary. Never double-log (log and rethrow).
+    - **4 Operational Tiers**: Tier 1 (Domain business failures $\rightarrow$ typed `Result<T, E>` or DomainError); Tier 2 (Transient infra failures $\rightarrow$ retry with backoff/jitter); Tier 3 (Environmental breakdowns $\rightarrow$ fail fast at startup); Tier 4 (Unhandled bugs $\rightarrow$ mask from user, alert on-call).
+    - **Public Boundary Masking**: Internal stack traces and raw SQL errors must NEVER leak to clients. Emit sanitized DTOs carrying a copyable `#req-...` correlation ID.
+15. **Observability, Structured Telemetry & Root Cause Analysis (RCA)**:
+    - **Pure JSON Logging**: All production logs emitted as single-line valid JSON with standardized schema (`timestamp`, `level`, `traceId`, `tenantId`, `durationMs`). Plain-text string dumps are forbidden.
+    - **PII Redaction Invariant**: Mandatory automated sanitization of passwords, authorization headers, tokens, and credit cards.
+    - **Blameless 5 Whys RCA**: Every SEV-1/2 incident requires an RCA document in `docs/rca/` containing a 5 Whys causal breakdown and binary mechanical action items with issue IDs.
+16. **Database Evolution & Zero-Downtime Migrations**:
+    - **The Expand/Contract Pattern**: Multi-phase releases for column modifications (Phase 1: Expand & dual-write $\rightarrow$ Phase 2: Batch backfill $\rightarrow$ Phase 3: Switch read $\rightarrow$ Phase 4: Contract & drop). Never drop and write in one release.
+    - **Non-Blocking DDL Guardrails**: Mandatory `SET lock_timeout = '2s'`; mandatory `CREATE INDEX CONCURRENTLY`; add `NOT NULL` with constant defaults or via `CHECK ... NOT VALID`.
+    - **Chunked Backfills**: Historical updates executed in indexed batches ($\le 1,000$ rows) with sleep pauses, never single-statement table locks.
 
 ---
 

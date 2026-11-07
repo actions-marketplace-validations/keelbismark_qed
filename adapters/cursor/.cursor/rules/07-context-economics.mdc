@@ -1,0 +1,21 @@
+---
+description: Q.E.D. Article XVII — Context Economics, Token Hygiene & Surgical Diffs
+globs: *
+alwaysApply: true
+---
+
+# Q.E.D. Context Economics & Token Hygiene (Article XVII)
+
+1. **The Surgical Edit Invariant (Anti-Rewrite)**:
+   - For changes affecting <20% of a file, full file rewrites are strictly prohibited.
+   - Use targeted edits or localized diffs to conserve model attention and output tokens.
+
+2. **Progressive Inspection & Bounded Range Reads**:
+   - Never read 500+ line files whole. Grep symbols/functions first; read bounded line ranges.
+
+3. **Log & Command Output Pruning**:
+   - When verifying with tests, run via `node bin/qed-engine.js exec <command>` or pass `--only-failures`.
+   - Never flood the context window with hundreds of green checkmarks.
+
+4. **Machine Verification Density**:
+   - Run `node bin/qed-engine.js check --compact` for high-density 3-token success (`OK`) and 1-line failure records.

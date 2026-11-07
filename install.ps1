@@ -190,7 +190,8 @@ if ($Harness -eq "all" -or $Harness -eq "cursor") {
             "03-tdd-discipline.mdc",
             "04-three-am-readability.mdc",
             "05-verification-gate.mdc",
-            "06-documentation-and-visuals.mdc"
+            "06-documentation-and-visuals.mdc",
+            "07-context-economics.mdc"
         )
         foreach ($rule in $cursorRules) {
             Install-File "adapters\cursor\.cursor\rules\$rule" (Join-Path $baseDir ".cursor\rules\$rule")

@@ -176,8 +176,17 @@ run_piped_remote_test() {
     
     # Start temporary local HTTP server to test piped remote stream
     local port=18843
-    python3 -m http.server "$port" --directory "$REPO_ROOT" > /dev/null 2>&1 &
-    local server_pid=$!
+    local server_pid
+    if command -v python3 >/dev/null 2>&1; then
+        (cd "$REPO_ROOT" && python3 -m http.server "$port" --bind 127.0.0.1 > /dev/null 2>&1) &
+        server_pid=$!
+    elif command -v python >/dev/null 2>&1; then
+        (cd "$REPO_ROOT" && python -m http.server "$port" --bind 127.0.0.1 > /dev/null 2>&1) &
+        server_pid=$!
+    else
+        node -e "const http=require('http'),fs=require('fs'),path=require('path');http.createServer((req,res)=>{const p=path.join('$REPO_ROOT',req.url.split('?')[0]);if(fs.existsSync(p)&&fs.statSync(p).isFile()){res.writeHead(200);fs.createReadStream(p).pipe(res);}else{res.writeHead(404);res.end();}}).listen($port);" > /dev/null 2>&1 &
+        server_pid=$!
+    fi
     sleep 1
 
     (

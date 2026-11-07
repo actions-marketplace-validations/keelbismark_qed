@@ -701,6 +701,190 @@ class QedLinter {
   }
 }
 
+// -------------------------------------------------------------
+// Token Economics & Context Budget Helpers
+// -------------------------------------------------------------
+
+function auditTokens(targetDir, jsonMode = false) {
+  const candidatePatterns = [
+    ".cursorrules",
+    ".cursorrules.lite",
+    ".cursor/rules",
+    "CLAUDE.md",
+    "CLAUDE.lite.md",
+    ".claude/skills",
+    ".claude/commands",
+    "GEMINI.md",
+    "GEMINI.lite.md",
+    "QED.lite.md",
+    ".clinerules",
+    ".clinerules.lite",
+    ".roomodes",
+    ".roomodes.lite",
+    ".windsurfrules",
+    ".windsurfrules.lite",
+    ".aider.conf.yml",
+    ".github/copilot-instructions.md",
+    ".github/copilot-instructions.lite.md",
+    ".opencoderules",
+    "OPENCODE.md",
+    "DEEPSEEK.md",
+    ".deepseekrules",
+    "CODEX.md",
+    "AGENTS.md",
+    "KIMI.md",
+    "PI.md",
+    "HERMES.md",
+    "MUSE.md",
+    "DEVIN.md",
+    "DROID.md",
+    "GROK.md",
+    "QWEN.md",
+    ".qwenrules",
+  ];
+
+  const results = [];
+  let totalChars = 0;
+  let totalTokens = 0;
+
+  function scanCandidate(rel) {
+    const full = path.join(targetDir, rel);
+    if (!fs.existsSync(full)) return;
+    try {
+      const stat = fs.statSync(full);
+      if (stat.isDirectory()) {
+        const sub = fs.readdirSync(full);
+        for (const s of sub) {
+          scanCandidate(path.join(rel, s));
+        }
+        return;
+      }
+      if (stat.isFile()) {
+        const content = fs.readFileSync(full, "utf8");
+        const chars = content.length;
+        const estTokens = Math.ceil(chars / 4);
+        totalChars += chars;
+        totalTokens += estTokens;
+        results.push({
+          file: rel.replace(/\\/g, "/"),
+          bytes: stat.size,
+          chars,
+          tokens: estTokens,
+        });
+      }
+    } catch {}
+  }
+
+  for (const pat of candidatePatterns) {
+    scanCandidate(pat);
+  }
+
+  const turns20 = totalTokens * 20;
+  let rating = "EXCELLENT";
+  let statusColor = "green";
+  if (totalTokens > 1500) {
+    rating = "HEAVY";
+    statusColor = "red";
+  } else if (totalTokens > 500) {
+    rating = "MODERATE";
+    statusColor = "yellow";
+  }
+
+  if (jsonMode) {
+    console.log(JSON.stringify({ files: results, totalTokens, totalChars, turns20, rating }, null, 2));
+    process.exit(0);
+  }
+
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.cyan(" Q.E.D. Token Footprint & Context Budget Auditor"));
+  console.log(colors.gray(" Evidence Before Assertions"));
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.gray(`Target: ${path.resolve(targetDir)}\n`));
+
+  if (results.length === 0) {
+    console.log(colors.yellow("No agent rule or instruction files detected in target directory.\n"));
+    console.log(colors.gray("Install Q.E.D. via: npx qed-standard check or bash install.sh [harness]"));
+    process.exit(0);
+  }
+
+  console.log(colors.bold("Discovered Instruction Files:"));
+  for (const r of results) {
+    console.log(
+      `  - ${colors.yellow(r.file.padEnd(38))} ${colors.cyan(r.tokens.toString().padStart(6) + " tokens")} ${colors.gray(
+        `(${r.chars} chars)`
+      )}`
+    );
+  }
+
+  console.log("\n----------------------------------------------------------");
+  console.log(`Per-Turn Rule Tax:      ${colors.bold(totalTokens.toLocaleString() + " tokens")}`);
+  console.log(`20-Turn Session Tax:    ${colors.bold(turns20.toLocaleString() + " tokens")}`);
+  console.log(`Context Efficiency:     ${colors[statusColor](colors.bold(rating))}`);
+  console.log("----------------------------------------------------------\n");
+
+  if (rating === "HEAVY") {
+    console.log(colors.yellow("Recommendations:"));
+    console.log("  [!] Heavy prompt tax detected. Install Q.E.D. Lite edition (<500 tokens):");
+    console.log(colors.cyan("      bash install.sh --lite <harness>"));
+    console.log("  [!] Use modular rules with file globs (e.g. .cursor/rules/*.mdc) to load rules on-demand.\n");
+  } else if (rating === "MODERATE") {
+    console.log(colors.cyan("Standard tier active. For token-constrained sessions, consider Lite edition:"));
+    console.log(colors.gray("      bash install.sh --lite <harness>\n"));
+  } else {
+    console.log(colors.green("✓ Optimal token efficiency. Context footprint is minimal (<500 tokens).\n"));
+  }
+}
+
+function runCompactExec(commandArgs) {
+  const { spawnSync } = require("node:child_process");
+  if (commandArgs.length === 0) {
+    console.error(colors.red("Error: No command specified for exec."));
+    console.error("Usage: node bin/qed-engine.js exec <command...>");
+    process.exit(1);
+  }
+
+  const cmdString = commandArgs.join(" ");
+  const res = spawnSync(cmdString, {
+    shell: true,
+    stdio: "pipe",
+    encoding: "utf8",
+  });
+
+  const stdout = res.stdout || "";
+  const stderr = res.stderr || "";
+  const combined = stdout + (stderr ? "\n" + stderr : "");
+  const lines = combined.split(/\r?\n/).filter(Boolean);
+
+  if (res.status === 0) {
+    // Look for test/build summary line
+    const summaryMatch = lines.find((l) => /(?:passed|passing|tests?|ok\b|build.*success|clean)/i.test(l));
+    const summary = summaryMatch ? summaryMatch.trim() : "All checks passed successfully.";
+    console.log(colors.green(`✓ PASS [exit 0]: ${summary}`));
+    process.exit(0);
+  }
+
+  // Failure: Filter out passing lines, retain errors & failure traces
+  console.log(colors.red(`✗ FAIL [exit ${res.status}]: ${cmdString}\n`));
+
+  const relevantLines = lines.filter((l) => {
+    if (/^\s*(?:\[PASS\]|✓|PASS\b|.*passing)/.test(l)) return false;
+    return true;
+  });
+
+  const maxLines = 40;
+  if (relevantLines.length <= maxLines) {
+    console.log(relevantLines.join("\n"));
+  } else {
+    const head = relevantLines.slice(0, 15);
+    const tail = relevantLines.slice(-20);
+    console.log(head.join("\n"));
+    console.log(colors.yellow(`\n[... ${relevantLines.length - 35} noise lines omitted for context economics ...]\n`));
+    console.log(tail.join("\n"));
+  }
+
+  process.exit(res.status || 1);
+}
+
 // CLI Execution Entrypoint
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -708,11 +892,12 @@ if (require.main === module) {
   const targetDir = args.find((a) => !a.startsWith("-") && a !== command) || process.cwd();
   const strict = args.includes("--strict");
   const jsonMode = args.includes("--json");
+  const compactMode = args.includes("--compact") || args.includes("--ai");
   const configIndex = args.indexOf("--config");
   const explicitConfig = configIndex !== -1 && args[configIndex + 1] ? args[configIndex + 1] : null;
 
   if (command === "check") {
-    if (!jsonMode) {
+    if (!jsonMode && !compactMode) {
       console.log(colors.cyan("=========================================================="));
       console.log(colors.cyan(" Q.E.D. High-Assurance Mechanical Verification Engine"));
       console.log(colors.gray(" Evidence Before Assertions"));
@@ -744,6 +929,20 @@ if (require.main === module) {
         )
       );
       process.exit(isPassing ? 0 : 1);
+    }
+
+    if (compactMode) {
+      if (isPassing) {
+        console.log(`OK (0 violations${warnings.length > 0 ? `, ${warnings.length} warning(s)` : ""})`);
+        process.exit(0);
+      }
+      for (const v of violations) {
+        const tag = v.severity === "error" ? "ERR " : "WARN";
+        const loc = v.file ? `${v.file}${v.line ? `:${v.line}` : ""}` : "root";
+        const fix = v.fix ? ` -> ${v.fix}` : "";
+        console.log(`${tag} ${v.ruleId.split("/")[0]} ${loc}: ${v.message}${fix}`);
+      }
+      process.exit(1);
     }
 
     if (violations.length === 0) {
@@ -853,9 +1052,15 @@ exit 0
     fs.writeFileSync(hookPath, hookScript, { mode: 0o755 });
     console.log(colors.green(`[+] Installed Q.E.D. pre-commit hook to: ${hookPath}`));
     process.exit(0);
+  } else if (command === "tokens" || command === "context") {
+    auditTokens(targetDir, jsonMode);
+  } else if (command === "exec") {
+    runCompactExec(args.slice(1));
   } else {
     console.log(colors.red(`Unknown command: ${command}`));
-    console.log("Usage: node bin/qed-engine.js [check | init | hook] [target_dir] [--json] [--strict] [--config <path>]");
+    console.log(
+      "Usage: node bin/qed-engine.js [check | exec | tokens | init | hook] [target_dir] [--compact] [--json] [--strict] [--config <path>]"
+    );
     process.exit(1);
   }
 }

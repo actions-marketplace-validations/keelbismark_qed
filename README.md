@@ -3,8 +3,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keelbismark/qed/actions"><img src="https://github.com/keelbismark/qed/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://www.npmjs.com/package/qed-standard"><img src="https://img.shields.io/npm/v/qed-standard.svg?style=flat-square" alt="npm version"></a>
+  <a href="https://github.com/keelbismark/qed/actions/workflows/ci.yml"><img src="https://github.com/keelbismark/qed/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
+  <a href="https://github.com/keelbismark/qed/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/release-v1.0.0-blue.svg?style=flat-square" alt="Release: v1.0.0"></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/pkg-qed--standard-cb3837.svg?style=flat-square&logo=npm" alt="Package: qed-standard"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"></a>
   <a href="docs/harnesses.md"><img src="https://img.shields.io/badge/harnesses-20%20platforms-8b5cf6.svg?style=flat-square" alt="Harnesses: 20 Platforms"></a>
   <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-16%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 16 Core Specs"></a>

@@ -261,3 +261,27 @@ Any documentation or visual asset produced under Q.E.D. must obey these rules:
    - **Responsive Scaling**: Always declare `viewBox`, `width="100%"`, `height="auto"`, and `preserveAspectRatio="xMidYMid meet"`.
    - **Typography**: Use modern system font stacks (`-apple-system, BlinkMacSystemFont, 'Segoe UI'`) with calibrated letter-spacing on small caps and badge pills.
    - **Developer Badges**: Use `style=flat-square` shields for factual metadata; avoid decorative badge spam.
+
+---
+
+## 10. Phase 8 — Context Economics, Token Hygiene & Surgical Diffs
+
+Context window capacity is a finite, degrading engineering resource. Unchecked context pollution degrades model reasoning (the "lost-in-the-middle" phenomenon), exhausts rate limits, and multiplies API latency.
+
+Every agent operating under Q.E.D. must enforce the **5 Context Invariants**:
+
+1. **The Surgical Edit Invariant (Anti-Rewrite)**:
+   - When modifying an existing file where changes affect less than 20% of lines, emitting a full-file replacement is strictly forbidden.
+   - Use targeted, bounded patch blocks or surgical tool edits. Never burn 800 output tokens to modify a single boolean condition.
+2. **Progressive Inspection & Targeted Range Reading**:
+   - Never read a 1,000-line file into context without prior reconnaissance.
+   - Grep for function signatures, class boundaries, or symbols first; read bounded line intervals (`StartLine` and `EndLine`).
+3. **Command Output Hygiene (Log Pruning)**:
+   - Running commands that emit hundreds of green passing lines (e.g., standard test runners) floods context memory with zero-entropy tokens.
+   - Agents must run test verification via `qed exec <command>` or pass silent/failure-only flags (`--only-failures`, `-q`).
+4. **Machine Verification Density (`qed check --compact`)**:
+   - For automated verification loops, agents must invoke `node bin/qed-engine.js check --compact`.
+   - Success returns a dense 3-token confirmation (`OK (0 violations)`). Violations are reported in single-line machine records, eliminating decorative ASCII banners.
+5. **Anti-Padding (Zero Conversational Noise)**:
+   - Strict prohibition on performative conversational filler ("Certainly! I will now carefully proceed to inspect...").
+   - State intent in 5 words, execute the tool, and provide evidence before assertions.

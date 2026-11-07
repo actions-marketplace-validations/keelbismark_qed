@@ -198,7 +198,7 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "cursor" ]; then
         # Token-optimized Lite mode: install only the lightweight constitution rule
         install_file "adapters/cursor/.cursor/rules/00-constitution.lite.mdc" "$BASE_DIR/.cursor/rules/00-constitution.mdc"
     else
-        for rule in 00-constitution.mdc 01-blast-radius.mdc 02-anti-duplication.mdc 03-tdd-discipline.mdc 04-three-am-readability.mdc 05-verification-gate.mdc 06-documentation-and-visuals.mdc; do
+        for rule in 00-constitution.mdc 01-blast-radius.mdc 02-anti-duplication.mdc 03-tdd-discipline.mdc 04-three-am-readability.mdc 05-verification-gate.mdc 06-documentation-and-visuals.mdc 07-context-economics.mdc; do
             install_file "adapters/cursor/.cursor/rules/$rule" "$BASE_DIR/.cursor/rules/$rule"
         done
     fi

@@ -37,3 +37,9 @@ Before declaring completion:
 1. Pre-commit purge: remove debug prints (`console.log`, `print`, `debugger`), temp files, dead imports.
 2. Run typecheck (`tsc`, `mypy`), linter (`eslint`, `ruff`), and full test suite.
 3. Verify 100% pass and clean `git diff`.
+
+## 5. Context Economics (Token Hygiene)
+- **Surgical Edits**: Targeted diffs only; ban full-file rewrites when modifying <20% lines.
+- **Progressive Inspection**: Grep & read bounded line intervals; never dump 1000L files into context.
+- **Log Pruning**: Run tests with `qed exec <cmd>` or `--only-failures`; ban flooding context with green dots.
+- **Zero Filler**: No conversational padding in responses. Evidence before assertions.

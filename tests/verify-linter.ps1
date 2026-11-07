@@ -195,6 +195,40 @@ try {
         "src/cache.ts" = "export const userCache = new Map();"
     } -ExpectedRule "QED006" -ShouldPass $false
 
+    # 24. Compact / AI Mode (--compact)
+    $compactTestDir = Join-Path $fixtureDir "compact_test"
+    New-Item -Path "$compactTestDir/src" -ItemType Directory -Force | Out-Null
+    Set-Content -Path "$compactTestDir/src/main.ts" -Value "export const a = 1;"
+    $compactOut = node $linterScript check $compactTestDir --compact
+    if ($compactOut -match "^OK\s*\(0 violations\)") {
+        Write-Host "  [PASS] Token Economy: check --compact outputs dense OK" -ForegroundColor Green
+        $script:testsPassed++
+    } else {
+        Write-Host "  [FAIL] Token Economy: check --compact failed: $compactOut" -ForegroundColor Red
+        $script:testsFailed++
+    }
+
+    # 25. Token Footprint Auditor (tokens --json)
+    $tokensOutRaw = node $linterScript tokens $repoRoot --json
+    $tokensJson = $tokensOutRaw | ConvertFrom-Json
+    if ($tokensJson.totalTokens -gt 0 -and $tokensJson.rating) {
+        Write-Host "  [PASS] Token Economy: tokens audit computes token metrics" -ForegroundColor Green
+        $script:testsPassed++
+    } else {
+        Write-Host "  [FAIL] Token Economy: tokens audit returned invalid metrics" -ForegroundColor Red
+        $script:testsFailed++
+    }
+
+    # 26. Log Pruning Exec Runner (exec)
+    $execOut = node $linterScript exec "node -e 'console.log(\"all tests passed\"); process.exit(0);'"
+    if ($execOut -match "PASS") {
+        Write-Host "  [PASS] Token Economy: exec prunes command output" -ForegroundColor Green
+        $script:testsPassed++
+    } else {
+        Write-Host "  [FAIL] Token Economy: exec failed to prune: $execOut" -ForegroundColor Red
+        $script:testsFailed++
+    }
+
 } finally {
     Remove-Item -Path $fixtureDir -Recurse -Force -ErrorAction SilentlyContinue
 }

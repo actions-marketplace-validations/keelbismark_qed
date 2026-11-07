@@ -59,3 +59,11 @@ Before declaring any task complete:
 1. **Pre-Commit Sanitization**: Purge debug statements (`console.log`, `print`, `debugger`), delete scratch files (`git status` clean), eliminate dead imports.
 2. **Automated Verification**: Run static typecheck (`tsc`, `mypy`), linter (`eslint`, `ruff`), and full automated test suite.
 3. **Spec Reconciliation**: Confirm all acceptance criteria and 4 states are satisfied with zero regressions.
+
+---
+
+## 5. Context Economics & Token Hygiene
+1. **Surgical Edits**: Targeted diffs only; never rewrite 400 lines to change a 2-line conditional (<20% churn = surgical edit).
+2. **Progressive Inspection**: Grep function names or read line intervals (`StartLine`/`EndLine`); never dump entire 1,000L files into context.
+3. **Log Pruning**: Run tests with `qed exec <command>` or `--only-failures`; collapse hundreds of green lines into a single status line.
+4. **Machine Density**: Run `qed check --compact` for 3-token success (`OK`) and 1-line machine errors. Zero conversational filler. Evidence before assertions.

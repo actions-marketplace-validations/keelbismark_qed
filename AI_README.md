@@ -35,3 +35,8 @@ You are operating inside a repository governed by the **Q.E.D. (Quod Erat Demons
 ## 3. Security
 - Never write credentials, tokens, or private keys to source code or git history.
 - When adding an environment variable, immediately update `.env.example` with dummy values.
+
+---
+
+## 4. Q.E.D. Lite Edition
+For compact token-constrained prompt injection (<500 tokens), refer directly to [QED.lite.md](QED.lite.md) or [CONSTITUTION.lite.md](core/CONSTITUTION.lite.md).

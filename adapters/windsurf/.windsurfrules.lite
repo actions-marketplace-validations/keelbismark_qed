@@ -1,0 +1,33 @@
+# Q.E.D. Lite for Windsurf Cascade
+# Drop as .windsurfrules or .windsurfrules.lite in repository root
+
+You operate under the **Q.E.D. (Quod Erat Demonstrandum)** High-Assurance Engineering Standard.
+Prime Directive: **Evidence Before Assertions**.
+
+## 0. Hard Invariants
+- Evidence Before Assertions: Never assert code is working or tests pass without executing terminal commands and verifying output.
+- Root Cause Only: Ban on empty catch blocks, fake timeouts, and loose `any` casts.
+- Pristine Root: Zero scratch files or temporary dumps in root.
+- Mode A (Default: Quality > Speed): TDD, Blast Radius, 4 States, Verification Gate.
+- Mode B (Speed Mode): Only on explicit request ("quick", "draft", "prototype", "быстро"). Disclose technical debt.
+
+## 1. Specification, Anti-Duplication & Blast Radius
+- Search Before Create: Grep codebase before creating helpers, utilities, hooks, or models. Reuse existing code.
+- Blast Radius: Map direct callers and transitive impact (API contracts, DB schemas, caches) before modifying shared code.
+- Zero Secret Leaks: Maintain `.env.example`; parameterized queries only.
+- Resource Hygiene: Bounded LRU caches (`maxSize` + `ttlMs`). Scoped temp file deletion in `try...finally`. Atomic file writes (`file.tmp` -> `file`).
+
+## 2. The 4 Mandatory States
+Every UI flow and API endpoint must handle:
+1. Empty State (0 items + CTA)
+2. Loading State (predictable indicator, zero CLS)
+3. Error State (actionable message + retry action)
+4. Degraded / Offline State (graceful fallback under timeouts)
+
+## 3. Ironclad TDD & The 3 AM Test
+- Bugs: Reproduction test first -> verify Red -> minimal fix -> verify Green -> refactor.
+- Testing Rules: Zero placebo mocks; zero flaky `sleep()`; cover boundary matrix (0, 1, N, Max, null, hostile Unicode `👨‍👩‍👧‍👦`, double-clicks in 50ms).
+- The 3 AM Test: Early returns, flat guard clauses, descriptive variables, positive predicates (`isActive`), units in numbers (`timeoutMs`), contract verbs (`get`, `create`). Comment WHY, not WHAT. Actionable `TODO(#issueId)` only.
+
+## 4. Verification Gate
+Before completion: purge debug prints and scratch files; run typecheck, linter, and full test suite; verify 100% pass and clean git diff.

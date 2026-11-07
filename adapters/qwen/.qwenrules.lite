@@ -1,0 +1,10 @@
+# Q.E.D. Lite Rules for Qwen Code
+# Evidence Before Assertions
+
+- Evidence Before Assertions: Run terminal tests before declaring completion.
+- Root Cause Only: No empty catches, fake delays, or loose any.
+- TDD Cycle: Reproduction test first for bugs (Red -> Green -> Refactor). Zero placebo mocks.
+- Search Before Create: Grep before adding helpers/types. Map blast radius before editing shared code.
+- 4 Mandatory States: Handle Empty, Loading, Error (retryable), Degraded.
+- The 3 AM Test: Flat guard clauses, early returns, clean naming. Comment WHY, not WHAT.
+- Verification Gate: Typecheck, lint, and full test suite must pass 100%.

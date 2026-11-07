@@ -1,0 +1,11 @@
+# Q.E.D. Lite for DeepSeek CLI & dsh
+# Evidence Before Assertions
+
+Directives:
+- Evidence Before Assertions: Execute real tests in terminal; verify stdout/stderr before reporting success.
+- Root Cause Only: Zero empty catches, fake timeouts, or loose `any` casts.
+- Anti-Duplication & Blast Radius: Grep before adding helpers/types. Map callers before editing shared code.
+- 4 Mandatory States: Handle Empty, Loading, Error (actionable retry), Degraded.
+- Ironclad TDD: Failing reproduction test first (Red -> Green -> Refactor). Zero placebo mocks.
+- The 3 AM Test: Early returns, flat guard clauses, descriptive variables.
+- Verification Gate: Typecheck, lint, full test suite must pass before completion.

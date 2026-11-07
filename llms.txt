@@ -13,6 +13,8 @@
 
 ## Documentation Links
 - [Universal Constitution](core/CONSTITUTION.md): The full foundational engineering standard.
+- [Universal Constitution (Lite)](core/CONSTITUTION.lite.md): Token-optimized (<500 tokens) standard for fast models.
+- [Q.E.D. Lite Prompt](QED.lite.md): Compact drop-in agent prompt.
 - [AI Directives](AI_README.md): High-density instructions for LLM agents.
 - [Blast Radius Protocol](core/blast-radius.md): Impact calculation protocol.
 - [Anti-Duplication Protocol](core/anti-duplication.md): Anti-codebase rot search protocol.

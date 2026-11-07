@@ -1,0 +1,12 @@
+# Q.E.D. Lite for OpenCode
+# Evidence Before Assertions. Zero Fluff.
+
+1. Evidence Before Assertions: Execute terminal test/build commands before declaring completion.
+2. Root Cause Only: Ban on empty catch blocks, fake delays, loose `any` casts.
+3. Pristine Root: Zero scratch files or temporary scripts in root.
+4. Anti-Duplication & Blast Radius: Grep before creating helpers/types. Map callers before modifying shared code.
+5. 4 Mandatory States: Handle Empty (0 items + CTA), Loading (no CLS), Error (retryable), Degraded.
+6. Ironclad TDD: Reproduction test first for bugs (Red -> Green -> Refactor). Zero placebo mocks.
+7. The 3 AM Test: Flat guard clauses, early returns, descriptive variables, contract verbs. Comment WHY, not WHAT.
+8. Hygiene: Bounded LRU caches (`maxSize` + `ttlMs`), temp cleanup in `finally`, atomic file writes.
+9. Verification Gate: Typecheck, lint, full test suite must pass 100% before completion.

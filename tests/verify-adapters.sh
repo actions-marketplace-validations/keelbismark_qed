@@ -51,6 +51,69 @@ run_positional_test() {
     )
 }
 
+run_lite_test() {
+    local harness="$1"
+    shift
+    local expected=("$@")
+    local target_dir="$TEST_DIR/lite-$harness"
+    mkdir -p "$target_dir"
+    
+    (
+        cd "$target_dir"
+        bash "$REPO_ROOT/install.sh" --lite "$harness" > /dev/null
+        
+        for file in "${expected[@]}"; do
+            if [ ! -e "$file" ]; then
+                echo "  [FAIL] lite-$harness (Missing: $file)"
+                exit 1
+            fi
+        done
+        echo "  [PASS] lite-$harness (${#expected[@]} files verified)"
+    )
+}
+
+run_lite_positional_test() {
+    local harness="$1"
+    shift
+    local expected=("$@")
+    local target_dir="$TEST_DIR/pos-lite-$harness"
+    mkdir -p "$target_dir"
+    
+    (
+        cd "$target_dir"
+        bash "$REPO_ROOT/install.sh" "$harness" --lite > /dev/null
+        
+        for file in "${expected[@]}"; do
+            if [ ! -e "$file" ]; then
+                echo "  [FAIL] pos-lite-$harness (Missing: $file)"
+                exit 1
+            fi
+        done
+        echo "  [PASS] pos-lite-$harness (${#expected[@]} files verified)"
+    )
+}
+
+run_absence_test() {
+    local test_name="$1"
+    local cmd="$2"
+    shift 2
+    local unexpected=("$@")
+    local target_dir="$TEST_DIR/absence-$test_name"
+    mkdir -p "$target_dir"
+    
+    (
+        cd "$target_dir"
+        eval "$cmd" > /dev/null
+        for file in "${unexpected[@]}"; do
+            if [ -e "$file" ]; then
+                echo "  [FAIL] $test_name (Unexpected file found: $file)"
+                exit 1
+            fi
+        done
+        echo "  [PASS] $test_name (Absence of ${#unexpected[@]} unneeded files verified)"
+    )
+}
+
 run_global_test() {
     local fake_home="$TEST_DIR/fake-home"
     mkdir -p "$fake_home"
@@ -202,6 +265,29 @@ run_global_test
 
 echo "--- Section 4: Piped Remote Execution Tests ---"
 run_piped_remote_test
+
+echo "--- Section 5: Lite Mode Installation Tests ---"
+run_lite_test "antigravity" "GEMINI.md" "GEMINI.lite.md" "QED.lite.md" ".antigravity-plugin/plugin.json"
+run_lite_test "gemini" "GEMINI.md" "GEMINI.lite.md" "QED.lite.md" "gemini-extension.json"
+run_lite_test "cursor" ".cursorrules" ".cursorrules.lite" ".cursor/rules/00-constitution.mdc" "QED.lite.md" ".cursor-plugin/plugin.json"
+run_lite_test "claude" "CLAUDE.md" "CLAUDE.lite.md" "QED.lite.md" ".claude-plugin/plugin.json"
+run_lite_test "cline" ".clinerules" ".clinerules.lite" "QED.lite.md"
+run_lite_test "roo" ".clinerules" ".clinerules.lite" ".roomodes" ".roomodes.lite" "QED.lite.md"
+run_lite_test "windsurf" ".windsurfrules" ".windsurfrules.lite" "QED.lite.md"
+run_lite_test "copilot" ".github/copilot-instructions.md" ".github/copilot-instructions.lite.md" "QED.lite.md"
+run_lite_test "deepseek" "DEEPSEEK.md" "DEEPSEEK.lite.md" ".deepseekrules" ".deepseekrules.lite" "QED.lite.md"
+run_lite_positional_test "cursor" ".cursorrules" ".cursorrules.lite" ".cursor/rules/00-constitution.mdc" "QED.lite.md"
+run_lite_test "all" "GEMINI.md" "GEMINI.lite.md" "CLAUDE.md" "CLAUDE.lite.md" ".cursorrules" ".cursorrules.lite" "QED.lite.md"
+
+echo "--- Section 6: Cleanliness & Absence Tests ---"
+run_absence_test "clean-std-antigravity" "bash \"$REPO_ROOT/install.sh\" local antigravity" "GEMINI.lite.md" "QED.lite.md"
+run_absence_test "clean-std-cursor" "bash \"$REPO_ROOT/install.sh\" local cursor" ".cursorrules.lite" "QED.lite.md"
+run_absence_test "clean-std-claude" "bash \"$REPO_ROOT/install.sh\" local claude" "CLAUDE.lite.md" "QED.lite.md"
+run_absence_test "clean-lite-cursor" "bash \"$REPO_ROOT/install.sh\" --lite cursor" ".cursor/rules/01-blast-radius.mdc" ".cursor/rules/05-verification-gate.mdc"
+run_absence_test "clean-lite-claude" "bash \"$REPO_ROOT/install.sh\" --lite claude" ".claude/skills/qed-verify/SKILL.md" ".claude/commands/boost.md"
+run_absence_test "clean-lite-windsurf" "bash \"$REPO_ROOT/install.sh\" --lite windsurf" ".windsurf/workflows/qed-boost.md" ".windsurf/workflows/qed-tdd-cycle.md"
+run_absence_test "clean-lite-copilot" "bash \"$REPO_ROOT/install.sh\" --lite copilot" ".github/prompts/qed-boost.prompt.md"
+run_absence_test "clean-lite-deepseek" "bash \"$REPO_ROOT/install.sh\" --lite deepseek" ".continue/prompts/qed-boost.prompt"
 
 echo ""
 echo "All Bash verification tests PASSED successfully!"

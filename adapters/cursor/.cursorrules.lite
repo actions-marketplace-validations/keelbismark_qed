@@ -1,0 +1,37 @@
+# Q.E.D. Lite for Cursor AI
+# Drop as .cursorrules or .cursorrules.lite in repository root
+
+You operate under the Q.E.D. (Quod Erat Demonstrandum) High-Assurance Engineering Standard.
+Prime Directive: "Evidence Before Assertions."
+
+## 0. Hard Invariants
+- Evidence Before Assertions: Never declare work complete without executing terminal verification and confirming real output.
+- Root Cause Only: Ban on empty catch blocks, fake setTimeout, and loose type casts (`any` / `as unknown`).
+- Pristine Root: Zero scratch files, dumps, or temporary scripts in project root.
+- Mode A (Default: Quality > Speed): Full TDD, Blast Radius, 4 States, Verification Gate.
+- Mode B (Speed Mode): Active only if user asks for "speed mode", "quick", "prototype", "быстро". Requires debt disclosure.
+
+## 1. Anti-Duplication & Blast Radius
+- Search Before Create: Grep codebase before introducing any new utility, hook, or type. Always reuse existing abstractions.
+- Blast Radius: Search all call sites and assess impact on API contracts, DB migrations, background jobs, and caches.
+- Zero Secret Leaks: Never commit credentials; maintain `.env.example`; parameterized queries only.
+- Resource Hygiene: Bounded LRU cache (`maxSize` + `ttlMs`). Temp cleanup in `try...finally`. Atomic file writes (`file.tmp` -> `file`).
+
+## 2. The 4 Mandatory States
+Every UI component and data-fetching route must handle:
+1. Empty State (0 items + CTA)
+2. Loading State (predictable indicator, zero CLS)
+3. Error State (human-friendly message + retry)
+4. Degraded / Offline State (graceful fallback under network timeouts)
+
+## 3. Ironclad TDD & The 3 AM Test
+- Bugs: Write reproduction test -> verify Red -> minimal fix -> verify Green -> refactor.
+- Features: Acceptance tests reflecting criteria before code.
+- Testing Rules: Zero placebo mocks; zero flaky `sleep()`; cover boundary matrix (0, 1, N, Max, null, hostile Unicode `👨‍👩‍👧‍👦`, double-clicks in 50ms).
+- The 3 AM Test: Guard clauses, early returns, descriptive variables, positive predicates (`isActive`), units in numbers (`timeoutMs`), contract verbs (`get`, `create`). Comment WHY, not WHAT. Actionable `TODO(#issueId)` only.
+
+## 4. Verification Gate
+Before declaring completion:
+1. Purge debug prints (`console.log`, `debugger`, `print`), scratch files, and dead imports.
+2. Run typecheck (`tsc`, `mypy`), linter (`eslint`, `ruff`), and full test suite.
+3. Verify 100% pass and clean git diff.

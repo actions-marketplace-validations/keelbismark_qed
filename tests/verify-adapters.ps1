@@ -12,7 +12,7 @@ New-Item -ItemType Directory -Path $testRunDir -Force | Out-Null
 
 $results = @()
 
-function Run-Harness-Test([string]$testName, [string]$targetMode, [string]$harness, [string[]]$expectedFiles, [switch]$Positional) {
+function Run-Harness-Test([string]$testName, [string]$targetMode, [string]$harness, [string[]]$expectedFiles, [string[]]$unexpectedFiles = @(), [switch]$Positional, [switch]$Lite) {
     $targetDir = Join-Path $testRunDir $testName
     New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     
@@ -28,12 +28,21 @@ function Run-Harness-Test([string]$testName, [string]$targetMode, [string]$harne
     try {
         if ($Positional) {
             # Test positional syntax: install.ps1 <harness>
-            & "$RepoRoot\install.ps1" $harness | Out-Null
+            if ($Lite) {
+                & "$RepoRoot\install.ps1" $harness -Lite | Out-Null
+            } else {
+                & "$RepoRoot\install.ps1" $harness | Out-Null
+            }
         } else {
-            & "$RepoRoot\install.ps1" -Harness $harness -Target $targetMode | Out-Null
+            if ($Lite) {
+                & "$RepoRoot\install.ps1" -Harness $harness -Target $targetMode -Lite | Out-Null
+            } else {
+                & "$RepoRoot\install.ps1" -Harness $harness -Target $targetMode | Out-Null
+            }
         }
         
         $missing = @()
+        $unexpected = @()
         $checkBase = if ($targetMode -eq "global") { $fakeHome } else { $targetDir }
         foreach ($file in $expectedFiles) {
             $fullPath = Join-Path $checkBase $file
@@ -41,13 +50,22 @@ function Run-Harness-Test([string]$testName, [string]$targetMode, [string]$harne
                 $missing += $file
             }
         }
+        foreach ($file in $unexpectedFiles) {
+            $fullPath = Join-Path $checkBase $file
+            if (Test-Path $fullPath) {
+                $unexpected += $file
+            }
+        }
         
-        if ($missing.Count -eq 0) {
+        if ($missing.Count -eq 0 -and $unexpected.Count -eq 0) {
             Write-Host "  [PASS] $testName ($($expectedFiles.Count) files verified)" -ForegroundColor Green
-            return [PSCustomObject]@{ Test = $testName; Status = "PASS"; Missing = "" }
+            return [PSCustomObject]@{ Test = $testName; Status = "PASS"; Missing = ""; Unexpected = "" }
         } else {
-            Write-Host "  [FAIL] $testName (Missing: $($missing -join ', '))" -ForegroundColor Red
-            return [PSCustomObject]@{ Test = $testName; Status = "FAIL"; Missing = ($missing -join ', ') }
+            $errs = @()
+            if ($missing.Count -gt 0) { $errs += "Missing: $($missing -join ', ')" }
+            if ($unexpected.Count -gt 0) { $errs += "Unexpected: $($unexpected -join ', ')" }
+            Write-Host "  [FAIL] $testName ($($errs -join '; '))" -ForegroundColor Red
+            return [PSCustomObject]@{ Test = $testName; Status = "FAIL"; Missing = ($missing -join ', '); Unexpected = ($unexpected -join ', ') }
         }
     } finally {
         Pop-Location
@@ -64,11 +82,17 @@ Write-Host "`n--- Section 1: Local Installation Tests ---" -ForegroundColor Yell
 $results += Run-Harness-Test "local-antigravity" "local" "antigravity" @(
     "GEMINI.md",
     ".antigravity-plugin\plugin.json"
+) -unexpectedFiles @(
+    "GEMINI.lite.md",
+    "QED.lite.md"
 )
 
 $results += Run-Harness-Test "local-gemini" "local" "gemini" @(
     "GEMINI.md",
     "gemini-extension.json"
+) -unexpectedFiles @(
+    "GEMINI.lite.md",
+    "QED.lite.md"
 )
 
 $results += Run-Harness-Test "local-cursor" "local" "cursor" @(
@@ -80,6 +104,9 @@ $results += Run-Harness-Test "local-cursor" "local" "cursor" @(
     ".cursor\rules\03-tdd-discipline.mdc",
     ".cursor\rules\04-three-am-readability.mdc",
     ".cursor\rules\05-verification-gate.mdc"
+) -unexpectedFiles @(
+    ".cursorrules.lite",
+    "QED.lite.md"
 )
 
 $results += Run-Harness-Test "local-claude" "local" "claude" @(
@@ -303,6 +330,110 @@ $results += Run-Harness-Test "global-all" "global" "all" @(
     ".qwen\QWEN.md",
     ".qwenrules"
 )
+# --- SECTION 4: Lite Mode Installation Tests ---
+Write-Host "`n--- Section 4: Lite Mode Installation Tests ---" -ForegroundColor Yellow
+
+$results += Run-Harness-Test "lite-antigravity" "local" "antigravity" @(
+    "GEMINI.md",
+    "GEMINI.lite.md",
+    "QED.lite.md",
+    ".antigravity-plugin\plugin.json"
+) -Lite
+
+$results += Run-Harness-Test "lite-gemini" "local" "gemini" @(
+    "GEMINI.md",
+    "GEMINI.lite.md",
+    "QED.lite.md",
+    "gemini-extension.json"
+) -Lite
+
+$results += Run-Harness-Test "lite-cursor" "local" "cursor" @(
+    ".cursorrules",
+    ".cursorrules.lite",
+    ".cursor\rules\00-constitution.mdc",
+    "QED.lite.md",
+    ".cursor-plugin\plugin.json"
+) -unexpectedFiles @(
+    ".cursor\rules\01-blast-radius.mdc",
+    ".cursor\rules\02-anti-duplication.mdc",
+    ".cursor\rules\03-tdd-discipline.mdc",
+    ".cursor\rules\04-three-am-readability.mdc",
+    ".cursor\rules\05-verification-gate.mdc"
+) -Lite
+
+$results += Run-Harness-Test "lite-claude" "local" "claude" @(
+    "CLAUDE.md",
+    "CLAUDE.lite.md",
+    "QED.lite.md",
+    ".claude-plugin\plugin.json"
+) -unexpectedFiles @(
+    ".claude\skills\qed-verify\SKILL.md",
+    "skills\qed-verify\SKILL.md",
+    ".claude\commands\boost.md"
+) -Lite
+
+$results += Run-Harness-Test "lite-windsurf" "local" "windsurf" @(
+    ".windsurfrules",
+    ".windsurfrules.lite",
+    "QED.lite.md"
+) -unexpectedFiles @(
+    ".windsurf\workflows\qed-tdd-cycle.md",
+    ".windsurf\workflows\qed-boost.md"
+) -Lite
+
+$results += Run-Harness-Test "lite-copilot" "local" "copilot" @(
+    ".github\copilot-instructions.md",
+    ".github\copilot-instructions.lite.md",
+    "QED.lite.md"
+) -unexpectedFiles @(
+    ".github\prompts\qed-spec.prompt.md",
+    ".github\prompts\qed-boost.prompt.md"
+) -Lite
+
+$results += Run-Harness-Test "lite-cline" "local" "cline" @(
+    ".clinerules",
+    ".clinerules.lite",
+    "QED.lite.md"
+) -Lite
+
+$results += Run-Harness-Test "lite-roo" "local" "roo" @(
+    ".clinerules",
+    ".clinerules.lite",
+    ".roomodes",
+    ".roomodes.lite",
+    "QED.lite.md"
+) -Lite
+
+$results += Run-Harness-Test "lite-deepseek" "local" "deepseek" @(
+    "DEEPSEEK.md",
+    "DEEPSEEK.lite.md",
+    ".deepseekrules",
+    ".deepseekrules.lite",
+    "QED.lite.md"
+) -Lite
+
+$results += Run-Harness-Test "lite-positional-cursor" "local" "cursor" @(
+    ".cursorrules",
+    ".cursorrules.lite",
+    ".cursor\rules\00-constitution.mdc",
+    "QED.lite.md"
+) -Positional -Lite
+
+$results += Run-Harness-Test "lite-all" "local" "all" @(
+    "GEMINI.md",
+    "GEMINI.lite.md",
+    "CLAUDE.md",
+    "CLAUDE.lite.md",
+    ".cursorrules",
+    ".cursorrules.lite",
+    ".clinerules",
+    ".clinerules.lite",
+    "DEEPSEEK.md",
+    "DEEPSEEK.lite.md",
+    "CODEX.md",
+    "CODEX.lite.md",
+    "QED.lite.md"
+) -Lite
 
 # Cleanup
 Remove-Item -Path $testRunDir -Recurse -Force -ErrorAction SilentlyContinue

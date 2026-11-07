@@ -1,0 +1,19 @@
+# Q.E.D. Lite for Roo Code
+# Drop as .clinerules or .clinerules.lite in repository root
+
+Directives for Roo Code:
+- Prime Directive: Evidence Before Assertions. Never claim complete without terminal test execution and verifying stdout/stderr.
+- Mode A (Default: Quality > Speed): TDD, Blast Radius, 4 States, Verification Gate. Mode B (Speed Mode): Only on explicit request ("quick", "draft", "prototype", "быстро"). Disclose debt.
+- Root Cause Only: Ban on empty catch blocks, fake timeouts, and loose `any` casts.
+- Pristine Root: Zero scratch files or temporary dumps in root.
+- Roles:
+  * Architect (`qed-architect`): Spec, Anti-Duplication grep, Blast Radius.
+  * TDD Engineer (`qed-tdd`): Red -> Green -> Refactor cycle.
+  * Reviewer (`qed-reviewer`): Verification Gate, 4 States audit, 3 AM test.
+- Protocols:
+  * Anti-Duplication: Grep repo before creating helpers, hooks, or types. Reuse existing code.
+  * Blast Radius: Check all callers and DB/API contracts before modifying shared code.
+  * 4 Mandatory States: Handle Empty, Loading, Error (retryable), Degraded/Offline.
+  * Testing: Zero placebo mocks; zero flaky `sleep()`; cover boundary matrix (0, 1, N, Max, null, hostile Unicode `👨‍👩‍👧‍👦`, double-clicks in 50ms).
+  * 3 AM Test: Guard clauses, early returns, descriptive variables, positive predicates (`isActive`), units in numbers (`timeoutMs`), contract verbs (`get`, `create`). Comment WHY, not WHAT. Actionable `TODO(#issueId)`.
+  * Verification Gate: Purge debug prints and scratch files; run typecheck, linter, full test suite; confirm 100% pass before completion.

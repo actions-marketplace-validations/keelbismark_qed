@@ -7,28 +7,28 @@ This document provides the complete integration matrix and setup reference for a
 
 ## 1. Quick Harness Directory
 
-| Harness | Primary Config | Native Features |
-| :--- | :--- | :--- |
-| **Cursor AI** | `.cursorrules`, `.cursor/rules/*.mdc` | Modern MDC rules with YAML frontmatter (`globs`, `alwaysApply: true`) |
-| **Claude Code** | `CLAUDE.md`, `.claude/skills/`, `.claude/commands/` | Native slash commands (`/boost`, `/qed-verify`), plugin manifest |
-| **Google Antigravity** | `GEMINI.md`, `.antigravity-plugin/plugin.json` | Autonomous multi-agent directives, marketplace bundle |
-| **Gemini CLI** | `GEMINI.md`, `gemini-extension.json` | Extension manifest with generalist subagent mappings |
-| **OpenAI Codex** | `CODEX.md`, `AGENTS.md`, `.codex-plugin/` | Codex App & CLI manifest with AGENTS.md conventions |
-| **Moonshot Kimi Code** | `KIMI.md`, `.kimi-plugin/plugin.json` | Plugin manifest with automatic `sessionStart` hook |
-| **Pi Coding Agent** | `PI.md`, `package.json`, `.pi/extensions/qed.ts` | In-process extension with compaction ordering preservation |
-| **Nous Hermes** | `HERMES.md`, `.hermes-plugin/__init__.py` | Python hook `pre_llm_call(**kwargs)` with turn-1 injection |
-| **Muse** | `MUSE.md`, `.muse-plugin/plugin.json` | Marketplace manifest and `SessionStart` hooks |
-| **Cognition Devin** | `DEVIN.md`, `.devin-plugin/plugin.json` | Devin CLI playbook and runtime guardrails |
-| **Factory Droid** | `DROID.md`, `.agents/plugins/marketplace.json` | Marketplace registration and workspace rules |
-| **xAI Grok Build CLI** | `GROK.md`, `.grok-plugin/plugin.json` | Grok CLI plugin configuration |
-| **Alibaba Qwen Code** | `QWEN.md`, `.qwenrules` | CLI and IDE extension rules |
-| **OpenCode** | `opencode.json`, `.opencoderules`, `plugins/qed.js` | In-process plugin supporting V1 (`transform`) and V2 (`setup`) |
-| **DeepSeek (dsh / Continue)** | `DEEPSEEK.md`, `.deepseekrules`, `.continue/` | R1 Chain-of-Thought directives and Continue slash commands |
-| **Cline** | `.clinerules` | Autonomous agent rules and zero-leak secrets policy |
-| **Roo Code** | `.roomodes`, `.clinerules` | 3 custom modes: Architect, TDD Engineer, Reviewer |
-| **Windsurf Cascade** | `.windsurfrules`, `.windsurf/workflows/*.md` | Interactive workflows (`qed-boost`, `qed-tdd-cycle`) |
-| **Aider** | `.aider.conf.yml`, `.aider.conventions.md` | Auto-testing (`auto-test: true`), Conventional Commits automation |
-| **GitHub Copilot** | `.github/copilot-instructions.md`, prompts | Reusable prompt files (`qed-boost.prompt.md`, `qed-spec.prompt.md`) |
+| Harness | Primary Config | Lite Manifest (<500 tokens) | Native Features |
+| :--- | :--- | :--- | :--- |
+| **Cursor AI** | `.cursorrules`, `.cursor/rules/*.mdc` | `.cursorrules.lite` | Modern MDC rules with YAML frontmatter (`globs`, `alwaysApply: true`) |
+| **Claude Code** | `CLAUDE.md`, `.claude/skills/` | `CLAUDE.lite.md` | Native slash commands (`/boost`, `/qed-verify`), plugin manifest |
+| **Google Antigravity** | `GEMINI.md`, `.antigravity-plugin/` | `GEMINI.lite.md` | Autonomous multi-agent directives, marketplace bundle |
+| **Gemini CLI** | `GEMINI.md`, `gemini-extension.json` | `GEMINI.lite.md` | Extension manifest with generalist subagent mappings |
+| **OpenAI Codex** | `CODEX.md`, `AGENTS.md`, `.codex-plugin/` | `CODEX.lite.md`, `AGENTS.lite.md` | Codex App & CLI manifest with AGENTS.md conventions |
+| **Moonshot Kimi Code** | `KIMI.md`, `.kimi-plugin/plugin.json` | `KIMI.lite.md` | Plugin manifest with automatic `sessionStart` hook |
+| **Pi Coding Agent** | `PI.md`, `package.json`, extensions | `PI.lite.md` | In-process extension with compaction ordering preservation |
+| **Nous Hermes** | `HERMES.md`, `.hermes-plugin/` | `HERMES.lite.md` | Python hook `pre_llm_call(**kwargs)` with turn-1 injection |
+| **Muse** | `MUSE.md`, `.muse-plugin/plugin.json` | `MUSE.lite.md` | Marketplace manifest and `SessionStart` hooks |
+| **Cognition Devin** | `DEVIN.md`, `.devin-plugin/plugin.json` | `DEVIN.lite.md` | Devin CLI playbook and runtime guardrails |
+| **Factory Droid** | `DROID.md`, `.agents/plugins/` | `DROID.lite.md` | Marketplace registration and workspace rules |
+| **xAI Grok Build CLI** | `GROK.md`, `.grok-plugin/plugin.json` | `GROK.lite.md` | Grok CLI plugin configuration |
+| **Alibaba Qwen Code** | `QWEN.md`, `.qwenrules` | `QWEN.lite.md`, `.qwenrules.lite` | CLI and IDE extension rules |
+| **OpenCode** | `opencode.json`, `.opencoderules` | `OPENCODE.lite.md`, `.opencoderules.lite` | In-process plugin supporting V1 (`transform`) and V2 (`setup`) |
+| **DeepSeek (dsh / Continue)** | `DEEPSEEK.md`, `.deepseekrules` | `DEEPSEEK.lite.md`, `.deepseekrules.lite` | R1 Chain-of-Thought directives and Continue slash commands |
+| **Cline** | `.clinerules` | `.clinerules.lite` | Autonomous agent rules and zero-leak secrets policy |
+| **Roo Code** | `.roomodes`, `.clinerules` | `.roomodes.lite`, `.clinerules.lite` | 3 custom modes: Architect, TDD Engineer, Reviewer |
+| **Windsurf Cascade** | `.windsurfrules`, workflows | `.windsurfrules.lite` | Interactive workflows (`qed-boost`, `qed-tdd-cycle`) |
+| **Aider** | `.aider.conf.yml`, conventions | `.aider.conventions.lite.md` | Auto-testing (`auto-test: true`), Conventional Commits automation |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | `copilot-instructions.lite.md` | Reusable prompt files (`qed-boost.prompt.md`, `qed-spec.prompt.md`) |
 
 ---
 

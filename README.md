@@ -6,7 +6,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"></a>
   <a href="docs/harnesses.md"><img src="https://img.shields.io/badge/harnesses-20%20platforms-8b5cf6.svg?style=flat-square" alt="Harnesses: 20 Platforms"></a>
   <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-10%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 10 Core Specs"></a>
-  <a href="tests/verify-adapters.ps1"><img src="https://img.shields.io/badge/tests-25%2F25%20passing-38bdf8.svg?style=flat-square" alt="Verification: 100% Passing"></a>
+  <a href="core/CONSTITUTION.lite.md"><img src="https://img.shields.io/badge/edition-Q.E.D.%20Lite%20(<500%20tokens)-ec4899.svg?style=flat-square" alt="Edition: Q.E.D. Lite"></a>
+  <a href="tests/verify-adapters.ps1"><img src="https://img.shields.io/badge/tests-36%2F36%20passing-38bdf8.svg?style=flat-square" alt="Verification: 100% Passing"></a>
   <a href="llms.txt"><img src="https://img.shields.io/badge/agent-llms.txt-f59e0b.svg?style=flat-square" alt="LLM Entrypoint: llms.txt"></a>
 </p>
 
@@ -172,6 +173,23 @@ Install configurations for a specific AI harness only:
 ./install.sh roo         # Roo Code custom modes (Architect, TDD, Reviewer)
 ./install.sh global all  # Machine-wide installation across user profile
 ```
+
+### Q.E.D. Lite (Token-Optimized Edition)
+For fast or token-constrained models (**Claude 3.5 Haiku, Gemini Flash, GPT-4o-mini, local LLMs via Ollama/Llama 3/Qwen**), install the ultra-dense Lite edition (<500 tokens, ~80% token reduction) without sacrificing any core engineering invariants:
+
+```bash
+# Linux / macOS
+./install.sh --lite             # Install Lite for all harnesses
+./install.sh --lite claude      # Install Lite for Claude Code (CLAUDE.md)
+./install.sh --lite cursor      # Install Lite for Cursor (.cursorrules)
+
+# Windows (PowerShell)
+.\install.ps1 -Lite             # Install Lite for all harnesses
+.\install.ps1 -Lite -Harness claude
+.\install.ps1 cursor -Lite
+```
+
+*Distinct Lite manifests are also directly available in the repository root and harness folders (`QED.lite.md`, `core/CONSTITUTION.lite.md`, `adapters/*/GEMINI.lite.md`, `CLAUDE.lite.md`, `.cursorrules.lite`).*
 
 ---
 

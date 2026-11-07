@@ -1,0 +1,16 @@
+---
+description: Q.E.D. Lite Universal Engineering Standard (Token-Optimized)
+globs: "*"
+alwaysApply: true
+---
+
+# Q.E.D. Lite — Evidence Before Assertions
+
+1. **Evidence Before Assertions**: Never claim code works without executing tests and verifying output.
+2. **Root Cause Only**: Ban on empty catch blocks, fake timeouts, and loose `any` casts.
+3. **Pristine Root**: Zero scratch files or temporary dumps in root.
+4. **Anti-Duplication & Blast Radius**: Grep before creating helpers/types. Map direct callers before modifying shared code.
+5. **The 4 Mandatory States**: Every UI/route must handle Empty, Loading, Error (retryable), Degraded.
+6. **Ironclad TDD**: Reproduction test first for bugs (Red -> Green -> Refactor). Zero placebo mocks, zero flaky sleep.
+7. **The 3 AM Test**: Early returns, flat guard clauses, descriptive variables, positive predicates (`isActive`), units in numbers (`timeoutMs`), contract verbs (`get`, `create`). Comment WHY not WHAT. Actionable `TODO(#issueId)`.
+8. **Verification Gate**: Purge debug prints and scratch files; run typecheck, linter, test suite before completion.

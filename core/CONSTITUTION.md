@@ -165,7 +165,7 @@ Execute changes using disciplined software craftsmanship:
 
 ---
 
-## 8. Phase 6 — Verification & Completion Gate
+## 8. Phase 6 — Verification & Sanitization Gate
 
 Before reporting completion:
 
@@ -173,10 +173,15 @@ Before reporting completion:
    - Run the type checker (`tsc`, `mypy`, `dart analyze`, etc.).
    - Run the linter (`eslint`, `ruff`, etc.).
    - Run the test suite (`npm test`, `pytest`, `cargo test`, etc.).
-2. **Spec Reconciliation**:
+2. **Pre-Commit Sanitization & Hygiene Sweep**:
+   - **Zero-Debug Invariant**: Verify that zero temporary debug statements (`console.log`, `print()`, `debugger;`, `fmt.Println`, `dbg!()`) remain in the codebase.
+   - **Scratch Scaffolding Purge**: Run `git status --porcelain` and permanently delete all temporary scripts (`temp_*.py`, `scratch.*`, `debug.log`, JSON dumps).
+   - **Dead Code Elimination**: Eliminate unused imports, unreferenced variables, and commented-out code blocks.
+   - **Diff Sanity Audit**: Inspect `git diff` line-by-line to ensure no accidental whitespace churn or unintended file modifications occurred.
+3. **Spec Reconciliation**:
    - Cross-check the final diff against the initial Acceptance Criteria from Phase 1.
    - Confirm all 4 states (Empty, Loading, Error, Success) and edge cases are safely handled.
-3. **Clean Report**:
+4. **Clean Report**:
    - Summarize what was verified with real output/evidence, note any relevant architectural decisions, and outline how the user can test the change.
 
 ---

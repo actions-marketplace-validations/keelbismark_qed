@@ -33,13 +33,14 @@ Every UI flow and API endpoint must handle:
 - **New Features**: Write acceptance tests -> implement -> verify -> refactor.
 - **The 3 AM Test & Clean Comments**: Flat control flow, early returns, descriptive variable names. Comment WHY, never WHAT. Ban on syntax echo noise (`// set count to 0`). Comments only for trade-offs, platform workarounds, and domain rules. Actionable TODOs with issue IDs (`// TODO(#123)`).
 
-## 4. Phase 4 — Verification Gate & Completion
+## 4. Phase 4 — Verification Gate & Pre-Commit Sanitization
 Before reporting completion to the user:
-1. Run static type checker (`tsc`, `mypy`, `cargo check`).
-2. Run linter (`eslint`, `ruff`, `cargo clippy`).
-3. Run full automated test suite (`npm test`, `pytest`, `cargo test`).
-4. Reconcile final git diff against acceptance criteria.
-5. Provide a clear completion report detailing exact commands run and real outputs.
+1. Pre-Commit Sanitization: purge all debug prints (`console.log`, `print()`, `debugger`), delete scratch scripts, eliminate dead imports.
+2. Run static type checker (`tsc`, `mypy`, `cargo check`).
+3. Run linter (`eslint`, `ruff`, `cargo clippy`).
+4. Run full automated test suite (`npm test`, `pytest`, `cargo test`).
+5. Reconcile final git diff against acceptance criteria.
+6. Provide a clear completion report detailing exact commands run and real outputs.
 
 ## 5. Phase 5 — Documentation & Visual Ergonomics (Anti-Slop)
 - Separate Human vs. Machine entrypoints (`README.md` for humans, `AI_README.md`/`llms.txt` for agents).

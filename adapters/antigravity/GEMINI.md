@@ -33,6 +33,7 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 - **Zero Flaky Sleep**: Strict ban on `sleep()` or arbitrary timeouts in tests. Use fake timers or deterministic condition polling.
 - **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
 - **Reproduction First (Red -> Green)**: For bug fixes, write failing reproduction test first, verify failure, fix root cause, confirm pass.
+- **Pre-Commit Sanitization Sweep**: Zero temporary debug statements (`console.log`, `print`, `debugger`, `fmt.Println`). Delete all throwaway scratch files. Zero dead imports or commented-out code.
 - Verify type checks, linters, and full test suite before declaring completion.
 
 ## 6. Documentation & Visual Ergonomics (Anti-Slop)

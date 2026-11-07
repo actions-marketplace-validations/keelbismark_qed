@@ -74,11 +74,12 @@ Every UI view and API route must implement:
 - **New Features**: Write acceptance tests first -> implement -> verify -> refactor.
 - **The 3 AM Test & Clean Comments**: Flat structure, guard clauses, early returns, clear intermediate variables. Comment WHY, never WHAT. Ban on syntax echo noise (`// set count to 0`). Comments only for trade-offs, platform workarounds, and domain rules. Actionable TODOs with issue IDs (`// TODO(#123)`).
 
-### Phase 4: Verification Gate
+### Phase 4: Verification Gate & Pre-Commit Sanitization
 Before reporting completion, run:
-1. Typechecker (`tsc`, `mypy`, `dart analyze`, etc.)
-2. Linter (`eslint`, `ruff`, etc.)
-3. Automated test suite (`npm test`, `pytest`, `cargo test`, etc.)
+1. Pre-Commit Sanitization: Purge all debug prints (`console.log`, `print()`, `debugger;`), delete temporary scratch files (`git status` clean), eliminate dead imports.
+2. Typechecker (`tsc`, `mypy`, `dart analyze`, etc.)
+3. Linter (`eslint`, `ruff`, etc.)
+4. Automated test suite (`npm test`, `pytest`, `cargo test`, etc.)
 Reconcile the final git diff against the initial Acceptance Criteria.
 
 ---

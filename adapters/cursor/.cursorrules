@@ -49,7 +49,12 @@ Your motto is: "Evidence Before Assertions."
   * For Bug Fixes: Write a reproduction test covering the defect. Run it and verify it fails (Red). Write the minimal clean fix (Green). Verify regression suite passes.
   * For New Features: Write unit/integration tests reflecting acceptance criteria, implement until tests pass, then refactor.
 
-## 5. PHASE 5: VERIFICATION GATE & CONVENTIONAL COMMITS
+## 5. PHASE 5: VERIFICATION GATE, PRE-COMMIT SANITIZATION & COMMITS
+- Pre-Commit Sanitization Sweep:
+  * Zero-Debug Invariant: Purge all temporary debug prints (console.log, print(), debugger;, fmt.Println, dbg!()).
+  * Scratch Scaffolding Purge: Delete any temporary scripts, throwaway test files, or logs. git status must show zero untracked junk.
+  * Dead Code Elimination: Purge unused imports and dead variables.
+  * Diff Sanity Audit: Check git diff line-by-line for whitespace churn or unintended file changes.
 - Verification Gate: Before completing any task, execute:
   1. Automated typechecker (tsc, mypy, dart analyze, etc.).
   2. Automated linter (eslint, ruff, clippy, etc.).

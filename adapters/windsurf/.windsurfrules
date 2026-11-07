@@ -58,13 +58,14 @@ Every UI flow and API endpoint must implement:
 
 ---
 
-## 4. Phase 4 — Verification Gate & Workflows
+## 4. Phase 4 — Verification Gate, Sanitization & Workflows
 Before signaling task completion:
-1. Run type checker (`tsc`, `mypy`, `cargo check`).
-2. Run linter (`eslint`, `ruff`, `cargo clippy`).
-3. Run automated tests (`npm test`, `pytest`, `cargo test`).
-4. Reconcile final git diff against acceptance criteria.
-5. Provide evidence-based summary in your response.
+1. Pre-Commit Sanitization: Purge all debug prints (`console.log`, `print()`, `debugger;`), delete temporary scratch files (`git status` clean), eliminate dead imports.
+2. Run type checker (`tsc`, `mypy`, `cargo check`).
+3. Run linter (`eslint`, `ruff`, `cargo clippy`).
+4. Run automated tests (`npm test`, `pytest`, `cargo test`).
+5. Reconcile final git diff against acceptance criteria.
+6. Provide evidence-based summary in your response.
 
 Refer to workspace workflows in `.windsurf/workflows/`:
 - `qed-spec-and-blast-radius.md`: Pre-implementation specification and blast radius analysis.

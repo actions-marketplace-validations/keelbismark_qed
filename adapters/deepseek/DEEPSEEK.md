@@ -38,12 +38,13 @@ When running with DeepSeek-R1, DeepSeek-V3, or `dsh` terminal agent, your `<thin
 
 ---
 
-## 4. Verification Gate
+## 4. Verification Gate & Pre-Commit Sanitization
 Before reporting completion:
-1. Run static analysis and type checks (`tsc`, `mypy`, etc.).
-2. Run project linters (`eslint`, `ruff`, etc.).
-3. Run the full test suite (`npm test`, `pytest`, etc.).
-4. Confirm zero regressions and format git commits via Conventional Commits (`feat:`, `fix:`, `test:`, `refactor:`).
+1. Pre-Commit Sanitization: Remove all debug prints (`print()`, `console.log`, `debugger`), delete scratch scripts, eliminate dead imports.
+2. Run static analysis and type checks (`tsc`, `mypy`, etc.).
+3. Run project linters (`eslint`, `ruff`, etc.).
+4. Run the full test suite (`npm test`, `pytest`, etc.).
+5. Confirm zero regressions and format git commits via Conventional Commits (`feat:`, `fix:`, `test:`, `refactor:`).
 
 ---
 

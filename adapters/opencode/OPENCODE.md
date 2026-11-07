@@ -32,6 +32,7 @@ Your prime directive is: **Evidence Before Assertions**.
   * Grep the codebase before creating new helpers, utilities, or types ("Search Before You Create").
   * Map direct callers and indirect API/DB risks before altering shared code.
   * Dependency Discipline: stdlib for trivial helpers; proven standards for crypto/auth; wrap external libraries behind internal facades.
+  * Context-Driven Security: Scale security to tier (Tier 1 CLI paths/exec, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech audit/timing). Anti-security-theater: never block paste, silent session refresh, zero draft loss.
 - **Phase 2: Adversarial QA & The 4 Mandatory States**:
   * Every view and endpoint must handle: 1) Empty state, 2) Loading state, 3) Error state with retry, 4) Degraded/Offline state.
 - **Phase 3: Ironclad TDD & The 3 AM Test**:

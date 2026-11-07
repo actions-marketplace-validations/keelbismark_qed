@@ -15,6 +15,7 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 ## 2. Adaptive Architecture, Dependencies & Blast Radius
 - **Anti-Dogmatism & Earned Complexity**: No rigid cookie-cutter templates. Structure follows actual data flow and native ecosystem idioms (Go, Rust, Python, Web). Scale structure organically; never build enterprise layer bloat for small tools.
 - **Dependency Discipline & The Wrapper Invariant**: Battle-tested standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap external libraries behind internal facades.
+- **Context-Driven Security & Anti-Security-Theater**: Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 client bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit). Never block clipboard paste (support password managers); silent session refresh & auto-save form drafts; ban captive puzzle captchas for initial human logins.
 - **Pristine Root Invariant**: Zero scratch files or temporary dumps in root. 10-second entrypoint discovery. Locality of change.
 - **"Search Before You Create"**: Grep for existing helpers/types before writing new ones. Never duplicate.
 - **Calculate Blast Radius**: Identify direct callers and indirect API/DB impact before editing shared code.

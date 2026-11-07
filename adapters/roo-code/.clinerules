@@ -14,6 +14,7 @@ Your prime directive is: **Evidence Before Assertions**.
 - **Anti-Dogmatism & Earned Complexity**: Structure follows the unique domain and ecosystem (Go, Rust, Python, Web), not a rigid template. Never build 8 nested layers for a 150-line utility.
 - **Pristine Root Invariant**: Zero scratch files or temp dumps in root. 10-second entrypoint discovery. Locality of change.
 - **Dependency Discipline & The Wrapper Invariant**: Standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap 3rd-party libraries behind internal facades.
+- **Context-Driven Security & Anti-Security-Theater**: Scale security to context (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech audit/timing immunity). Never block paste (support password managers), silent session refresh & auto-save form drafts to prevent user data loss, ban captchas on initial logins.
 - **Search Before You Create**: Grep the codebase for existing helpers, utilities, hooks, or models before creating new ones. Never duplicate code.
 - **Blast Radius Analysis**: Identify all direct callers and calculate downstream risks (API contracts, DB schemas, caches) before modifying shared code.
 - **Binary Acceptance Criteria**: Establish unambiguous pass/fail criteria before touching code.

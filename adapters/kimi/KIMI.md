@@ -38,5 +38,8 @@ Your prime directive is: **Evidence Before Assertions**.
 - **Dependency Discipline & The Wrapper Invariant**:
   - Evaluate dependencies against 4 pillars (transitive blast radius, vitality, native types, permissive license).
   - Wrap third-party packages behind internal application facades.
+- **Context-Driven Security & Anti-Security-Theater**:
+  - Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit).
+  - Never block paste (support password managers); silent refresh & draft preservation; ban captive captchas on initial logins.
 - **Verification Gate**:
   - Run typecheck, lint, and full test suite via `Bash` before claiming completion.

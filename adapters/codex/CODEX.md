@@ -37,6 +37,8 @@ Your prime directive is: **Evidence Before Assertions**.
 
 - **Dependency Discipline & The Wrapper Invariant**:
   - Battle-tested standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap external libraries behind internal facades.
+- **Context-Driven Security & Anti-Security-Theater**:
+  - Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit). Never block paste (support password managers); silent refresh & draft preservation; ban captchas on initial logins.
 - **Read/Search Before You Create**:
   - Always search the codebase (via grep or glob) for existing utilities, hooks, or types before writing new ones. Never duplicate helpers.
 - **Blast Radius Calculation**:

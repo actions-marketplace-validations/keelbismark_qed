@@ -219,6 +219,7 @@ Q.E.D. adapts to your velocity requirements:
 ## Documentation
 
 * **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
+* **[Security Philosophy & Threat-Adaptive Tiers](core/security-philosophy.md)** — Context-driven threat modeling, 4 security tiers, and anti-security-theater UX.
 * **[Git & Versioning Philosophy](core/git-and-versioning.md)** — Git change ledger vs. SemVer/CalVer/ZeroVer/Continuous trust contracts.
 * **[Adaptive Architecture & Structure](core/adaptive-architecture.md)** — Anti-template dogmatism, earned complexity, and native ecosystem idioms.
 * **[Dependency Philosophy & Supply Chain](core/dependency-philosophy.md)** — Build vs. Buy matrix, package health audits, and the Wrapper Invariant.

@@ -24,6 +24,9 @@ Your prime directive is: **Evidence Before Assertions**.
   * Battle-tested standards for crypto/auth/protocols (never DIY). Standard library for trivial helpers (no micro-packages for clamps/slugs).
   * 4-Pillar audit: transitive dependency tree, maintenance vitality, native types, permissive license (MIT/Apache 2.0).
   * Wrap external dependencies behind internal facades. Never leak 3rd-party types across call sites.
+- **Context-Driven Security & Anti-Security-Theater**:
+  * Scale security to context: Tier 1 CLI (path/exec safety), Tier 2 Client (bundle leaks/XSS), Tier 3 Web (multi-tenant IDOR/error masking/strict DTOs), Tier 4 FinTech (timing attacks/Argon2id/audit trails).
+  * Anti-Security-Theater: Never block clipboard paste (support password managers), silent session refresh & auto-save form drafts, ban captchas on initial logins.
 - **Search Before You Create**:
   * Before generating new utility functions, helper methods, hooks, or data models, check if equivalent abstractions already exist in the codebase.
   * Always reuse or extend existing code rather than creating parallel duplicates (`utils2.ts`, `customFormatDate`).

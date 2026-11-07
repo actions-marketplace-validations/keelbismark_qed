@@ -16,10 +16,11 @@ This agent operates strictly under the Q.E.D. (Quod Erat Demonstrandum) Engineer
 When running with DeepSeek-R1, DeepSeek-V3, or `dsh` terminal agent, your `<think>` / reasoning block MUST explicitly verify:
 
 1. **Architecture, Dependencies & Anti-Duplication**: Does the proposed structure respect native ecosystem idioms and earned complexity? Have I avoided bloat dependencies (using stdlib for trivial helpers, industry standards for crypto) and wrapped external libraries?
-2. **Blast Radius Analysis**: What files call this function? Does modifying this interface break existing callers or API contracts?
-3. **The 4 Mandatory States**: Have I accounted for Empty, Loading, Error (with retry), and Degraded states?
-4. **The 3 AM Test, Naming & Comment Standard**: Is the proposed logic flat (guard clauses, early returns) with descriptive variable names? Have I eliminated lazy placeholders (`data`, `temp`), specified units in numbers, used positive predicates, and commented only WHY?
-5. **TDD Sequence**: Am I writing a failing reproduction test first before touching the fix?
+2. **Context-Driven Security & Anti-Security-Theater**: Does the security model match the runtime tier (Tier 1 CLI paths/exec, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit)? Have I avoided user-hostile security theater (blocking paste, killing sessions without drafts, captive captchas)?
+3. **Blast Radius Analysis**: What files call this function? Does modifying this interface break existing callers or API contracts?
+4. **The 4 Mandatory States**: Have I accounted for Empty, Loading, Error (with retry), and Degraded states?
+5. **The 3 AM Test, Naming & Comment Standard**: Is the proposed logic flat (guard clauses, early returns) with descriptive variable names? Have I eliminated lazy placeholders (`data`, `temp`), specified units in numbers, used positive predicates, and commented only WHY?
+6. **TDD Sequence**: Am I writing a failing reproduction test first before touching the fix?
 
 ---
 

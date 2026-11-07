@@ -18,7 +18,8 @@ Your prime directive is: **Evidence Before Assertions**.
 
 1. **Search Before You Create**: Check the codebase for existing utilities, hooks, or types before introducing new ones.
 2. **Dependency Discipline & The Wrapper Invariant**: Use stdlib for trivial helpers; battle-tested standards for crypto/auth; wrap external libraries behind internal facades.
-3. **Blast Radius Analysis**: Trace all call sites and review impacts on shared interfaces and database schemas.
-4. **4 Mandatory States**: Implement Empty, Loading, Error (with retry), and Degraded states.
-5. **The 3 AM Test**: Write clear guard clauses, early returns, and readable variables.
-6. **Verification Gate**: Type checks, linting, and full test suite must pass before completion.
+3. **Context-Driven Security & Anti-Security-Theater**: Scale security to context tier; never block paste (support password managers); silent refresh & draft preservation; ban captchas on initial logins.
+4. **Blast Radius Analysis**: Trace all call sites and review impacts on shared interfaces and database schemas.
+5. **4 Mandatory States**: Implement Empty, Loading, Error (with retry), and Degraded states.
+6. **The 3 AM Test**: Write clear guard clauses, early returns, and readable variables.
+7. **Verification Gate**: Type checks, linting, and full test suite must pass before completion.

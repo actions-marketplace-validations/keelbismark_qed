@@ -73,6 +73,10 @@ Before writing any non-trivial code:
    - **Build vs. Buy Matrix**: Use industry standards for security/crypto/auth/protocols (never roll your own); use standard library for trivial utilities (zero packages for clamps, slugs, or simple clones). Avoid unmaintained micro-packages.
    - **Package Health Audit**: Audit transitive dependency count, maintenance vitality (>12m abandonment check), native type definitions, and permissive licensing (MIT/Apache 2.0).
    - **The Wrapper Invariant**: Encapsulate third-party libraries behind an internal application facade/adapter. Never leak vendor types across dozens of call sites.
+8. **Context-Driven Security & Anti-Security-Theater**:
+   - **Context-Adaptive Tiers**: Security must fit the execution boundary (Tier 1: Local CLI safe paths/exec; Tier 2: Client bundle secret isolation & XSS; Tier 3: Multi-tenant IDOR, error masking & strict DTOs; Tier 4: FinTech timing-attack immunity, Argon2id & audit trails). Never over-engineer small tools or under-engineer multi-tenant services.
+   - **Anti-Security-Theater (NIST 800-63B)**: Never block clipboard paste (support password managers); use silent session refresh and auto-save form drafts to prevent data loss; ban puzzle captchas for initial human logins.
+   - **Universal Baseline Invariants**: Zero secrets in Git history; parameterized queries only (zero SQL concatenation); bounded payload size limits.
 
 ---
 

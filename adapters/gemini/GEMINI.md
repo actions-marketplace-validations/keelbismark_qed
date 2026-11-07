@@ -38,15 +38,17 @@ Your prime directive is: **Evidence Before Assertions**.
 
 1. **Dependency Discipline & The Wrapper Invariant**:
    - Battle-tested standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap external libraries behind internal facades.
-2. **Anti-Duplication Radar**:
+2. **Context-Driven Security & Anti-Security-Theater**:
+   - Match security to runtime tier (Tier 1 CLI path/exec, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech audit/timing). Never block paste (support password managers); silent refresh & draft preservation; ban captchas on initial logins.
+3. **Anti-Duplication Radar**:
    - Before writing new utilities or models, use `grep_search` to verify existing helpers. Never create duplicate utilities.
-3. **Blast Radius Analysis**:
+4. **Blast Radius Analysis**:
    - Calculate direct callers and indirect contract/DB risks before editing shared code.
-4. **The 4 Mandatory States**:
+5. **The 4 Mandatory States**:
    - Always implement: Empty state, Loading state, Error state with retry, and Degraded state.
-5. **The 3 AM Test**:
+6. **The 3 AM Test**:
    - Use early returns and guard clauses. Avoid opaque 6-level chained functional one-liners.
-6. **Adversarial Testing (Chaos Monkey)**:
+7. **Adversarial Testing (Chaos Monkey)**:
    - Handle rapid double-clicks (500ms), 5MB+ payloads, and hostile Unicode.
-7. **Verification Gate**:
+8. **Verification Gate**:
    - Run typecheck, linter, and full test suite via `run_shell_command` before completion.

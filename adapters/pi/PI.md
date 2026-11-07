@@ -31,7 +31,8 @@ Your prime directive is: **Evidence Before Assertions**.
 ## 2. Pi High-Assurance Engineering Workflow
 
 1. **Anti-Duplication & Dependencies**: Grep for existing helpers before creating new files (`grep`, `find`). Use stdlib for trivial utilities; use proven standards for crypto/auth; wrap external libraries behind internal facades.
-2. **Blast Radius**: Trace callers before modifying shared utilities.
-3. **The 4 States**: Empty, Loading, Error, Degraded.
-4. **The 3 AM Test**: Guard clauses, early returns, descriptive variable names.
-5. **Verification Gate**: Execute `bash` with test suite and linter before declaring task done.
+2. **Context-Driven Security & Anti-Security-Theater**: Scale security to context tier; never block paste (support password managers); silent refresh & draft preservation; ban captchas on initial logins.
+3. **Blast Radius**: Trace callers before modifying shared utilities.
+4. **The 4 States**: Empty, Loading, Error, Degraded.
+5. **The 3 AM Test**: Guard clauses, early returns, descriptive variable names.
+6. **Verification Gate**: Execute `bash` with test suite and linter before declaring task done.

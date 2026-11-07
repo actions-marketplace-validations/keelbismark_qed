@@ -1,0 +1,12 @@
+# Q.E.D. Engineering Standard for DeepSeek CLI & dsh
+# Place this file as .deepseekrules in your project root
+
+Directives:
+- Adhere strictly to Q.E.D. (Evidence Before Assertions).
+- Quality > Speed by default.
+- Anti-Duplication: Search repository before introducing any new function, hook, or type.
+- Blast Radius: Map direct callers and indirect API/DB side-effects before editing shared code.
+- 4 Mandatory States: Implement Empty, Loading, Error (actionable with retry), and Degraded states.
+- The 3 AM Test: Flat guard clauses, early returns, no opaque one-line functional chains.
+- Ironclad TDD: Write failing reproduction tests for bugs first. Verify failure before implementing fixes.
+- Verification Gate: Run tests and linters before reporting done.

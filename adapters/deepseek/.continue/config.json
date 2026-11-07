@@ -1,0 +1,19 @@
+{
+  "customCommands": [
+    {
+      "name": "qed-spec",
+      "prompt": "You are operating under the Q.E.D. Engineering Standard. Generate a formal specification for the following feature. Include: 1) Problem Statement, 2) User Stories & Scenarios, 3) The 4 Mandatory States (Empty, Loading, Error, Degraded), 4) Blast Radius Impact Assessment, and 5) Binary Pass/Fail Acceptance Criteria. Do not write implementation code yet.\n\nTask: {{{ input }}}",
+      "description": "Generate a Q.E.D. specification with Blast Radius and 4 states"
+    },
+    {
+      "name": "qed-tdd",
+      "prompt": "You are operating under the Q.E.D. Ironclad TDD Standard. For the following requirement, generate a failing test (RED stage) first. Assert the expected behavior against boundary conditions and Chaos Monkey edge cases. Do not write the implementation until the test is defined.\n\nTask: {{{ input }}}",
+      "description": "Generate a Q.E.D. failing test (RED stage)"
+    },
+    {
+      "name": "qed-verify",
+      "prompt": "You are the Q.E.D. Verification Sentinel. Audit the current changes against: 1) Acceptance Criteria, 2) The 3 AM Readability Test (guard clauses, descriptive names), 3) Zero-Leak security policy, and 4) Full test execution output. Evidence before assertions.\n\nDiff/Context: {{{ input }}}",
+      "description": "Audit code against Q.E.D. Verification Gate"
+    }
+  ]
+}

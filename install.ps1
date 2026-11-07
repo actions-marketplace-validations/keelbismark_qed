@@ -21,7 +21,7 @@ if ($Agent -ne "" -and $Harness -eq "all") {
 $knownHarnesses = @(
     "antigravity", "gemini", "cursor", "claude", "claude-code", 
     "cline", "roo", "roo-code", "windsurf", "aider", 
-    "copilot", "github-copilot", "opencode", "all"
+    "copilot", "github-copilot", "opencode", "deepseek", "dsh", "deepseek-harness", "all"
 )
 
 $targetNormalized = $Target.ToLower().Trim()
@@ -211,6 +211,24 @@ if ($Harness -eq "all" -or $Harness -eq "opencode") {
         Install-File "adapters\opencode\opencode.json" ".\opencode.json"
         Install-File "adapters\opencode\.opencoderules" ".\.opencoderules"
         Install-File "adapters\opencode\OPENCODE.md" ".\OPENCODE.md"
+    }
+}
+
+# 10. DeepSeek Harness (dsh) & Continue.dev
+if ($Harness -eq "all" -or $Harness -eq "deepseek" -or $Harness -eq "dsh" -or $Harness -eq "deepseek-harness") {
+    Write-Host "`nConfiguring DeepSeek Harness (dsh) & Continue.dev..." -ForegroundColor Cyan
+    if ($Target -eq "global") {
+        Install-File "adapters\deepseek\DEEPSEEK.md" (Join-Path $userHome ".deepseek\DEEPSEEK.md")
+        Install-File "adapters\deepseek\.deepseekrules" (Join-Path $userHome ".deepseekrules")
+        Install-File "adapters\deepseek\.dsh\config.json" (Join-Path $userHome ".dsh\config.json")
+        Install-File "adapters\deepseek\.continue\config.json" (Join-Path $userHome ".continue\config.json")
+    } else {
+        Install-File "adapters\deepseek\DEEPSEEK.md" ".\DEEPSEEK.md"
+        Install-File "adapters\deepseek\.deepseekrules" ".\.deepseekrules"
+        Install-File "adapters\deepseek\.dsh\config.json" ".\.dsh\config.json"
+        Install-File "adapters\deepseek\.continue\config.json" ".\.continue\config.json"
+        Install-File "adapters\deepseek\.continue\prompts\qed-spec.prompt" ".\.continue\prompts\qed-spec.prompt"
+        Install-File "adapters\deepseek\.continue\prompts\qed-verify.prompt" ".\.continue\prompts\qed-verify.prompt"
     }
 }
 

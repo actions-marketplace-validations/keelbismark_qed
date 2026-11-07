@@ -1,0 +1,12 @@
+---
+name: qed-verify
+description: Verify changes against Q.E.D. Quality Gate
+---
+Audit the selected code or diff against the Q.E.D. Standard:
+1. Verify Acceptance Criteria satisfaction.
+2. Check The 3 AM Test: Are there deep nested ifs? Are intermediate variables named?
+3. Check Anti-Duplication: Did we introduce any duplicate helpers or types?
+4. Check 4 States: Are Empty, Loading, Error, and Degraded states covered?
+5. Require terminal verification command output before approving.
+
+{{{ input }}}

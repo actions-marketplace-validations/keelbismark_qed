@@ -119,6 +119,7 @@ Q.E.D. provides first-class, native configurations and adapters tailored specifi
 | **GitHub Copilot** | `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` | Workspace instructions + reusable prompt files (`qed-spec.prompt.md`, `qed-verify.prompt.md`, `qed-tdd.prompt.md`). |
 | **Google Antigravity** | `GEMINI.md` | Autonomous multi-agent directives enforcing Evidence Before Assertions and dual modes. |
 | **OpenCode** | `opencode.json` + `.opencoderules` + `OPENCODE.md` | Machine-readable schema configuration, sandbox constraints, and verification hooks. |
+| **DeepSeek (dsh & Continue)** | `DEEPSEEK.md` + `.deepseekrules` + `.dsh/` + `.continue/` | DeepSeek-R1 Chain-of-Thought reasoning directives, DeepSeek Harness safety presets, and Continue.dev custom slash commands (`/qed-verify`, `/qed-spec`). |
 
 ---
 
@@ -141,6 +142,7 @@ Install for your specific harness or all harnesses at once:
 .\install.ps1 -Harness aider
 .\install.ps1 -Harness copilot
 .\install.ps1 -Harness opencode
+.\install.ps1 -Harness deepseek
 .\install.ps1 -Harness antigravity
 
 # Or install globally to user profile
@@ -162,6 +164,7 @@ Install for your specific harness or all harnesses at once:
 ./install.sh --harness aider
 ./install.sh --harness copilot
 ./install.sh --harness opencode
+./install.sh --harness deepseek
 ./install.sh --harness antigravity
 
 # Or install globally
@@ -219,7 +222,8 @@ qed/
 │   ├── windsurf/           # Windsurf Cascade (.windsurfrules & workflows/*)
 │   ├── aider/              # Aider (.aider.conf.yml & .aider.conventions.md)
 │   ├── copilot/            # GitHub Copilot (.github/copilot-instructions.md & prompts/*)
-│   └── opencode/           # OpenCode (opencode.json, .opencoderules, OPENCODE.md)
+│   ├── opencode/           # OpenCode (opencode.json, .opencoderules, OPENCODE.md)
+│   └── deepseek/           # DeepSeek Harness (DEEPSEEK.md, .deepseekrules, .dsh/*, .continue/*)
 ├── templates/              # Standard Artifact Templates
 │   ├── SPEC_TEMPLATE.md    # Specification Template (What & Why)
 │   ├── ADR_TEMPLATE.md     # Architecture Decision Record

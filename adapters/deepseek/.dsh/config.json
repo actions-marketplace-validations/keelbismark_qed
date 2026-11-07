@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/main/schema/config.json",
+  "name": "qed-deepseek-harness",
+  "version": "1.0.0",
+  "profile": "standard",
+  "rules": [
+    "DEEPSEEK.md",
+    ".deepseekrules"
+  ],
+  "safety": {
+    "zeroSecretLeaks": true,
+    "requireEvidenceBeforeAssertions": true,
+    "requireTddForBugfixes": true
+  },
+  "conventions": {
+    "commitStyle": "conventional",
+    "enforceThreeAmTest": true,
+    "enforceFourStates": true
+  }
+}

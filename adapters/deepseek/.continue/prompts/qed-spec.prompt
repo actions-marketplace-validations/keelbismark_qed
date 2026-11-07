@@ -1,0 +1,12 @@
+---
+name: qed-spec
+description: Generate a Q.E.D. specification with Blast Radius and 4 states
+---
+Generate a formal Q.E.D. specification for the following request:
+1. Problem Statement
+2. User Stories & Scenarios
+3. The 4 Mandatory States: Empty, Loading, Error (actionable), Degraded
+4. Blast Radius (Direct callers, indirect impacts, risk level)
+5. Binary Acceptance Criteria (Pass/Fail)
+
+{{{ input }}}

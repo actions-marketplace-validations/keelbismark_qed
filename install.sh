@@ -28,7 +28,7 @@ while [[ $# -gt 0 ]]; do
             TARGET="$1"
             shift
             ;;
-        antigravity|gemini|cursor|claude|claude-code|cline|roo|roo-code|windsurf|aider|copilot|github-copilot|opencode|all)
+        antigravity|gemini|cursor|claude|claude-code|cline|roo|roo-code|windsurf|aider|copilot|github-copilot|opencode|deepseek|dsh|deepseek-harness|all)
             HARNESS="$1"
             shift
             ;;
@@ -208,6 +208,24 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "opencode" ]; then
         install_file "adapters/opencode/opencode.json" "./opencode.json"
         install_file "adapters/opencode/.opencoderules" "./.opencoderules"
         install_file "adapters/opencode/OPENCODE.md" "./OPENCODE.md"
+    fi
+fi
+
+# 10. DeepSeek Harness (dsh) & Continue.dev
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "deepseek" ] || [ "$HARNESS" = "dsh" ] || [ "$HARNESS" = "deepseek-harness" ]; then
+    echo -e "\nConfiguring DeepSeek Harness (dsh) & Continue.dev..."
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/deepseek/DEEPSEEK.md" "$HOME/.deepseek/DEEPSEEK.md"
+        install_file "adapters/deepseek/.deepseekrules" "$HOME/.deepseekrules"
+        install_file "adapters/deepseek/.dsh/config.json" "$HOME/.dsh/config.json"
+        install_file "adapters/deepseek/.continue/config.json" "$HOME/.continue/config.json"
+    else
+        install_file "adapters/deepseek/DEEPSEEK.md" "./DEEPSEEK.md"
+        install_file "adapters/deepseek/.deepseekrules" "./.deepseekrules"
+        install_file "adapters/deepseek/.dsh/config.json" "./.dsh/config.json"
+        install_file "adapters/deepseek/.continue/config.json" "./.continue/config.json"
+        install_file "adapters/deepseek/.continue/prompts/qed-spec.prompt" "./.continue/prompts/qed-spec.prompt"
+        install_file "adapters/deepseek/.continue/prompts/qed-verify.prompt" "./.continue/prompts/qed-verify.prompt"
     fi
 fi
 

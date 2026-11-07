@@ -78,6 +78,10 @@ run_global_test() {
             "$fake_home/.opencoderules"
             "$fake_home/.opencode/opencode.json"
             "$fake_home/.opencode/OPENCODE.md"
+            "$fake_home/.deepseek/DEEPSEEK.md"
+            "$fake_home/.deepseekrules"
+            "$fake_home/.dsh/config.json"
+            "$fake_home/.continue/config.json"
         )
         
         for file in "${expected[@]}"; do
@@ -124,7 +128,8 @@ run_local_test "windsurf" ".windsurfrules" ".windsurf/workflows/qed-tdd-cycle.md
 run_local_test "aider" ".aider.conf.yml" ".aider.conventions.md"
 run_local_test "copilot" ".github/copilot-instructions.md" ".github/prompts/qed-spec.prompt.md"
 run_local_test "opencode" "opencode.json" ".opencoderules" "OPENCODE.md"
-run_local_test "all" "GEMINI.md" ".cursorrules" "CLAUDE.md" ".clinerules" ".roomodes" ".windsurfrules" ".aider.conf.yml" ".github/copilot-instructions.md" "opencode.json"
+run_local_test "deepseek" "DEEPSEEK.md" ".deepseekrules" ".dsh/config.json" ".continue/config.json"
+run_local_test "all" "GEMINI.md" ".cursorrules" "CLAUDE.md" ".clinerules" ".roomodes" ".windsurfrules" ".aider.conf.yml" ".github/copilot-instructions.md" "opencode.json" "DEEPSEEK.md"
 
 echo "--- Section 2: Positional Argument Tests ---"
 run_positional_test "cursor" ".cursorrules" ".cursor/rules/00-constitution.mdc"

@@ -115,6 +115,15 @@ $results += Run-Harness-Test "local-opencode" "local" "opencode" @(
     "OPENCODE.md"
 )
 
+$results += Run-Harness-Test "local-deepseek" "local" "deepseek" @(
+    "DEEPSEEK.md",
+    ".deepseekrules",
+    ".dsh\config.json",
+    ".continue\config.json",
+    ".continue\prompts\qed-spec.prompt",
+    ".continue\prompts\qed-verify.prompt"
+)
+
 $results += Run-Harness-Test "local-all" "local" "all" @(
     "GEMINI.md",
     ".cursorrules",
@@ -131,7 +140,11 @@ $results += Run-Harness-Test "local-all" "local" "all" @(
     ".github\copilot-instructions.md",
     ".github\prompts\qed-spec.prompt.md",
     "opencode.json",
-    ".opencoderules"
+    ".opencoderules",
+    "DEEPSEEK.md",
+    ".deepseekrules",
+    ".dsh\config.json",
+    ".continue\config.json"
 )
 
 # --- SECTION 2: Positional Argument Handling ---
@@ -162,7 +175,11 @@ $results += Run-Harness-Test "global-all" "global" "all" @(
     ".github\prompts\qed-spec.prompt.md",
     ".opencoderules",
     ".opencode\opencode.json",
-    ".opencode\OPENCODE.md"
+    ".opencode\OPENCODE.md",
+    ".deepseek\DEEPSEEK.md",
+    ".deepseekrules",
+    ".dsh\config.json",
+    ".continue\config.json"
 )
 
 # Cleanup

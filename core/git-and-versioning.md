@@ -47,6 +47,16 @@ Refs: #123
 * Once a branch is merged into `main`, delete both the local and remote branch immediately.
 * Strictly forbid blind destructive actions (`git reset --hard`, force-pushing to protected branches).
 
+### E. The Remote CI Hand-off Invariant (Push != Done)
+* **The Rule**: In any repository with an active CI pipeline (GitHub Actions, GitLab CI, Buildkite, etc.), a task is **NEVER marked complete** upon executing `git push`.
+* **Why**: Local verification is necessary, but remote CI runs the definitive multi-OS and container matrix. Pushing code is the *hand-off to the remote gate*, not the finish line.
+* **Prohibition**: An engineer or autonomous agent must monitor the CI run (`gh run watch` or `node bin/qed-engine.js ci-watch`) until it terminates with a Green status (`completed success`). Claiming victory before CI returns Green is a direct violation of Q.E.D.
+
+### F. The Multi-Platform Matrix Invariant
+* **The Rule**: If a repository maintains scripts or adapters for multiple operating systems (e.g., `.sh` for POSIX and `.ps1` for Windows), local verification must never rely on single-OS evidence.
+* **Why**: Subtle shell differences (e.g. bash `$'\/\/'` quoting vs powershell interpolation) cannot be verified by analogy.
+* **Enforcement**: If the alternative shell runtime is present locally (Git Bash / WSL on Windows, pwsh on Linux), the multi-platform test runner (`node bin/qed-engine.js test`) must execute both before any commit or push leaves the machine.
+
 ---
 
 ## 2. Part II: Pragmatic Versioning (Context-Driven Schemes)

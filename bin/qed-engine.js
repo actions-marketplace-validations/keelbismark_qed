@@ -885,6 +885,132 @@ function runCompactExec(commandArgs) {
   process.exit(res.status || 1);
 }
 
+function runAllTests(targetDir) {
+  const { spawnSync } = require("node:child_process");
+  const testsDir = path.join(targetDir, "tests");
+  if (!fs.existsSync(testsDir)) {
+    console.log(colors.yellow("No tests/ directory found."));
+    process.exit(0);
+  }
+
+  const isWindows = process.platform === "win32";
+  let bashPath = null;
+  if (isWindows) {
+    const candidates = [
+      "C:\\Program Files\\Git\\bin\\bash.exe",
+      "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+      "C:\\Git\\bin\\bash.exe",
+    ];
+    for (const c of candidates) {
+      if (fs.existsSync(c)) {
+        bashPath = c;
+        break;
+      }
+    }
+    if (!bashPath) {
+      const probe = spawnSync("where", ["bash"], { encoding: "utf8" });
+      if (probe.status === 0 && probe.stdout) {
+        bashPath = probe.stdout.trim().split(/\r?\n/)[0];
+      }
+    }
+  } else {
+    bashPath = "bash";
+  }
+
+  const entries = fs.readdirSync(testsDir);
+  const ps1Tests = entries.filter((f) => f.endsWith(".ps1") && f.startsWith("verify-"));
+  const shTests = entries.filter((f) => f.endsWith(".sh") && f.startsWith("verify-"));
+
+  let failed = false;
+
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.cyan(" Q.E.D. Multi-Platform Test Runner & Verification Gate"));
+  console.log(colors.gray(" Evidence Before Assertions"));
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.gray(`OS: ${process.platform} | Bash: ${bashPath || "None"}\n`));
+
+  // 1. Run PowerShell tests (on Windows or if pwsh available)
+  if (isWindows || spawnSync("which", ["pwsh"]).status === 0) {
+    const psExe = isWindows ? "powershell" : "pwsh";
+    for (const testFile of ps1Tests) {
+      const fullPath = path.join(testsDir, testFile);
+      console.log(colors.bold(`\n▶ Running Windows Suite: ${testFile}`));
+      const res = spawnSync(psExe, ["-ExecutionPolicy", "Bypass", "-File", fullPath], {
+        stdio: "inherit",
+      });
+      if (res.status !== 0) {
+        failed = true;
+        console.log(colors.red(`✗ Windows Test Failed: ${testFile}`));
+      }
+    }
+  }
+
+  // 2. Run POSIX Bash tests (if bash runtime is found)
+  if (bashPath) {
+    for (const testFile of shTests) {
+      const fullPath = path.join(testsDir, testFile).replace(/\\/g, "/");
+      console.log(colors.bold(`\n▶ Running POSIX Suite via Bash: ${testFile}`));
+      const res = spawnSync(bashPath, [fullPath], {
+        stdio: "inherit",
+        cwd: targetDir,
+      });
+      if (res.status !== 0) {
+        failed = true;
+        console.log(colors.red(`✗ POSIX Test Failed: ${testFile}`));
+      }
+    }
+  } else {
+    console.log(colors.yellow("\n[WARN] Bash interpreter not detected on Windows; skipping POSIX tests."));
+  }
+
+  console.log("\n----------------------------------------------------------");
+  if (failed) {
+    console.log(colors.red("✗ Q.E.D. Multi-Platform Test Suite FAILED: Some tests did not pass."));
+    process.exit(1);
+  } else {
+    console.log(colors.green("✓ Q.E.D. Multi-Platform Test Suite: 100% PASSED."));
+    process.exit(0);
+  }
+}
+
+function watchCI(targetDir) {
+  const { spawnSync } = require("node:child_process");
+  const ghProbe = spawnSync("gh", ["--version"], { encoding: "utf8" });
+  if (ghProbe.status !== 0) {
+    console.log(colors.yellow("GitHub CLI (gh) is not installed. Polling requires gh CLI."));
+    console.log("Install gh CLI from: https://cli.github.com/");
+    process.exit(1);
+  }
+
+  console.log(colors.cyan("Connecting to GitHub Actions CI stream..."));
+  const res = spawnSync("gh", ["run", "list", "--limit", "1", "--json", "databaseId,status,conclusion,name"], {
+    cwd: targetDir,
+    encoding: "utf8",
+  });
+  if (res.status !== 0 || !res.stdout) {
+    console.error(colors.red("Failed to query GitHub Actions runs."));
+    process.exit(1);
+  }
+
+  try {
+    const runs = JSON.parse(res.stdout);
+    if (!runs || runs.length === 0) {
+      console.log(colors.yellow("No recent CI runs found."));
+      process.exit(0);
+    }
+    const runId = runs[0].databaseId;
+    console.log(colors.bold(`Watching CI Run #${runId} (${runs[0].name})...\n`));
+    const watchRes = spawnSync("gh", ["run", "watch", runId.toString()], {
+      cwd: targetDir,
+      stdio: "inherit",
+    });
+    process.exit(watchRes.status || 0);
+  } catch (err) {
+    console.error(colors.red(`Error: ${err.message}`));
+    process.exit(1);
+  }
+}
+
 // CLI Execution Entrypoint
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -1050,8 +1176,38 @@ exit 0
 
     const hookPath = path.join(hooksDir, "pre-commit");
     fs.writeFileSync(hookPath, hookScript, { mode: 0o755 });
-    console.log(colors.green(`[+] Installed Q.E.D. pre-commit hook to: ${hookPath}`));
+
+    // Pre-push hook enforces cross-platform test matrix before code leaves machine
+    const prePushScript = `#!/usr/bin/env sh
+# Q.E.D. Automated Mechanical Gate Pre-Push Hook
+
+echo "Running Q.E.D. Pre-Push Multi-Platform Test Gate..."
+
+if command -v node >/dev/null 2>&1 && [ -f "./bin/qed-engine.js" ]; then
+    node "./bin/qed-engine.js" test
+    EXIT_CODE=$?
+elif [ -f "./tests/verify-linter.ps1" ] && command -v powershell >/dev/null 2>&1; then
+    powershell -ExecutionPolicy Bypass -File "./tests/verify-linter.ps1"
+    EXIT_CODE=$?
+else
+    EXIT_CODE=0
+fi
+
+if [ "$EXIT_CODE" -ne 0 ]; then
+    echo "Push BLOCKED by Q.E.D. Multi-Platform Test Gate."
+    exit 1
+fi
+exit 0
+`;
+    const prePushPath = path.join(hooksDir, "pre-push");
+    fs.writeFileSync(prePushPath, prePushScript, { mode: 0o755 });
+
+    console.log(colors.green(`[+] Installed Q.E.D. hooks: pre-commit & pre-push to ${hooksDir}`));
     process.exit(0);
+  } else if (command === "test") {
+    runAllTests(targetDir);
+  } else if (command === "ci" || command === "ci-watch") {
+    watchCI(targetDir);
   } else if (command === "tokens" || command === "context") {
     auditTokens(targetDir, jsonMode);
   } else if (command === "exec") {
@@ -1059,7 +1215,7 @@ exit 0
   } else {
     console.log(colors.red(`Unknown command: ${command}`));
     console.log(
-      "Usage: node bin/qed-engine.js [check | exec | tokens | init | hook] [target_dir] [--compact] [--json] [--strict] [--config <path>]"
+      "Usage: node bin/qed-engine.js [check | test | ci | exec | tokens | init | hook] [target_dir] [--compact] [--json] [--strict] [--config <path>]"
     );
     process.exit(1);
   }

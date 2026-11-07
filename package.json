@@ -22,8 +22,9 @@
   "scripts": {
     "lint": "node bin/qed-engine.js check",
     "check": "node bin/qed-engine.js check",
-    "test": "powershell -ExecutionPolicy Bypass -File tests/verify-linter.ps1",
-    "test:adapters": "powershell -ExecutionPolicy Bypass -File tests/verify-adapters.ps1"
+    "test": "node bin/qed-engine.js test",
+    "ci": "node bin/qed-engine.js ci-watch",
+    "tokens": "node bin/qed-engine.js tokens"
   },
   "keywords": [
     "qed",

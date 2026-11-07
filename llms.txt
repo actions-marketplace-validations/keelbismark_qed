@@ -1,0 +1,21 @@
+# Q.E.D. (Quod Erat Demonstrandum)
+> The High-Assurance Engineering Framework for Autonomous Coding Agents
+
+## Core Principles
+- Evidence Before Assertions: No code claims without verified terminal test execution.
+- Root Cause Only: Ban on empty catch blocks, fake timeouts, and loose type casts.
+- Dual Execution Modes: Production (Quality > Speed) by default; Prototype (Speed > Quality) on-demand.
+- Blast Radius: Calculate direct callers and indirect API/DB side-effects before editing shared code.
+- Anti-Duplication: Search repository before creating new helpers, types, or hooks.
+- 4 Mandatory States: Empty, Loading, Error (actionable with retry), and Degraded states.
+- The 3 AM Test: Flat guard clauses, early returns, clear intermediate variables.
+- Chaos Monkey: Adversarial tests for rapid double-clicks, oversized payloads, and hostile Unicode.
+
+## Documentation Links
+- [Universal Constitution](core/CONSTITUTION.md): The full foundational engineering standard.
+- [AI Directives](AI_README.md): High-density instructions for LLM agents.
+- [Blast Radius Protocol](core/blast-radius.md): Impact calculation protocol.
+- [Anti-Duplication Protocol](core/anti-duplication.md): Anti-codebase rot search protocol.
+- [Chaos Monkey Protocol](core/chaos-monkey.md): Adversarial test cases.
+- [3 AM Test Protocol](core/three-am-test.md): Cognitive readability standard.
+- [Supported Harnesses](docs/harnesses.md): Setup for all 20 AI coding environments.

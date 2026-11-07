@@ -22,8 +22,9 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 - Always implement: Empty state, Loading state, Error state with retry, Degraded/Offline state.
 - Include Chaos Monkey edge cases: rapid double clicks, oversized payloads, hostile Unicode.
 
-## 4. The 3 AM Test & Clean Comments
+## 4. The 3 AM Test, Naming & Clean Comments
 - Code must be instantly clear to an engineer at 3 AM: guard clauses, early returns, no 6-method functional chains, clear intermediate variables.
+- Semantic Naming: Zero lazy placeholders (`data`, `temp`, `res`). Units in numbers (`timeoutMs`, `fileSizeBytes`). Positive predicates (`isActive`, `canRefund`). Plural collections (`users`), key-value maps (`usersById`). Specific contract verbs (`get`, `fetch`, `calculate`, `create`), ban on `handle`/`process`.
 - Comment WHY, never WHAT: Strict ban on echo noise (`// set count to 0`). Comments only for architectural trade-offs, platform workarounds with issue links, and domain rules.
 - Concrete I/O examples for complex algorithms and regexes. Actionable TODOs must reference issue IDs (`// TODO(#123)`).
 

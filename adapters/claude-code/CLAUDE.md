@@ -72,7 +72,7 @@ Every UI view and API route must implement:
 - **Boundary Value Matrix**: Every test suite must cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (rapid double-clicks in 50ms).
 - **Bug Fixes**: Write a reproduction test first -> observe it fail (**Red**) -> implement the minimal fix -> observe it pass (**Green**) -> run full suite.
 - **New Features**: Write acceptance tests first -> implement -> verify -> refactor.
-- **The 3 AM Test & Clean Comments**: Flat structure, guard clauses, early returns, clear intermediate variables. Comment WHY, never WHAT. Ban on syntax echo noise (`// set count to 0`). Comments only for trade-offs, platform workarounds, and domain rules. Actionable TODOs with issue IDs (`// TODO(#123)`).
+- **The 3 AM Test, Naming & Clean Comments**: Flat structure, guard clauses, early returns, clear intermediate variables. Semantic naming: units in numbers (`timeoutMs`), positive predicates (`isActive`), plural arrays, key-value maps (`usersById`), contract verbs (`get`, `create`, `delete`). Comment WHY, never WHAT. Ban on syntax echo noise (`// set count to 0`). Actionable TODOs with issue IDs (`// TODO(#123)`).
 
 ### Phase 4: Verification Gate & Pre-Commit Sanitization
 Before reporting completion, run:

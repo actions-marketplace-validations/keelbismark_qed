@@ -18,7 +18,7 @@ When running with DeepSeek-R1, DeepSeek-V3, or `dsh` terminal agent, your `<thin
 1. **Adaptive Architecture & Anti-Duplication**: Does the proposed structure respect native ecosystem idioms and earned complexity without template dogmatism? Have I searched for existing utilities before creating new ones?
 2. **Blast Radius Analysis**: What files call this function? Does modifying this interface break existing callers or API contracts?
 3. **The 4 Mandatory States**: Have I accounted for Empty, Loading, Error (with retry), and Degraded states?
-4. **The 3 AM Test & Comment Standard**: Is the proposed logic flat (guard clauses, early returns) with descriptive variable names? Have I eliminated syntax echo noise and commented only WHY?
+4. **The 3 AM Test, Naming & Comment Standard**: Is the proposed logic flat (guard clauses, early returns) with descriptive variable names? Have I eliminated lazy placeholders (`data`, `temp`), specified units in numbers, used positive predicates, and commented only WHY?
 5. **TDD Sequence**: Am I writing a failing reproduction test first before touching the fix?
 
 ---

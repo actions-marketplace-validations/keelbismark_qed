@@ -107,7 +107,13 @@ Protect the codebase from cognitive overload and generative bloat:
      * *Domain Invariants*: Regulatory, legal, or non-obvious business rules.
      * *Concrete I/O Examples*: Input/output tables for complex regexes, parsers, or math.
    - **Actionable TODOs Only**: Ban on vague apologies (`// TODO: fix later`). All TODOs must cite an issue tracker (`// TODO(#102): ...`).
-3. **Eradicate AI Slop**:
+3. **Naming Philosophy & Semantic Rigor**:
+   - **Scope-Proportional Length**: Identifiers in tiny scopes (lambdas) can be short; exported symbols must be exhaustively descriptive and uniquely grep-able.
+   - **Units of Measurement**: Numbers representing time or size must carry their unit (`timeoutMs`, `fileSizeBytes`, `priceInCents`).
+   - **Positive Predicates**: Booleans must always be positive assertions (`isActive`, `hasPermission`, `canRefund`, `shouldRetry`). Ban on negative flags (`isNotDisabled`).
+   - **Collection Semantics**: Plural nouns for arrays (`users`, not `userList`); key-to-value format for maps (`usersById`).
+   - **Semantic Function Verbs**: Function names must begin with precise contract verbs (`get`, `fetch`, `calculate`, `create`, `update`, `delete`, `toDto`). Ban on vague verbs (`handle`, `process`, `manage`).
+4. **Eradicate AI Slop**:
    - No gratuitous wrappers, fake helper classes, or 5-layer deep factory patterns where a simple 5-line function suffices.
    - In UI: eliminate cliché terminal aesthetics, monotonous 3x3 Bento grids, and decorative borders that provide zero user utility.
 

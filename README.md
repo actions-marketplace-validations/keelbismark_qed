@@ -220,6 +220,7 @@ Q.E.D. adapts to your velocity requirements:
 
 * **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
 * **[Adaptive Architecture & Structure](core/adaptive-architecture.md)** — Anti-template dogmatism, earned complexity, and native ecosystem idioms.
+* **[Naming Philosophy & Semantics](core/naming-philosophy.md)** — Scope-proportional length, positive predicates, and semantic contract verbs.
 * **[Testing Philosophy & Standards](core/testing-philosophy.md)** — Zero placebo mocks, boundary value matrix, and mutation-tested determinism.
 * **[Hygiene & Pre-Commit Sanitization](core/hygiene-and-cleanup.md)** — Zero-debug print invariant, scratch scaffolding purge, and dead code elimination.
 * **[Comment Philosophy & Anti-Noise](core/comment-philosophy.md)** — Ban on syntax echo noise, Why-over-What rules, and high-assurance docstrings.

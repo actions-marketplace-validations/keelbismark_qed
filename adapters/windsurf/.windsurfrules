@@ -50,9 +50,9 @@ Every UI flow and API endpoint must implement:
   2. Run the test and confirm it fails.
   3. Implement the minimal clean fix directly addressing the root cause (**Green**).
   4. Run the entire test suite to guarantee zero regressions.
-- **The 3 AM Test & Clean Comments**: Code must be easily understandable by an exhausted engineer at 3:00 AM.
+- **The 3 AM Test, Naming & Clean Comments**: Code must be easily understandable by an exhausted engineer at 3:00 AM.
   * Use early returns and flat guard clauses.
-  * Use descriptive intermediate variables instead of 5-level chained one-liners.
+  * Semantic naming: zero `data`/`temp`, units in numbers (`timeoutMs`), positive predicates (`isActive`), plural arrays, key-value maps (`usersById`), contract verbs (`get`, `create`).
   * Ban AI slop: no unnecessary wrappers or multi-layer factory patterns where a 5-line function works.
   * Comment WHY, never WHAT: Strict ban on syntax echo noise (`// set count to 0`). Comments only for trade-offs, platform workarounds, and domain rules. Actionable TODOs with issue IDs (`// TODO(#123)`).
 

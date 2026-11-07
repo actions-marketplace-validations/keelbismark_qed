@@ -229,6 +229,18 @@ try {
         $script:testsFailed++
     }
 
+    # 27. Custom Config: excludeDirs overrides hardcoded directory exclusions
+    Assert-LinterRule -TestName "Configuration custom excludeDirs" -Files @{
+        ".qedrc.json" = '{ "excludeDirs": ["custom_third_party"] }'
+        "custom_third_party/unverified.ts" = "const raw = val as any;"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 28. Custom Config: scratchPatterns overrides hardcoded root bans
+    Assert-LinterRule -TestName "Configuration custom scratchPatterns" -Files @{
+        ".qedrc.json" = '{ "scratchPatterns": ["^my_dump_.*\\.bak$"] }'
+        "my_dump_test.bak" = "temporary memory dump"
+    } -ExpectedRule "QED001" -ShouldPass $false
+
 } finally {
     Remove-Item -Path $fixtureDir -Recurse -Force -ErrorAction SilentlyContinue
 }

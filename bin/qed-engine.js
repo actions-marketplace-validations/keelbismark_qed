@@ -265,6 +265,12 @@ class QedLinter {
     const config = {
       source: sourcePath,
       ignorePatterns: Array.isArray(rawConfig.ignorePatterns) ? rawConfig.ignorePatterns : [],
+      excludeDirs: Array.isArray(rawConfig.excludeDirs) ? rawConfig.excludeDirs : [],
+      extensions: Array.isArray(rawConfig.extensions)
+        ? rawConfig.extensions.map((e) => (e.startsWith(".") ? e.toLowerCase() : "." + e.toLowerCase()))
+        : [],
+      scratchPatterns: Array.isArray(rawConfig.scratchPatterns) ? rawConfig.scratchPatterns : [],
+      secretPatterns: Array.isArray(rawConfig.secretPatterns) ? rawConfig.secretPatterns : [],
       rules: {},
     };
     if (rawConfig.rules && typeof rawConfig.rules === "object") {
@@ -333,7 +339,7 @@ class QedLinter {
   checkPristineRoot() {
     if (this.getRuleSeverity("QED001") === "off") return;
 
-    const suspiciousPatterns = [
+    const defaultScratchPatterns = [
       /^temp_/i,
       /^scratch/i,
       /\.tmp$/i,
@@ -341,6 +347,16 @@ class QedLinter {
       /^test_dump/i,
       /^debug_/i,
     ];
+
+    const customPatterns = (this.config.scratchPatterns || []).map((p) => {
+      try {
+        return typeof p === "string" ? new RegExp(p, "i") : p;
+      } catch {
+        return null;
+      }
+    }).filter(Boolean);
+
+    const suspiciousPatterns = [...defaultScratchPatterns, ...customPatterns];
 
     try {
       const entries = fs.readdirSync(this.targetDir, { withFileTypes: true });
@@ -375,11 +391,14 @@ class QedLinter {
       return results;
     }
 
+    const activeExcludes = new Set([...DEFAULT_EXCLUDES, ...(this.config.excludeDirs || [])]);
+    const activeExtensions = new Set([...CODE_EXTENSIONS, ...(this.config.extensions || [])]);
+
     for (const entry of entries) {
       if (entry.name.startsWith(".") && entry.name !== ".env.example") {
         if (entry.name !== ".github") continue;
       }
-      if (DEFAULT_EXCLUDES.has(entry.name)) continue;
+      if (activeExcludes.has(entry.name)) continue;
 
       const fullPath = path.join(dir, entry.name);
       const relPath = path.relative(this.targetDir, fullPath);
@@ -393,7 +412,7 @@ class QedLinter {
         results = results.concat(this.collectSourceFiles(fullPath));
       } else if (entry.isFile()) {
         const ext = path.extname(entry.name).toLowerCase();
-        if (CODE_EXTENSIONS.has(ext)) {
+        if (activeExtensions.has(ext)) {
           results.push(fullPath);
         }
       }
@@ -493,7 +512,21 @@ class QedLinter {
 
       // QED007: Secret Leak Radar
       if (!suppressions.isIgnored("QED007", lineNum)) {
-        const secretMatch = line.match(/(?:sk-(?:proj-)?[a-zA-Z0-9-_]{20,}|ghp_[a-zA-Z0-9]{30,}|AIza[0-9A-Za-z-_]{35})/);
+        let secretMatch = line.match(/(?:sk-(?:proj-)?[a-zA-Z0-9-_]{20,}|ghp_[a-zA-Z0-9]{30,}|AIza[0-9A-Za-z-_]{35})/);
+        if (!secretMatch && this.config.secretPatterns && this.config.secretPatterns.length > 0) {
+          for (const pattern of this.config.secretPatterns) {
+            try {
+              const rx = typeof pattern === "string" ? new RegExp(pattern) : pattern;
+              const m = line.match(rx);
+              if (m) {
+                secretMatch = m;
+                break;
+              }
+            } catch {
+              // Ignore invalid custom regex
+            }
+          }
+        }
         if (secretMatch) {
           this.addViolation(
             "QED007/SECRET_LEAK",
@@ -885,6 +918,68 @@ function runCompactExec(commandArgs) {
   process.exit(res.status || 1);
 }
 
+function findBashInterpreter() {
+  const { spawnSync } = require("node:child_process");
+  if (process.platform !== "win32") {
+    return "bash";
+  }
+
+  // 1. Explicit user/agent override via environment variables
+  const envBash = process.env.GIT_BASH || process.env.BASH_PATH || process.env.SHELL;
+  if (envBash && fs.existsSync(envBash) && !/powershell|cmd\.exe/i.test(envBash)) {
+    return envBash;
+  }
+
+  // 2. Locate Git installation dynamically from 'where git'
+  try {
+    const gitProbe = spawnSync("where", ["git"], { encoding: "utf8" });
+    if (gitProbe.status === 0 && gitProbe.stdout) {
+      const gitExe = gitProbe.stdout.trim().split(/\r?\n/)[0].trim();
+      if (gitExe) {
+        const gitRoot = path.resolve(path.dirname(gitExe), "..");
+        const cand1 = path.join(gitRoot, "bin", "bash.exe");
+        const cand2 = path.join(gitRoot, "usr", "bin", "bash.exe");
+        if (fs.existsSync(cand1)) return cand1;
+        if (fs.existsSync(cand2)) return cand2;
+      }
+    }
+  } catch {
+    // Ignore Git probe error
+  }
+
+  // 3. Dynamically search standard system installation roots from environment
+  const systemDrive = process.env.SystemDrive || "C:";
+  const searchRoots = [
+    process.env.ProgramFiles,
+    process.env["ProgramFiles(x86)"],
+    process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, "Programs") : null,
+    path.join(systemDrive, "Git"),
+  ].filter(Boolean);
+
+  for (const root of searchRoots) {
+    const cand1 = path.join(root, "Git", "bin", "bash.exe");
+    const cand2 = path.join(root, "Git", "usr", "bin", "bash.exe");
+    const cand3 = path.join(root, "bin", "bash.exe");
+    if (fs.existsSync(cand1)) return cand1;
+    if (fs.existsSync(cand2)) return cand2;
+    if (fs.existsSync(cand3)) return cand3;
+  }
+
+  // 4. Discover via PATH (excluding WSL / System32 redirectors)
+  try {
+    const probe = spawnSync("where", ["bash"], { encoding: "utf8" });
+    if (probe.status === 0 && probe.stdout) {
+      const paths = probe.stdout.trim().split(/\r?\n/).map((p) => p.trim()).filter(Boolean);
+      const safeBash = paths.find((p) => !/System32|WindowsApps/i.test(p) && fs.existsSync(p));
+      if (safeBash) return safeBash;
+    }
+  } catch {
+    // Ignore PATH probe error
+  }
+
+  return null;
+}
+
 function runAllTests(targetDir) {
   const { spawnSync } = require("node:child_process");
   const testsDir = path.join(targetDir, "tests");
@@ -894,28 +989,7 @@ function runAllTests(targetDir) {
   }
 
   const isWindows = process.platform === "win32";
-  let bashPath = null;
-  if (isWindows) {
-    const candidates = [
-      "C:\\Program Files\\Git\\bin\\bash.exe",
-      "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
-      "C:\\Git\\bin\\bash.exe",
-    ];
-    for (const c of candidates) {
-      if (fs.existsSync(c)) {
-        bashPath = c;
-        break;
-      }
-    }
-    if (!bashPath) {
-      const probe = spawnSync("where", ["bash"], { encoding: "utf8" });
-      if (probe.status === 0 && probe.stdout) {
-        bashPath = probe.stdout.trim().split(/\r?\n/)[0];
-      }
-    }
-  } else {
-    bashPath = "bash";
-  }
+  const bashPath = findBashInterpreter();
 
   const entries = fs.readdirSync(testsDir);
   const ps1Tests = entries.filter((f) => f.endsWith(".ps1") && f.startsWith("verify-"));
@@ -973,7 +1047,7 @@ function runAllTests(targetDir) {
   }
 }
 
-function watchCI(targetDir) {
+function watchCI(targetDir, extraArgs = []) {
   const { spawnSync } = require("node:child_process");
   const ghProbe = spawnSync("gh", ["--version"], { encoding: "utf8" });
   if (ghProbe.status !== 0) {
@@ -982,8 +1056,44 @@ function watchCI(targetDir) {
     process.exit(1);
   }
 
-  console.log(colors.cyan("Connecting to GitHub Actions CI stream..."));
-  const res = spawnSync("gh", ["run", "list", "--limit", "1", "--json", "databaseId,status,conclusion,name"], {
+  // Allow explicit run ID via positional arg or flag
+  const explicitRunId = extraArgs.find((a) => /^\d{5,}$/.test(a));
+  if (explicitRunId) {
+    console.log(colors.bold(`Watching explicitly specified CI Run #${explicitRunId}...\n`));
+    const watchRes = spawnSync("gh", ["run", "watch", explicitRunId], {
+      cwd: targetDir,
+      stdio: "inherit",
+    });
+    process.exit(watchRes.status || 0);
+  }
+
+  // Detect current git branch dynamically to avoid watching unrelated branch runs
+  let currentBranch = null;
+  const branchFlagIndex = extraArgs.indexOf("--branch");
+  if (branchFlagIndex !== -1 && extraArgs[branchFlagIndex + 1]) {
+    currentBranch = extraArgs[branchFlagIndex + 1];
+  } else {
+    try {
+      const branchRes = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+        cwd: targetDir,
+        encoding: "utf8",
+      });
+      if (branchRes.status === 0 && branchRes.stdout) {
+        currentBranch = branchRes.stdout.trim();
+      }
+    } catch {
+      // Fall through if git branch resolution fails
+    }
+  }
+
+  console.log(colors.cyan(`Connecting to GitHub Actions CI stream${currentBranch ? ` for branch [${currentBranch}]` : ""}...`));
+
+  const listArgs = ["run", "list", "--limit", "1", "--json", "databaseId,status,conclusion,name,headBranch"];
+  if (currentBranch && currentBranch !== "HEAD") {
+    listArgs.push("--branch", currentBranch);
+  }
+
+  const res = spawnSync("gh", listArgs, {
     cwd: targetDir,
     encoding: "utf8",
   });
@@ -995,11 +1105,11 @@ function watchCI(targetDir) {
   try {
     const runs = JSON.parse(res.stdout);
     if (!runs || runs.length === 0) {
-      console.log(colors.yellow("No recent CI runs found."));
+      console.log(colors.yellow(`No recent CI runs found${currentBranch ? ` for branch ${currentBranch}` : ""}.`));
       process.exit(0);
     }
     const runId = runs[0].databaseId;
-    console.log(colors.bold(`Watching CI Run #${runId} (${runs[0].name})...\n`));
+    console.log(colors.bold(`Watching CI Run #${runId} (${runs[0].name}) on [${runs[0].headBranch || "unknown"}]...\n`));
     const watchRes = spawnSync("gh", ["run", "watch", runId.toString()], {
       cwd: targetDir,
       stdio: "inherit",
@@ -1207,7 +1317,7 @@ exit 0
   } else if (command === "test") {
     runAllTests(targetDir);
   } else if (command === "ci" || command === "ci-watch") {
-    watchCI(targetDir);
+    watchCI(targetDir, args.slice(1));
   } else if (command === "tokens" || command === "context") {
     auditTokens(targetDir, jsonMode);
   } else if (command === "exec") {

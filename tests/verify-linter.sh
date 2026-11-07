@@ -151,6 +151,34 @@ else
     FAILED=$((FAILED + 1))
 fi
 
+# 25. Custom Config: excludeDirs overrides hardcoded directory exclusions
+CUSTOM_EXCLUDE_DIR="$TEMP_BASE/custom_exclude"
+mkdir -p "$CUSTOM_EXCLUDE_DIR/custom_third_party"
+echo '{ "excludeDirs": ["custom_third_party"] }' > "$CUSTOM_EXCLUDE_DIR/.qedrc.json"
+echo 'const val = x as any;' > "$CUSTOM_EXCLUDE_DIR/custom_third_party/legacy.ts"
+EXCL_OUT=$(node "$LINTER_SCRIPT" check "$CUSTOM_EXCLUDE_DIR" --compact 2>/dev/null || true)
+if echo "$EXCL_OUT" | grep -q "OK (0 violations"; then
+    echo "  [PASS] Configuration custom excludeDirs"
+    PASSED=$((PASSED + 1))
+else
+    echo "  [FAIL] Configuration custom excludeDirs: $EXCL_OUT"
+    FAILED=$((FAILED + 1))
+fi
+
+# 26. Custom Config: scratchPatterns overrides hardcoded root bans
+CUSTOM_SCRATCH_DIR="$TEMP_BASE/custom_scratch"
+mkdir -p "$CUSTOM_SCRATCH_DIR"
+echo '{ "scratchPatterns": ["^my_dump_.*\\.bak$"] }' > "$CUSTOM_SCRATCH_DIR/.qedrc.json"
+echo 'temporary dump' > "$CUSTOM_SCRATCH_DIR/my_dump_1.bak"
+SCRATCH_OUT=$(node "$LINTER_SCRIPT" check "$CUSTOM_SCRATCH_DIR" --compact 2>/dev/null || true)
+if echo "$SCRATCH_OUT" | grep -q "QED001"; then
+    echo "  [PASS] Configuration custom scratchPatterns"
+    PASSED=$((PASSED + 1))
+else
+    echo "  [FAIL] Configuration custom scratchPatterns: $SCRATCH_OUT"
+    FAILED=$((FAILED + 1))
+fi
+
 echo "----------------------------------------------------------"
 echo "Linter Test Results: $PASSED Passed, $FAILED Failed"
 

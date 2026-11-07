@@ -170,12 +170,25 @@ run_global_test() {
     )
 }
 
+find_free_port() {
+    if command -v python3 >/dev/null 2>&1; then
+        python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()'
+    elif command -v python >/dev/null 2>&1; then
+        python -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()'
+    elif command -v node >/dev/null 2>&1; then
+        node -e 'const s = require("net").createServer(); s.listen(0, () => { console.log(s.address().port); s.close(); });'
+    else
+        echo $(( 20000 + RANDOM % 30000 ))
+    fi
+}
+
 run_piped_remote_test() {
     local target_dir="$TEST_DIR/piped-test"
     mkdir -p "$target_dir"
     
-    # Start temporary local HTTP server to test piped remote stream
-    local port=18843
+    # Dynamically allocate ephemeral port to avoid hardcoded port collisions
+    local port
+    port=$(find_free_port)
     local server_pid
     if command -v python3 >/dev/null 2>&1; then
         (cd "$REPO_ROOT" && python3 -m http.server "$port" --bind 127.0.0.1 > /dev/null 2>&1) &
@@ -187,7 +200,22 @@ run_piped_remote_test() {
         node -e "const http=require('http'),fs=require('fs'),path=require('path');http.createServer((req,res)=>{const p=path.join('$REPO_ROOT',req.url.split('?')[0]);if(fs.existsSync(p)&&fs.statSync(p).isFile()){res.writeHead(200);fs.createReadStream(p).pipe(res);}else{res.writeHead(404);res.end();}}).listen($port);" > /dev/null 2>&1 &
         server_pid=$!
     fi
-    sleep 1
+
+    # Deterministic polling: wait until server responds before proceeding (zero arbitrary sleep)
+    local ready=0
+    for _ in $(seq 1 40); do
+        if curl -s -f -o /dev/null "http://127.0.0.1:$port/install.sh" 2>/dev/null; then
+            ready=1
+            break
+        fi
+        node -e 'const start = Date.now(); while (Date.now() - start < 50) {}' 2>/dev/null || true
+    done
+
+    if [ "$ready" -ne 1 ]; then
+        echo "  [FAIL] piped-remote (Local HTTP test server failed to bind port $port)"
+        kill "$server_pid" 2>/dev/null || true
+        exit 1
+    fi
 
     (
         cd "$target_dir"

@@ -15,6 +15,34 @@
         "type": "string"
       }
     },
+    "excludeDirs": {
+      "type": "array",
+      "description": "Additional directory names to skip during recursive source file scanning",
+      "items": {
+        "type": "string"
+      }
+    },
+    "extensions": {
+      "type": "array",
+      "description": "Additional file extensions to treat as code and inspect (e.g. ['.kt', '.swift', '.php'])",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scratchPatterns": {
+      "type": "array",
+      "description": "Custom regex patterns or substrings for temporary files to ban in repository root (QED001)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "secretPatterns": {
+      "type": "array",
+      "description": "Custom regex patterns for high-entropy secrets and access tokens to flag (QED007)",
+      "items": {
+        "type": "string"
+      }
+    },
     "rules": {
       "type": "object",
       "description": "Map of rule identifiers to their enforcement severity ('error', 'warn', 'off')",

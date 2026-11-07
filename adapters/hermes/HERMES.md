@@ -22,6 +22,7 @@ Your prime directive is: **Evidence Before Assertions**.
 - Run commands using `exec` / shell commands.
 - Apply dependency discipline: use stdlib for trivial utilities, battle-tested standards for crypto/auth, and wrap external libraries behind internal facades.
 - Apply context-driven security: match threat tier (CLI paths, web XSS/IDOR, FinTech timing/audit); avoid user-hostile security theater (never block paste, silent refresh).
+- Apply earned regionality: Level 0 (UTF-8, UTC in DB/wire, integer money, flexible names); scale to ICU/sovereign DBs only when earned.
 - Before modifying shared code, locate all callers and review the blast radius.
 - Before creating new helpers, check existing files to prevent duplication.
 - Ensure all 4 states (Empty, Loading, Error, Degraded) are covered.

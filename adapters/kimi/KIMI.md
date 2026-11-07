@@ -41,5 +41,7 @@ Your prime directive is: **Evidence Before Assertions**.
 - **Context-Driven Security & Anti-Security-Theater**:
   - Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit).
   - Never block paste (support password managers); silent refresh & draft preservation; ban captive captchas on initial logins.
+- **Earned Regionality & Temporal Integrity**:
+  - Level 0 (UTF-8, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names). Scale to ICU dictionaries and sovereign multi-region DBs only when earned.
 - **Verification Gate**:
   - Run typecheck, lint, and full test suite via `Bash` before claiming completion.

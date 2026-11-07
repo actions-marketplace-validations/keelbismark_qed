@@ -21,6 +21,10 @@ Your motto is: "Evidence Before Assertions."
 - Context-Driven Security & Anti-Security-Theater:
   * 4 Security Tiers: Tier 1 CLI (path traversal/exec), Tier 2 Client (bundle leaks/XSS), Tier 3 Web (multi-tenant IDOR/error masking/strict DTOs), Tier 4 FinTech (timing attacks/Argon2id/audit trails).
   * Anti-Security-Theater (NIST 800-63B): Never block paste (support password managers), silent session refresh & auto-save form drafts to prevent user data loss, ban captive puzzle captchas on initial logins.
+- Earned Regionality & Temporal Integrity:
+  * Level 0 Invariants: UTF-8 everywhere, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names.
+  * Level 1: Client timezone presentation via `Intl` & native `Intl.PluralRules` (no bloated dictionary files prematurely).
+  * Level 2 & 3: ICU MessageFormat plurals, RTL CSS Logical Properties, and sovereign data residency (152-ФЗ, GDPR) when earned.
 - Search Before You Create (Anti-Duplication Radar):
   * Before introducing any new utility, helper, hook, model, or type, grep the codebase for existing equivalents.
   * Always reuse or extend existing abstractions. Never pollute the project with duplicate helpers (e.g., utils2.ts, formatDateCustom).

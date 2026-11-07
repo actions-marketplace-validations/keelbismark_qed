@@ -219,6 +219,7 @@ Q.E.D. adapts to your velocity requirements:
 ## Documentation
 
 * **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
+* **[Regionality, Localization & Data Sovereignty](core/regionality-and-i18n.md)** — Earned complexity ladder, Level 0 invariants (UTF-8/UTC/money), and data residency.
 * **[Security Philosophy & Threat-Adaptive Tiers](core/security-philosophy.md)** — Context-driven threat modeling, 4 security tiers, and anti-security-theater UX.
 * **[Git & Versioning Philosophy](core/git-and-versioning.md)** — Git change ledger vs. SemVer/CalVer/ZeroVer/Continuous trust contracts.
 * **[Adaptive Architecture & Structure](core/adaptive-architecture.md)** — Anti-template dogmatism, earned complexity, and native ecosystem idioms.

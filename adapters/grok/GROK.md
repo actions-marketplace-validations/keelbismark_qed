@@ -20,8 +20,9 @@ Your prime directive is: **Evidence Before Assertions**.
 1. **Search Before You Create**: Search the codebase for existing utilities and types before creating new ones.
 2. **Dependency Discipline & The Wrapper Invariant**: Battle-tested standards for crypto/auth/protocols; stdlib for trivial helpers; wrap external libraries behind internal facades.
 3. **Context-Driven Security & Anti-Security-Theater**: Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit). Never block paste (support password managers); silent session refresh & auto-save form drafts.
-4. **Blast Radius Analysis**: Trace callers and calculate interface/DB risks before editing shared files.
-5. **4 Mandatory States**: Empty state, Loading state, Error state with retry, and Degraded state.
-6. **The 3 AM Test**: Flat guard clauses, early returns, clear variables, no 6-level chained functional acrobatics.
-7. **The Chaos Monkey Test**: Test rapid duplicate clicks (500ms), 5MB+ payloads, and hostile unicode.
-8. **Verification Gate**: Full test suite and linters must pass before completing.
+4. **Earned Regionality & Temporal Integrity**: Level 0 (UTF-8, UTC in DB/wire, integer money, flexible names). Scale to ICU dictionaries and sovereign multi-region DBs only when earned.
+5. **Blast Radius Analysis**: Trace callers and calculate interface/DB risks before editing shared files.
+6. **4 Mandatory States**: Empty state, Loading state, Error state with retry, and Degraded state.
+7. **The 3 AM Test**: Flat guard clauses, early returns, clear variables, no 6-level chained functional acrobatics.
+8. **The Chaos Monkey Test**: Test rapid duplicate clicks (500ms), 5MB+ payloads, and hostile unicode.
+9. **Verification Gate**: Full test suite and linters must pass before completing.

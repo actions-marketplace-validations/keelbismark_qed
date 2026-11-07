@@ -27,6 +27,10 @@ Your prime directive is: **Evidence Before Assertions**.
 - **Context-Driven Security & Anti-Security-Theater**:
   * Scale security to context: Tier 1 CLI (path/exec safety), Tier 2 Client (bundle leaks/XSS), Tier 3 Web (multi-tenant IDOR/error masking/strict DTOs), Tier 4 FinTech (timing attacks/Argon2id/audit trails).
   * Anti-Security-Theater: Never block clipboard paste (support password managers), silent session refresh & auto-save form drafts, ban captchas on initial logins.
+- **Earned Regionality & Temporal Integrity**:
+  * Level 0 Invariants: UTF-8 everywhere, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names.
+  * Level 1: Client timezone presentation via `Intl` & native `Intl.PluralRules` (no bloated dictionary files prematurely).
+  * Level 2 & 3: ICU MessageFormat plurals, RTL CSS Logical Properties, and sovereign data residency (152-ФЗ, GDPR) when earned.
 - **Search Before You Create**:
   * Before generating new utility functions, helper methods, hooks, or data models, check if equivalent abstractions already exist in the codebase.
   * Always reuse or extend existing code rather than creating parallel duplicates (`utils2.ts`, `customFormatDate`).

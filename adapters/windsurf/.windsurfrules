@@ -24,6 +24,7 @@ Your prime directive is: **Evidence Before Assertions**.
 - **Pristine Root Invariant**: Zero scratch files or temp dumps in root. 10-second entrypoint discovery. Locality of change.
 - **Dependency Discipline & The Wrapper Invariant**: Standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap 3rd-party libraries behind internal facades.
 - **Context-Driven Security & Anti-Security-Theater**: Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 client bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit). Never block clipboard paste (support password managers); silent session refresh & auto-save form drafts; ban captive puzzle captchas on initial logins.
+- **Earned Regionality & Temporal Integrity**: Level 0 invariants (UTF-8, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names); Level 1 client timezone presentation via `Intl` & native plurals; scale to ICU dictionaries and sovereign multi-region DBs (152-ФЗ, GDPR) only when earned.
 - **Anti-Duplication Radar**: Search the codebase (grep / symbol search) before introducing new utilities, helpers, hooks, or models. Always reuse or extend existing code.
 - **Blast Radius Analysis**:
   * Identify all direct call sites before modifying existing functions.

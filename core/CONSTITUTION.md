@@ -77,6 +77,10 @@ Before writing any non-trivial code:
    - **Context-Adaptive Tiers**: Security must fit the execution boundary (Tier 1: Local CLI safe paths/exec; Tier 2: Client bundle secret isolation & XSS; Tier 3: Multi-tenant IDOR, error masking & strict DTOs; Tier 4: FinTech timing-attack immunity, Argon2id & audit trails). Never over-engineer small tools or under-engineer multi-tenant services.
    - **Anti-Security-Theater (NIST 800-63B)**: Never block clipboard paste (support password managers); use silent session refresh and auto-save form drafts to prevent data loss; ban puzzle captchas for initial human logins.
    - **Universal Baseline Invariants**: Zero secrets in Git history; parameterized queries only (zero SQL concatenation); bounded payload size limits.
+9. **Earned Regionality, Localization & Temporal Integrity**:
+   - **Level 0 Invariants (Mandatory Everywhere)**: UTF-8 for all strings and DB collations; UTC persistence & ISO 8601 serialization; integer minor units + ISO 4217 for money (zero floating-point currency); flexible unconstrained name fields.
+   - **Level 1 (Monolingual Locale-Aware)**: Client-side timezone presentation via native `Intl`; timezone-aware SQL day aggregations (`AT TIME ZONE`); native `Intl.PluralRules` (no bloated dictionary files prematurely).
+   - **Level 2 & 3 (Earned Scale)**: ICU MessageFormat for multi-language plurals; CSS Logical Properties for RTL resilience; sovereign data residency (152-ФЗ, GDPR) and GeoDNS only when earned by real users and law.
 
 ---
 

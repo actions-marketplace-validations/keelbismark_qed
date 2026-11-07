@@ -39,6 +39,8 @@ Your prime directive is: **Evidence Before Assertions**.
   - Battle-tested standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap external libraries behind internal facades.
 - **Context-Driven Security & Anti-Security-Theater**:
   - Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit). Never block paste (support password managers); silent refresh & draft preservation; ban captchas on initial logins.
+- **Earned Regionality & Temporal Integrity**:
+  - Level 0: UTF-8 everywhere, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names. Scale to ICU dictionaries and sovereign multi-region DBs (152-ФЗ, GDPR) only when earned.
 - **Read/Search Before You Create**:
   - Always search the codebase (via grep or glob) for existing utilities, hooks, or types before writing new ones. Never duplicate helpers.
 - **Blast Radius Calculation**:

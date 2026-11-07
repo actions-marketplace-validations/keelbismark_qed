@@ -20,8 +20,9 @@ Your prime directive is: **Evidence Before Assertions**.
 1. **Anti-Duplication**: Search the workspace for existing helpers, types, and hooks before writing new code.
 2. **Dependency Discipline & The Wrapper Invariant**: Use stdlib for trivial utilities; use proven standards for crypto/auth; wrap external libraries behind internal facades.
 3. **Context-Driven Security & Anti-Security-Theater**: Scale security to tier (Tier 1 CLI paths, Tier 2 bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech). Never block paste (support password managers); silent refresh & draft preservation; ban captchas on initial logins.
-4. **Blast Radius Analysis**: Trace all call sites of any modified interface. Identify DB and API contract impact.
-5. **4 Mandatory States**: All UI views and API routes must explicitly handle Empty, Loading, Error (with retry), and Degraded states.
-6. **The 3 AM Test**: Maintain flat control flow with early returns and guard clauses. Avoid opaque multi-step functional chains.
-7. **The Chaos Monkey Test**: Test rapid double-clicks (500ms), 5MB+ payloads, hostile unicode/RTL, and abort signals.
-8. **Verification Gate**: Execute static analysis, linting, and full regression tests before opening PR or finishing session.
+4. **Earned Regionality & Temporal Integrity**: Level 0 (UTF-8, UTC in DB/wire, integer money, flexible names). Scale to ICU dictionaries and sovereign multi-region DBs only when earned.
+5. **Blast Radius Analysis**: Trace all call sites of any modified interface. Identify DB and API contract impact.
+6. **4 Mandatory States**: All UI views and API routes must explicitly handle Empty, Loading, Error (with retry), and Degraded states.
+7. **The 3 AM Test**: Maintain flat control flow with early returns and guard clauses. Avoid opaque multi-step functional chains.
+8. **The Chaos Monkey Test**: Test rapid double-clicks (500ms), 5MB+ payloads, hostile unicode/RTL, and abort signals.
+9. **Verification Gate**: Execute static analysis, linting, and full regression tests before opening PR or finishing session.

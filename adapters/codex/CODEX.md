@@ -41,6 +41,8 @@ Your prime directive is: **Evidence Before Assertions**.
   - Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit). Never block paste (support password managers); silent refresh & draft preservation; ban captchas on initial logins.
 - **Earned Regionality & Temporal Integrity**:
   - Level 0: UTF-8 everywhere, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names. Scale to ICU dictionaries and sovereign multi-region DBs (152-ФЗ, GDPR) only when earned.
+- **Cache, Memory & Resource Hygiene**:
+  - Mandatory bounded LRU caches (`maxSize`) and TTL (`ttlMs`); tenant-scoped cache keys; invalidate on DB mutation; guaranteed temp file deletion (`try...finally`); atomic file writes (`file.tmp` -> `file`); streams with backpressure for payloads > 10MB.
 - **Read/Search Before You Create**:
   - Always search the codebase (via grep or glob) for existing utilities, hooks, or types before writing new ones. Never duplicate helpers.
 - **Blast Radius Calculation**:

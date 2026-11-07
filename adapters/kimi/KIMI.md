@@ -43,5 +43,7 @@ Your prime directive is: **Evidence Before Assertions**.
   - Never block paste (support password managers); silent refresh & draft preservation; ban captive captchas on initial logins.
 - **Earned Regionality & Temporal Integrity**:
   - Level 0 (UTF-8, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names). Scale to ICU dictionaries and sovereign multi-region DBs only when earned.
+- **Cache, Memory & Resource Hygiene**:
+  - Bounded LRU cache (`maxSize` + TTL); tenant-scoped cache keys; invalidate on DB mutation; guaranteed temp file deletion (`try...finally`); atomic file writes (`file.tmp` -> `file`); streams for > 10MB payloads.
 - **Verification Gate**:
   - Run typecheck, lint, and full test suite via `Bash` before claiming completion.

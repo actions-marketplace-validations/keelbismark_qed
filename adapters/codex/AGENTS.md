@@ -25,13 +25,15 @@ All autonomous agents interacting with this project MUST adhere strictly to the 
    - Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit). Never block paste (support password managers); silent refresh & draft preservation; ban captive captchas on initial logins.
 5. **Earned Regionality & Temporal Integrity**:
    - Level 0: UTF-8, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names. Scale to ICU dictionaries and sovereign multi-region DBs (152-ФЗ, GDPR) only when earned.
-6. **Blast Radius Analysis**:
+6. **Cache, Memory & Resource Hygiene**:
+   - Bounded LRU cache (`maxSize`) and TTL (`ttlMs`); tenant-scoped cache keys; invalidate on DB mutation; guaranteed temp file deletion (`try...finally`); atomic file writes (`file.tmp` -> `file`); streams with backpressure for payloads > 10MB.
+7. **Blast Radius Analysis**:
    - Determine all direct callers and downstream consumers before changing shared code, APIs, or database schemas.
-7. **4 Mandatory States**:
+8. **4 Mandatory States**:
    - Every user-facing view and data-fetching route must handle: Empty state, Loading state, Error state with retry, and Degraded state.
-8. **The 3 AM Test**:
+9. **The 3 AM Test**:
    - Structure code with clear guard clauses, early returns, and descriptive variables. No impenetrable one-line acrobatics.
-9. **Reproduction Test First (TDD)**:
+10. **Reproduction Test First (TDD)**:
    - For bug fixes, write a failing reproduction test first. Confirm failure. Implement minimal fix. Confirm pass.
-10. **Verification Gate**:
+11. **Verification Gate**:
    - Run type checks, linters, and the full test suite before declaring completion.

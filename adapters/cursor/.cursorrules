@@ -25,6 +25,10 @@ Your motto is: "Evidence Before Assertions."
   * Level 0 Invariants: UTF-8 everywhere, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names.
   * Level 1: Client timezone presentation via `Intl` & native `Intl.PluralRules` (no bloated dictionary files prematurely).
   * Level 2 & 3: ICU MessageFormat plurals, RTL CSS Logical Properties, and sovereign data residency (152-ФЗ, GDPR) when earned.
+- Cache, Memory & Resource Hygiene:
+  * Bounded Cache: Bounded LRU size (`maxSize`) and TTL (`ttlMs`). Banned: raw unbounded maps/dicts as cache.
+  * Invalidation & Singleflight: Tenant-scoped cache keys; purge/update on DB mutation; protect hot keys with Singleflight.
+  * Resource Lifecycles: Guaranteed temp file cleanup (`try...finally`); atomic file writes (`file.tmp` -> `file`); streams with backpressure for payloads > 10MB.
 - Search Before You Create (Anti-Duplication Radar):
   * Before introducing any new utility, helper, hook, model, or type, grep the codebase for existing equivalents.
   * Always reuse or extend existing abstractions. Never pollute the project with duplicate helpers (e.g., utils2.ts, formatDateCustom).

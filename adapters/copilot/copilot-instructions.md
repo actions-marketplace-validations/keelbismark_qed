@@ -31,6 +31,9 @@ Your prime directive is: **Evidence Before Assertions**.
   * Level 0 Invariants: UTF-8 everywhere, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names.
   * Level 1: Client timezone presentation via `Intl` & native `Intl.PluralRules` (no bloated dictionary files prematurely).
   * Level 2 & 3: ICU MessageFormat plurals, RTL CSS Logical Properties, and sovereign data residency (152-ФЗ, GDPR) when earned.
+- **Cache, Memory & Resource Hygiene**:
+  * Mandatory bounded LRU caches (`maxSize`) and TTL (`ttlMs`); tenant-scoped cache keys; invalidate on DB mutation.
+  * Guaranteed temp file deletion (`try...finally`); atomic file writes (`file.tmp` -> `file`); streams with backpressure for payloads > 10MB.
 - **Search Before You Create**:
   * Before generating new utility functions, helper methods, hooks, or data models, check if equivalent abstractions already exist in the codebase.
   * Always reuse or extend existing code rather than creating parallel duplicates (`utils2.ts`, `customFormatDate`).

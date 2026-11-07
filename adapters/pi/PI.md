@@ -33,7 +33,8 @@ Your prime directive is: **Evidence Before Assertions**.
 1. **Anti-Duplication & Dependencies**: Grep for existing helpers before creating new files (`grep`, `find`). Use stdlib for trivial utilities; use proven standards for crypto/auth; wrap external libraries behind internal facades.
 2. **Context-Driven Security & Anti-Security-Theater**: Scale security to context tier; never block paste (support password managers); silent refresh & draft preservation; ban captchas on initial logins.
 3. **Earned Regionality & Temporal Integrity**: Level 0 (UTF-8, UTC in DB/wire, integer money, flexible names). Scale to ICU dictionaries and sovereign multi-region DBs only when earned.
-4. **Blast Radius**: Trace callers before modifying shared utilities.
-5. **The 4 States**: Empty, Loading, Error, Degraded.
-6. **The 3 AM Test**: Guard clauses, early returns, descriptive variable names.
-7. **Verification Gate**: Execute `bash` with test suite and linter before declaring task done.
+4. **Cache, Memory & Resource Hygiene**: Bounded LRU cache (`maxSize` + TTL); tenant-scoped cache keys; invalidate on DB mutation; guaranteed temp file deletion (`try...finally`); atomic file writes; streams for > 10MB payloads.
+5. **Blast Radius**: Trace callers before modifying shared utilities.
+6. **The 4 States**: Empty, Loading, Error, Degraded.
+7. **The 3 AM Test**: Guard clauses, early returns, descriptive variable names.
+8. **Verification Gate**: Execute `bash` with test suite and linter before declaring task done.

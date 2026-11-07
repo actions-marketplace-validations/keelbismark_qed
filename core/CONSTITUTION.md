@@ -81,6 +81,10 @@ Before writing any non-trivial code:
    - **Level 0 Invariants (Mandatory Everywhere)**: UTF-8 for all strings and DB collations; UTC persistence & ISO 8601 serialization; integer minor units + ISO 4217 for money (zero floating-point currency); flexible unconstrained name fields.
    - **Level 1 (Monolingual Locale-Aware)**: Client-side timezone presentation via native `Intl`; timezone-aware SQL day aggregations (`AT TIME ZONE`); native `Intl.PluralRules` (no bloated dictionary files prematurely).
    - **Level 2 & 3 (Earned Scale)**: ICU MessageFormat for multi-language plurals; CSS Logical Properties for RTL resilience; sovereign data residency (152-ФЗ, GDPR) and GeoDNS only when earned by real users and law.
+10. **Cache, Memory & Resource Hygiene**:
+    - **Bounded Cache Invariant**: Every in-memory cache MUST enforce strict max capacity (`maxSize` LRU) and deterministic TTL (`ttlMs`). Raw unbounded maps/dicts as cache are strictly banned.
+    - **Invalidation & Tenant Isolation**: Cache keys must be tenant-scoped (`tenant:${orgId}:${id}`); keys must be purged/updated immediately upon DB mutation (zero phantom data); protect hot keys with Singleflight.
+    - **Resource Lifecycle Hygiene**: Guaranteed cleanup of temporary files (`try...finally` / `withTempFile`); atomic file writes (`file.tmp` -> `file`); stream processing with backpressure for payloads > 10MB (zero buffering gigabytes into RAM).
 
 ---
 

@@ -43,15 +43,17 @@ Your prime directive is: **Evidence Before Assertions**.
 3. **Earned Regionality & Temporal Integrity**:
    - Level 0: UTF-8 everywhere, UTC in DB/wire, integer minor units + ISO 4217 for money, flexible names.
    - Level 1: Client timezone presentation via `Intl` & native plurals; scale to ICU dictionaries and sovereign multi-region DBs (152-ФЗ, GDPR) only when earned.
-4. **Anti-Duplication Radar**:
+4. **Cache, Memory & Resource Hygiene**:
+   - Bounded LRU cache (`maxSize`) and TTL (`ttlMs`); tenant-scoped cache keys; invalidate on DB mutation; guaranteed temp file deletion (`try...finally`); atomic file writes (`file.tmp` -> `file`); streams with backpressure for payloads > 10MB.
+5. **Anti-Duplication Radar**:
    - Before writing new utilities or models, use `grep_search` to verify existing helpers. Never create duplicate utilities.
-5. **Blast Radius Analysis**:
+6. **Blast Radius Analysis**:
    - Calculate direct callers and indirect contract/DB risks before editing shared code.
-6. **The 4 Mandatory States**:
+7. **The 4 Mandatory States**:
    - Always implement: Empty state, Loading state, Error state with retry, and Degraded state.
-7. **The 3 AM Test**:
+8. **The 3 AM Test**:
    - Use early returns and guard clauses. Avoid opaque 6-level chained functional one-liners.
-8. **Adversarial Testing (Chaos Monkey)**:
+9. **Adversarial Testing (Chaos Monkey)**:
    - Handle rapid double-clicks (500ms), 5MB+ payloads, and hostile Unicode.
-9. **Verification Gate**:
+10. **Verification Gate**:
    - Run typecheck, linter, and full test suite via `run_shell_command` before completion.

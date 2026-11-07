@@ -219,6 +219,7 @@ Q.E.D. adapts to your velocity requirements:
 ## Documentation
 
 * **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
+* **[Cache, Memory & Resource Hygiene](core/cache-memory-and-file-hygiene.md)** — Bounded LRU caches, leak-free streams, temp file lifecycles, and atomic writes.
 * **[Regionality, Localization & Data Sovereignty](core/regionality-and-i18n.md)** — Earned complexity ladder, Level 0 invariants (UTF-8/UTC/money), and data residency.
 * **[Security Philosophy & Threat-Adaptive Tiers](core/security-philosophy.md)** — Context-driven threat modeling, 4 security tiers, and anti-security-theater UX.
 * **[Git & Versioning Philosophy](core/git-and-versioning.md)** — Git change ledger vs. SemVer/CalVer/ZeroVer/Continuous trust contracts.

@@ -21,7 +21,8 @@ Your prime directive is: **Evidence Before Assertions**.
 2. **Dependency Discipline & The Wrapper Invariant**: Battle-tested standards for crypto/auth/protocols; stdlib for trivial helpers; wrap external libraries behind internal facades.
 3. **Context-Driven Security & Anti-Security-Theater**: Match security to runtime tier (Tier 1 CLI path/exec safety, Tier 2 web bundle/XSS, Tier 3 multi-tenant IDOR/error masking, Tier 4 FinTech timing/audit). Never block paste (support password managers); silent session refresh & auto-save form drafts.
 4. **Earned Regionality & Temporal Integrity**: Level 0 (UTF-8, UTC in DB/wire, integer money, flexible names). Scale to ICU dictionaries and sovereign multi-region DBs only when earned.
-5. **Blast Radius Analysis**: Trace callers before modifying shared code or database schemas.
-6. **4 Mandatory States**: All UI components and API handlers must handle Empty, Loading, Error, and Degraded states.
-7. **The 3 AM Test**: Guard clauses, early returns, descriptive names, zero opaque one-line acrobatics.
-8. **Verification Gate**: Full test suite and lint checks must pass cleanly.
+5. **Cache, Memory & Resource Hygiene**: Bounded LRU cache (`maxSize` + TTL); tenant-scoped cache keys; invalidate on DB mutation; guaranteed temp file deletion (`try...finally`); atomic file writes; streams for > 10MB payloads.
+6. **Blast Radius Analysis**: Trace callers before modifying shared code or database schemas.
+7. **4 Mandatory States**: All UI components and API handlers must handle Empty, Loading, Error, and Degraded states.
+8. **The 3 AM Test**: Guard clauses, early returns, descriptive names, zero opaque one-line acrobatics.
+9. **Verification Gate**: Full test suite and lint checks must pass cleanly.

@@ -63,11 +63,14 @@ Every UI view and API route must implement:
 3. **Error State**: Actionable, human-friendly error messages with a retry action.
 4. **Degraded / Offline State**: Graceful degradation under network timeouts or partial failures.
 
-### Phase 3: Ironclad TDD & The "3 AM Test"
+### Phase 3: Testing Philosophy & Ironclad TDD
+- **Zero Placebo Mocks**: Pure unit tests must run with zero mocks (<5ms). Real DB/IO must use realistic ephemeral environments (SQLite, Testcontainers). Never test mocks instead of the system.
+- **Zero Flaky Sleep**: Strict ban on `sleep()` or arbitrary timeouts in tests. Use fake timers or condition polling with deadlines.
+- **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
+- **Boundary Value Matrix**: Every test suite must cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (rapid double-clicks in 50ms).
 - **Bug Fixes**: Write a reproduction test first -> observe it fail (**Red**) -> implement the minimal fix -> observe it pass (**Green**) -> run full suite.
 - **New Features**: Write acceptance tests first -> implement -> verify -> refactor.
 - **The 3 AM Test**: Flat structure, guard clauses, early returns, clear intermediate variables, zero obscure functional one-liners or AI slop.
-- **Chaos Monkey Edge Cases**: Rapid duplicate actions (500ms), 5MB payloads, hostile Unicode (`👨‍👩‍👧‍👦`), SQL/HTML characters, interrupted connections.
 
 ### Phase 4: Verification Gate
 Before reporting completion, run:

@@ -95,11 +95,26 @@ Protect the codebase from cognitive overload and generative bloat:
 
 ---
 
-## 6. Phase 4 — Ironclad TDD & The Chaos Monkey Test
+## 6. Phase 4 — Testing Philosophy & Ironclad TDD
 
 Execute changes using disciplined software craftsmanship:
 
-1. **Test-Driven Development (Red-Green-Refactor)**:
+1. **Fundamental Testing Laws**:
+   - **Zero Placebo Mocks**: Never test mocks instead of the system. Pure unit tests must run with zero mocks (<5ms). Real I/O and DB queries must run against realistic ephemeral environments (SQLite, Testcontainers) or contract fixtures.
+   - **Zero Flaky Sleep**: Arbitrary `sleep()` or `setTimeout()` in tests is strictly forbidden. Use fake timers for time logic, or deterministic polling with an explicit condition and hard deadline.
+   - **The Mutation Check**: A test must be capable of failing. If core business logic is commented out, at least one test must turn Red.
+   - **Exact Assertions**: Ban on tautological assertions (`expect(x).toBeDefined()`). Assert exact return shapes, status codes, and side-effect state invariants.
+
+2. **The Mandatory Boundary Value Matrix**:
+   Automated test suites must explicitly cover the boundary matrix:
+   - *Zero / Empty*: `0`, `""`, `[]`, `{}` (handling empty states without crashing).
+   - *Singular & Nominal*: `1` item, standard nominal input `N`.
+   - *Limits*: `N+1` pagination limit, `Max` integers, 5MB+ payloads.
+   - *Null / Malformed*: missing fields, unexpected types.
+   - *Hostile Strings*: complex Unicode (`👨‍👩‍👧‍👦`), RTL scripts, SQL/HTML control characters.
+   - *Concurrency & Idempotency*: rapid duplicate requests within 50ms (debouncing).
+
+3. **Test-Driven Development (Red-Green-Refactor)**:
    - **For Bug Fixes**:
      1. Write a reproduction test covering the reported defect.
      2. Run the test and **verify that it fails** for the expected reason (Red).
@@ -110,13 +125,8 @@ Execute changes using disciplined software craftsmanship:
      1. Write unit or integration tests reflecting the Acceptance Criteria.
      2. Implement the feature until tests pass.
      3. Refactor for clarity and performance.
-2. **The "Chaos Monkey Test"**:
-   - When writing automated tests for user flows or API inputs, include adversarial edge cases:
-     * *Concurrency & Debouncing*: Rapid duplicate requests/clicks within 500ms.
-     * *Payload Overload*: Oversized inputs, deeply nested JSON objects.
-     * *Hostile Strings*: Complex Unicode (`👨‍👩‍👧‍👦`), RTL text, emoji combinations, raw SQL/HTML control characters.
-     * *Interrupted State*: Simulating network drops or cancellations mid-flight.
-3. **Workspace & Git Hygiene**:
+
+4. **Workspace & Git Hygiene**:
    - Isolate risky refactors in dedicated branches or subagents.
    - Never leave unstaged junk, debug logs, or temporary files in the repository.
 

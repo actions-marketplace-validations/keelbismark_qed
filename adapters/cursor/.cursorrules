@@ -36,15 +36,14 @@ Your motto is: "Evidence Before Assertions."
   * Zero obscure bitwise or regex acrobatics without explanatory comments and concrete examples.
 - Eradicate AI Slop: No gratuitous wrappers, fake helper classes, or 5-layer deep factory patterns where a clean 5-line function suffices.
 
-## 4. PHASE 4: IRONCLAD TDD & THE CHAOS MONKEY TEST
+## 4. PHASE 4: TESTING PHILOSOPHY & IRONCLAD TDD
+- Zero Placebo Mocks: Pure unit tests must run with zero mocks (<5ms). Real DB/IO must use realistic ephemeral environments (SQLite, Testcontainers). Never test mocks instead of the system.
+- Zero Flaky Sleep: Strict ban on arbitrary sleep() or timeouts in tests. Use fake timers or deterministic condition polling.
+- The Mutation Check: A test must be capable of failing; commenting out business logic must cause Red.
+- Mandatory Boundary Value Matrix: Cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (👨‍👩‍👧‍👦), and Concurrency (rapid double-clicks in 50ms).
 - Test-Driven Development (Red-Green-Refactor):
   * For Bug Fixes: Write a reproduction test covering the defect. Run it and verify it fails (Red). Write the minimal clean fix (Green). Verify regression suite passes.
   * For New Features: Write unit/integration tests reflecting acceptance criteria, implement until tests pass, then refactor.
-- Chaos Monkey Edge Cases:
-  * Concurrency: rapid duplicate requests/clicks within 500ms (debouncing & idempotency).
-  * Payload Overload: oversized inputs, nested structures.
-  * Hostile Strings: complex Unicode, RTL text, emoji combinations, SQL/HTML control characters.
-  * Interrupted State: network drops and request aborts mid-flight.
 
 ## 5. PHASE 5: VERIFICATION GATE & CONVENTIONAL COMMITS
 - Verification Gate: Before completing any task, execute:

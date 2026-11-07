@@ -23,8 +23,12 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 ## 4. The 3 AM Test
 - Code must be instantly clear to an engineer at 3 AM: guard clauses, early returns, no 6-method functional chains, clear intermediate variables.
 
-## 5. Ironclad TDD & Verification Gate
-- For bug fixes: Write reproduction test first (Red), fix root cause, confirm passing (Green).
+## 5. Testing Philosophy & Verification Gate
+- **Zero Placebo Mocks**: Pure unit tests must run with zero mocks (<5ms). Real DB/IO must use realistic ephemeral environments, not imaginary mocks.
+- **Boundary Value Matrix**: Every test suite must cover: 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (double-clicks in 50ms).
+- **Zero Flaky Sleep**: Strict ban on `sleep()` or arbitrary timeouts in tests. Use fake timers or deterministic condition polling.
+- **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
+- **Reproduction First (Red -> Green)**: For bug fixes, write failing reproduction test first, verify failure, fix root cause, confirm pass.
 - Verify type checks, linters, and full test suite before declaring completion.
 
 ## 6. Documentation & Visual Ergonomics (Anti-Slop)

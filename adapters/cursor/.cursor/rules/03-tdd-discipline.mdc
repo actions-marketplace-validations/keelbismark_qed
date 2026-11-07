@@ -1,12 +1,27 @@
 ---
-description: Q.E.D. Strict Test-Driven Development (Red-Green-Refactor) and Chaos Monkey test suite
-globs: **/*test*,**/*spec*,src/**/*,lib/**/*,app/**/*
+description: Q.E.D. Strict Test-Driven Development, Testing Philosophy, and Chaos Monkey test suite
+globs: "**/*test*,**/*spec*,src/**/*,lib/**/*,app/**/*"
 alwaysApply: false
 ---
 
-# Q.E.D. Ironclad TDD & Chaos Monkey Protocol
+# Q.E.D. Testing Philosophy & Ironclad TDD Protocol
 
-## 1. Red-Green-Refactor Discipline
+## 1. Fundamental Testing Laws
+- **Zero Placebo Mocks**: Pure unit tests must run with zero mocks (<5ms). Real DB/IO must use realistic ephemeral environments (SQLite, Testcontainers), not imaginary mocks. Never test mocks instead of the system.
+- **Zero Flaky Sleep**: Strict ban on `sleep()` or arbitrary timeouts in tests. Use fake timers for time logic, or deterministic condition polling with a deadline.
+- **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
+- **Exact Assertions**: Ban on tautological assertions (`expect(x).toBeDefined()`). Assert exact return shapes, status codes, and side-effect state invariants.
+
+## 2. The Mandatory Boundary Value Matrix
+Whenever writing tests for input parameters, collections, or state machines:
+- **Zero / Empty**: `0`, `""`, `[]`, `{}` (returns defined Empty state; never crashes).
+- **Singular & Nominal**: `1` item, standard nominal input `N`.
+- **Limits**: `N+1` pagination limit, `Max` integers, 5MB+ payloads.
+- **Null / Malformed**: missing fields, unexpected types.
+- **Hostile Strings**: complex Unicode (`👨‍👩‍👧‍👦`), RTL text, SQL/HTML injections (`<script>`, `' OR '1'='1`).
+- **Concurrency & Idempotency**: rapid duplicate requests within 50ms (debouncing).
+
+## 3. Red-Green-Refactor Discipline
 - **For Bug Fixes**:
   1. Write a minimal reproduction test covering the reported defect.
   2. Run the test and confirm that it fails for the expected reason (**Red**).
@@ -17,10 +32,3 @@ alwaysApply: false
   2. Implement the feature until tests pass (**Green**).
   3. Refactor code for readability and performance while keeping tests green.
 - **Strict Prohibition**: Never weaken, disable, or delete existing tests to force a build to pass.
-
-## 2. The Chaos Monkey Adversarial Test
-Always challenge new endpoints, data mutations, and user flows with:
-- **Concurrency & Debouncing**: Simulate rapid duplicate calls/clicks within 500ms.
-- **Payload Limits**: Test empty input, boundary numbers, 5MB payloads, and deeply nested objects.
-- **Hostile Strings**: Complex Unicode (e.g. `👨‍👩‍👧‍👦`), RTL strings (Arabic/Hebrew), SQL/HTML injections (`<script>`, `' OR '1'='1`).
-- **Interrupted State**: Simulate aborted requests, network dropouts, and cancelled async tasks.

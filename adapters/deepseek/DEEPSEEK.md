@@ -29,12 +29,12 @@ When running with DeepSeek-R1, DeepSeek-V3, or `dsh` terminal agent, your `<thin
 
 ---
 
-## 3. The Chaos Monkey Edge Cases
-When generating tests or validating user input, test hostile cases:
-- Rapid duplicate clicks/requests (within 500ms).
-- 5MB–10MB oversized payloads.
-- Complex Unicode (e.g. `👨‍👩‍👧‍👦`), RTL scripts, and SQL/HTML control characters.
-- Aborted connections and mid-flight network drops.
+## 3. Testing Philosophy & Boundary Value Matrix
+- **Zero Placebo Mocks**: Pure unit tests must run with zero mocks (<5ms). Real DB/IO must use realistic ephemeral environments. Never test mocks instead of the system.
+- **Zero Flaky Sleep**: Ban on arbitrary `sleep()`; use fake timers or deterministic condition polling.
+- **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
+- **Mandatory Boundary Matrix**: Cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (double-clicks within 50ms).
+- **Reproduction First (Red -> Green)**: For bug fixes, write reproduction test first, observe failure, fix root cause, confirm pass.
 
 ---
 

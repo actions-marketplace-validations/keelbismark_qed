@@ -1,0 +1,28 @@
+{
+  "name": "qed",
+  "version": "1.0.0",
+  "description": "Q.E.D. High-Assurance Engineering Standard for Google Antigravity",
+  "author": {
+    "name": "Q.E.D. Engineering Team",
+    "url": "https://github.com/keelbismark/qed"
+  },
+  "homepage": "https://github.com/keelbismark/qed",
+  "repository": "https://github.com/keelbismark/qed",
+  "license": "MIT",
+  "keywords": [
+    "antigravity",
+    "qed",
+    "tdd",
+    "blast-radius",
+    "anti-duplication",
+    "verification-gate",
+    "quality-over-speed"
+  ],
+  "interface": {
+    "displayName": "Q.E.D. Engineering Standard",
+    "shortDescription": "Evidence Before Assertions for Google Antigravity agents",
+    "longDescription": "Enforces strict engineering discipline in Google Antigravity: Search Before You Create, Blast Radius calculation, 4 mandatory states, and verified test execution before completion.",
+    "developerName": "Q.E.D.",
+    "category": "Developer Tools"
+  }
+}

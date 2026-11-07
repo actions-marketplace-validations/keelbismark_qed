@@ -1,0 +1,21 @@
+{
+  "name": "qed",
+  "version": "1.0.0",
+  "description": "Q.E.D. High-Assurance Engineering Standard for Devin: Evidence Before Assertions, Blast Radius Analysis, and Ironclad TDD.",
+  "author": {
+    "name": "Q.E.D. Engineering Team",
+    "url": "https://github.com/keelbismark/qed"
+  },
+  "homepage": "https://github.com/keelbismark/qed",
+  "repository": "https://github.com/keelbismark/qed",
+  "license": "MIT",
+  "keywords": [
+    "qed",
+    "devin",
+    "tdd",
+    "blast-radius",
+    "anti-duplication",
+    "verification-gate",
+    "quality-over-speed"
+  ]
+}

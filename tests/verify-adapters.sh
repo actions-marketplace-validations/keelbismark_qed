@@ -62,26 +62,33 @@ run_global_test() {
         
         expected=(
             "$fake_home/.gemini/GEMINI.md"
+            "$fake_home/.gemini/gemini-extension.json"
             "$fake_home/.cursorrules"
             "$fake_home/.cursor/rules/00-constitution.mdc"
             "$fake_home/.claude/CLAUDE.md"
             "$fake_home/.claude/skills/qed-verify/SKILL.md"
-            "$fake_home/.claude/commands/qed-verify.md"
             "$fake_home/.clinerules"
             "$fake_home/.roomodes"
             "$fake_home/.windsurfrules"
             "$fake_home/.windsurf/workflows/qed-tdd-cycle.md"
             "$fake_home/.aider.conf.yml"
-            "$fake_home/.aider.conventions.md"
             "$fake_home/.github/copilot-instructions.md"
-            "$fake_home/.github/prompts/qed-spec.prompt.md"
             "$fake_home/.opencoderules"
             "$fake_home/.opencode/opencode.json"
-            "$fake_home/.opencode/OPENCODE.md"
             "$fake_home/.deepseek/DEEPSEEK.md"
             "$fake_home/.deepseekrules"
-            "$fake_home/.dsh/config.json"
-            "$fake_home/.continue/config.json"
+            "$fake_home/.codex/CODEX.md"
+            "$fake_home/.agents/AGENTS.md"
+            "$fake_home/.kimi/KIMI.md"
+            "$fake_home/.pi/PI.md"
+            "$fake_home/.pi/package.json"
+            "$fake_home/.hermes/HERMES.md"
+            "$fake_home/.muse/MUSE.md"
+            "$fake_home/.devin/DEVIN.md"
+            "$fake_home/.droid/DROID.md"
+            "$fake_home/.grok/GROK.md"
+            "$fake_home/.qwen/QWEN.md"
+            "$fake_home/.qwenrules"
         )
         
         for file in "${expected[@]}"; do
@@ -98,30 +105,40 @@ run_piped_remote_test() {
     local target_dir="$TEST_DIR/piped-test"
     mkdir -p "$target_dir"
     
+    # Start temporary local HTTP server to test piped remote stream
+    local port=18843
+    python3 -m http.server "$port" --directory "$REPO_ROOT" > /dev/null 2>&1 &
+    local server_pid=$!
+    sleep 1
+
     (
         cd "$target_dir"
         # Simulate piped execution: cat install.sh | bash -s -- --harness cursor
-        cat "$REPO_ROOT/install.sh" | bash -s -- --harness cursor > /dev/null
+        cat "$REPO_ROOT/install.sh" | QED_RAW_BASE_URL="http://127.0.0.1:$port" bash -s -- --harness cursor > /dev/null
         
         expected=(
             ".cursorrules"
+            ".cursor-plugin/plugin.json"
             ".cursor/rules/00-constitution.mdc"
             ".cursor/rules/05-verification-gate.mdc"
         )
         for file in "${expected[@]}"; do
             if [ ! -e "$file" ]; then
                 echo "  [FAIL] piped-remote (Missing: $file)"
+                kill "$server_pid" 2>/dev/null || true
                 exit 1
             fi
         done
-        echo "  [PASS] piped-remote (${#expected[@]} files verified from GitHub)"
+        echo "  [PASS] piped-remote (${#expected[@]} files verified via piped remote stream)"
     )
+    kill "$server_pid" 2>/dev/null || true
 }
 
 echo "--- Section 1: Local Installation Tests ---"
-run_local_test "antigravity" "GEMINI.md"
-run_local_test "cursor" ".cursorrules" ".cursor/rules/00-constitution.mdc" ".cursor/rules/05-verification-gate.mdc"
-run_local_test "claude" "CLAUDE.md" ".claude/skills/qed-verify/SKILL.md" ".claude/commands/qed-verify.md"
+run_local_test "antigravity" "GEMINI.md" ".antigravity-plugin/plugin.json"
+run_local_test "gemini" "GEMINI.md" "gemini-extension.json"
+run_local_test "cursor" ".cursorrules" ".cursor/rules/00-constitution.mdc" ".cursor-plugin/plugin.json"
+run_local_test "claude" "CLAUDE.md" ".claude/skills/qed-verify/SKILL.md" ".claude-plugin/plugin.json"
 run_local_test "cline" ".clinerules"
 run_local_test "roo" ".clinerules" ".roomodes"
 run_local_test "windsurf" ".windsurfrules" ".windsurf/workflows/qed-tdd-cycle.md"
@@ -129,10 +146,43 @@ run_local_test "aider" ".aider.conf.yml" ".aider.conventions.md"
 run_local_test "copilot" ".github/copilot-instructions.md" ".github/prompts/qed-spec.prompt.md"
 run_local_test "opencode" "opencode.json" ".opencoderules" "OPENCODE.md"
 run_local_test "deepseek" "DEEPSEEK.md" ".deepseekrules" ".dsh/config.json" ".continue/config.json"
-run_local_test "all" "GEMINI.md" ".cursorrules" "CLAUDE.md" ".clinerules" ".roomodes" ".windsurfrules" ".aider.conf.yml" ".github/copilot-instructions.md" "opencode.json" "DEEPSEEK.md"
+run_local_test "codex" "CODEX.md" "AGENTS.md" ".codex-plugin/plugin.json"
+run_local_test "kimi" "KIMI.md" ".kimi-plugin/plugin.json"
+run_local_test "pi" "PI.md" "package.json" ".pi/extensions/qed.ts"
+run_local_test "hermes" "HERMES.md" ".hermes-plugin/plugin.yaml" ".hermes-plugin/__init__.py"
+run_local_test "muse" "MUSE.md" ".muse-plugin/plugin.json" ".muse-plugin/marketplace.json"
+run_local_test "devin" "DEVIN.md" ".devin-plugin/plugin.json" ".devin/config.json"
+run_local_test "droid" "DROID.md" ".agents/plugins/marketplace.json" ".droid/config.json"
+run_local_test "grok" "GROK.md" ".grok-plugin/plugin.json" ".grok/config.json"
+run_local_test "qwen" "QWEN.md" ".qwenrules" ".qwen/config.json"
+
+run_local_test "all" \
+    "GEMINI.md" \
+    "gemini-extension.json" \
+    ".cursorrules" \
+    "CLAUDE.md" \
+    ".clinerules" \
+    ".roomodes" \
+    ".windsurfrules" \
+    ".aider.conf.yml" \
+    ".github/copilot-instructions.md" \
+    "opencode.json" \
+    "DEEPSEEK.md" \
+    "CODEX.md" \
+    "AGENTS.md" \
+    "KIMI.md" \
+    "PI.md" \
+    "HERMES.md" \
+    "MUSE.md" \
+    "DEVIN.md" \
+    "DROID.md" \
+    "GROK.md" \
+    "QWEN.md"
 
 echo "--- Section 2: Positional Argument Tests ---"
 run_positional_test "cursor" ".cursorrules" ".cursor/rules/00-constitution.mdc"
+run_positional_test "codex" "CODEX.md" ".codex-plugin/plugin.json"
+run_positional_test "kimi" "KIMI.md" ".kimi-plugin/plugin.json"
 
 echo "--- Section 3: Global Installation Tests ---"
 run_global_test

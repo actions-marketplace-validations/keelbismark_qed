@@ -1,0 +1,6 @@
+name: qed
+version: 1.0.0
+description: Q.E.D. High-Assurance Engineering Standard for Hermes Agent
+author: keelbismark
+provides_hooks:
+  - pre_llm_call

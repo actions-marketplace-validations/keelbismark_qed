@@ -1,0 +1,12 @@
+{
+  "standard": "Q.E.D.",
+  "version": "1.0.0",
+  "motto": "Evidence Before Assertions",
+  "enforceTdd": true,
+  "enforceBlastRadius": true,
+  "verificationGate": {
+    "runTests": true,
+    "runLinter": true,
+    "runTypecheck": true
+  }
+}

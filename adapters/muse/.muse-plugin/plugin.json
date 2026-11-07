@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "name": "qed",
+  "displayName": "Q.E.D. Engineering Standard",
+  "version": "1.0.0",
+  "description": "High-Assurance Engineering Standard: Evidence Before Assertions, Blast Radius Analysis, Anti-Duplication, and Ironclad TDD.",
+  "compat": {
+    "source": "native",
+    "manifestDir": ".muse-plugin"
+  },
+  "capabilities": {
+    "hooks": [
+      {
+        "id": "qed-session-start",
+        "event": "SessionStart",
+        "command": [
+          "echo",
+          "Q.E.D. Active: Evidence Before Assertions"
+        ],
+        "timeoutMs": 5000
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "qed",
+  "version": "1.0.0",
+  "description": "Q.E.D. High-Assurance Engineering Standard: Evidence Before Assertions, Blast Radius Analysis, Anti-Duplication, and Ironclad TDD.",
+  "author": {
+    "name": "Q.E.D. Engineering Team",
+    "url": "https://github.com/keelbismark/qed"
+  },
+  "homepage": "https://github.com/keelbismark/qed",
+  "repository": "https://github.com/keelbismark/qed",
+  "license": "MIT",
+  "keywords": [
+    "qed",
+    "tdd",
+    "blast-radius",
+    "anti-duplication",
+    "verification-gate",
+    "quality-over-speed"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Q.E.D. Engineering Standard",
+    "shortDescription": "Evidence Before Assertions for Claude Code",
+    "category": "Developer Tools"
+  }
+}

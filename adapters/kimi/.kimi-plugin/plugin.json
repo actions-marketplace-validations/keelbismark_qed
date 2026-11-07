@@ -1,0 +1,26 @@
+{
+  "name": "qed",
+  "version": "1.0.0",
+  "description": "Q.E.D. High-Assurance Engineering Standard for Kimi Code",
+  "author": {
+    "name": "Q.E.D. Engineering Team",
+    "url": "https://github.com/keelbismark/qed"
+  },
+  "homepage": "https://github.com/keelbismark/qed",
+  "license": "MIT",
+  "keywords": [
+    "qed",
+    "kimi",
+    "tdd",
+    "blast-radius",
+    "anti-duplication",
+    "engineering-standards"
+  ],
+  "skillInstructions": "Kimi Code tool mapping for Q.E.D. Engineering Standard:\n\n- When clarifying requirements or asking binary acceptance questions, call Kimi Code's `AskUserQuestion` tool with concrete options, putting recommended choice first.\n- Use `TodoList` to track Q.E.D. phases (Phase 1: Spec & Blast Radius -> Phase 2: Adversarial QA -> Phase 3: Ironclad TDD -> Phase 4: Verification Gate).\n- When dispatching subagents, use Kimi Code's `Agent` tool with `subagent_type: \"coder\"` for TDD/implementation or `subagent_type: \"explore\"` for anti-duplication code search.\n- Use Kimi Code's `Read`, `Write`, `Edit`, `Bash`, `Grep`, `Glob`, `FetchURL`, `WebSearch`.\n- Evidence Before Assertions: always run tests via `Bash` and confirm zero failures before marking any task done.",
+  "interface": {
+    "displayName": "Q.E.D. Standard",
+    "shortDescription": "Evidence Before Assertions & Ironclad TDD for Kimi Code",
+    "longDescription": "Enforces Q.E.D. engineering discipline: Search Before You Create, Blast Radius calculation, 4 mandatory states, and full verification before completion.",
+    "developerName": "Q.E.D."
+  }
+}

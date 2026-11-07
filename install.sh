@@ -28,7 +28,7 @@ while [[ $# -gt 0 ]]; do
             TARGET="$1"
             shift
             ;;
-        antigravity|gemini|cursor|claude|claude-code|cline|roo|roo-code|windsurf|aider|copilot|github-copilot|opencode|deepseek|dsh|deepseek-harness|all)
+        antigravity|gemini|gemini-cli|cursor|claude|claude-code|cline|roo|roo-code|windsurf|aider|copilot|github-copilot|opencode|deepseek|dsh|deepseek-harness|codex|codex-cli|codex-app|kimi|kimi-code|pi|hermes|hermes-agent|muse|devin|devin-cli|droid|factory-droid|grok|grok-build|qwen|qwen-code|all)
             HARNESS="$1"
             shift
             ;;
@@ -42,7 +42,7 @@ done
 TARGET="$(echo "$TARGET" | tr '[:upper:]' '[:lower:]')"
 HARNESS="$(echo "$HARNESS" | tr '[:upper:]' '[:lower:]')"
 
-RAW_BASE_URL="https://raw.githubusercontent.com/keelbismark/qed/main"
+RAW_BASE_URL="${QED_RAW_BASE_URL:-https://raw.githubusercontent.com/keelbismark/qed/main}"
 
 # Safe SCRIPT_DIR detection even when piped into bash
 SCRIPT_DIR=""
@@ -118,27 +118,44 @@ else
 fi
 
 # 1. Antigravity
-if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "antigravity" ] || [ "$HARNESS" = "gemini" ]; then
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "antigravity" ]; then
     echo -e "\nConfiguring Google Antigravity..."
     if [ "$TARGET" = "global" ]; then
         install_file "adapters/antigravity/GEMINI.md" "$HOME/.gemini/GEMINI.md"
+        install_file "adapters/antigravity/.antigravity-plugin/plugin.json" "$BASE_DIR/.antigravity-plugin/plugin.json"
     else
         install_file "adapters/antigravity/GEMINI.md" "./GEMINI.md"
+        install_file "adapters/antigravity/.antigravity-plugin/plugin.json" "./.antigravity-plugin/plugin.json"
     fi
 fi
 
-# 2. Cursor
+# 2. Gemini CLI
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "gemini" ] || [ "$HARNESS" = "gemini-cli" ]; then
+    echo -e "\nConfiguring Gemini CLI..."
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/gemini/GEMINI.md" "$HOME/.gemini/GEMINI.md"
+        install_file "adapters/gemini/gemini-extension.json" "$HOME/.gemini/gemini-extension.json"
+    else
+        install_file "adapters/gemini/GEMINI.md" "./GEMINI.md"
+        install_file "adapters/gemini/gemini-extension.json" "./gemini-extension.json"
+    fi
+fi
+
+# 3. Cursor
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "cursor" ]; then
     echo -e "\nConfiguring Cursor (Legacy & Modern MDC Rules)..."
     install_file "adapters/cursor/.cursorrules" "$BASE_DIR/.cursorrules"
+    install_file "adapters/cursor/.cursor-plugin/plugin.json" "$BASE_DIR/.cursor-plugin/plugin.json"
     for rule in 00-constitution.mdc 01-blast-radius.mdc 02-anti-duplication.mdc 03-tdd-discipline.mdc 04-three-am-readability.mdc 05-verification-gate.mdc; do
         install_file "adapters/cursor/.cursor/rules/$rule" "$BASE_DIR/.cursor/rules/$rule"
     done
 fi
 
-# 3. Claude Code
+# 4. Claude Code
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "claude" ] || [ "$HARNESS" = "claude-code" ]; then
     echo -e "\nConfiguring Claude Code (CLAUDE.md, Skills & Slash Commands)..."
+    install_file "adapters/claude-code/.claude-plugin/plugin.json" "$BASE_DIR/.claude-plugin/plugin.json"
+    install_file "adapters/claude-code/.claude-plugin/marketplace.json" "$BASE_DIR/.claude-plugin/marketplace.json"
     if [ "$TARGET" = "global" ]; then
         CLAUDE_ROOT="$HOME/.claude"
         install_file "adapters/claude-code/CLAUDE.md" "$CLAUDE_ROOT/CLAUDE.md"
@@ -159,20 +176,20 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "claude" ] || [ "$HARNESS" = "claude
     fi
 fi
 
-# 4. Cline
+# 5. Cline
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "cline" ]; then
     echo -e "\nConfiguring Cline..."
     install_file "adapters/cline/.clinerules" "$BASE_DIR/.clinerules"
 fi
 
-# 5. Roo Code
+# 6. Roo Code
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "roo" ] || [ "$HARNESS" = "roo-code" ]; then
     echo -e "\nConfiguring Roo Code (Architect, TDD Engineer & Reviewer modes)..."
     install_file "adapters/roo-code/.clinerules" "$BASE_DIR/.clinerules"
     install_file "adapters/roo-code/.roomodes" "$BASE_DIR/.roomodes"
 fi
 
-# 6. Windsurf
+# 7. Windsurf
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "windsurf" ]; then
     echo -e "\nConfiguring Windsurf Cascade (Rules & Workflows)..."
     install_file "adapters/windsurf/.windsurfrules" "$BASE_DIR/.windsurfrules"
@@ -181,14 +198,14 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "windsurf" ]; then
     done
 fi
 
-# 7. Aider
+# 8. Aider
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "aider" ]; then
     echo -e "\nConfiguring Aider..."
     install_file "adapters/aider/.aider.conf.yml" "$BASE_DIR/.aider.conf.yml"
     install_file "adapters/aider/.aider.conventions.md" "$BASE_DIR/.aider.conventions.md"
 fi
 
-# 8. GitHub Copilot
+# 9. GitHub Copilot
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "copilot" ] || [ "$HARNESS" = "github-copilot" ]; then
     echo -e "\nConfiguring GitHub Copilot (Instructions & Prompt Files)..."
     install_file "adapters/copilot/.github/copilot-instructions.md" "$BASE_DIR/.github/copilot-instructions.md"
@@ -197,7 +214,7 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "copilot" ] || [ "$HARNESS" = "githu
     done
 fi
 
-# 9. OpenCode
+# 10. OpenCode
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "opencode" ]; then
     echo -e "\nConfiguring OpenCode..."
     if [ "$TARGET" = "global" ]; then
@@ -211,7 +228,7 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "opencode" ]; then
     fi
 fi
 
-# 10. DeepSeek Harness (dsh) & Continue.dev
+# 11. DeepSeek Harness (dsh) & Continue.dev
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "deepseek" ] || [ "$HARNESS" = "dsh" ] || [ "$HARNESS" = "deepseek-harness" ]; then
     echo -e "\nConfiguring DeepSeek Harness (dsh) & Continue.dev..."
     if [ "$TARGET" = "global" ]; then
@@ -226,6 +243,115 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "deepseek" ] || [ "$HARNESS" = "dsh"
         install_file "adapters/deepseek/.continue/config.json" "./.continue/config.json"
         install_file "adapters/deepseek/.continue/prompts/qed-spec.prompt" "./.continue/prompts/qed-spec.prompt"
         install_file "adapters/deepseek/.continue/prompts/qed-verify.prompt" "./.continue/prompts/qed-verify.prompt"
+    fi
+fi
+
+# 12. OpenAI Codex (App & CLI)
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "codex" ] || [ "$HARNESS" = "codex-cli" ] || [ "$HARNESS" = "codex-app" ]; then
+    echo -e "\nConfiguring OpenAI Codex (App & CLI)..."
+    install_file "adapters/codex/.codex-plugin/plugin.json" "$BASE_DIR/.codex-plugin/plugin.json"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/codex/CODEX.md" "$HOME/.codex/CODEX.md"
+        install_file "adapters/codex/AGENTS.md" "$HOME/.agents/AGENTS.md"
+    else
+        install_file "adapters/codex/CODEX.md" "./CODEX.md"
+        install_file "adapters/codex/AGENTS.md" "./AGENTS.md"
+    fi
+fi
+
+# 13. Kimi Code
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "kimi" ] || [ "$HARNESS" = "kimi-code" ]; then
+    echo -e "\nConfiguring Kimi Code..."
+    install_file "adapters/kimi/.kimi-plugin/plugin.json" "$BASE_DIR/.kimi-plugin/plugin.json"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/kimi/KIMI.md" "$HOME/.kimi/KIMI.md"
+    else
+        install_file "adapters/kimi/KIMI.md" "./KIMI.md"
+    fi
+fi
+
+# 14. Pi Coding Agent
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "pi" ]; then
+    echo -e "\nConfiguring Pi..."
+    install_file "adapters/pi/.pi/extensions/qed.ts" "$BASE_DIR/.pi/extensions/qed.ts"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/pi/PI.md" "$HOME/.pi/PI.md"
+        install_file "adapters/pi/package.json" "$HOME/.pi/package.json"
+    else
+        install_file "adapters/pi/PI.md" "./PI.md"
+        install_file "adapters/pi/package.json" "./package.json"
+    fi
+fi
+
+# 15. Hermes Agent
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "hermes" ] || [ "$HARNESS" = "hermes-agent" ]; then
+    echo -e "\nConfiguring Hermes Agent..."
+    install_file "adapters/hermes/.hermes-plugin/plugin.yaml" "$BASE_DIR/.hermes-plugin/plugin.yaml"
+    install_file "adapters/hermes/.hermes-plugin/__init__.py" "$BASE_DIR/.hermes-plugin/__init__.py"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/hermes/HERMES.md" "$HOME/.hermes/HERMES.md"
+    else
+        install_file "adapters/hermes/HERMES.md" "./HERMES.md"
+    fi
+fi
+
+# 16. Muse
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "muse" ]; then
+    echo -e "\nConfiguring Muse..."
+    install_file "adapters/muse/.muse-plugin/plugin.json" "$BASE_DIR/.muse-plugin/plugin.json"
+    install_file "adapters/muse/.muse-plugin/marketplace.json" "$BASE_DIR/.muse-plugin/marketplace.json"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/muse/MUSE.md" "$HOME/.muse/MUSE.md"
+    else
+        install_file "adapters/muse/MUSE.md" "./MUSE.md"
+    fi
+fi
+
+# 17. Devin CLI
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "devin" ] || [ "$HARNESS" = "devin-cli" ]; then
+    echo -e "\nConfiguring Devin CLI..."
+    install_file "adapters/devin/.devin-plugin/plugin.json" "$BASE_DIR/.devin-plugin/plugin.json"
+    install_file "adapters/devin/.devin/config.json" "$BASE_DIR/.devin/config.json"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/devin/DEVIN.md" "$HOME/.devin/DEVIN.md"
+    else
+        install_file "adapters/devin/DEVIN.md" "./DEVIN.md"
+    fi
+fi
+
+# 18. Factory Droid
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "droid" ] || [ "$HARNESS" = "factory-droid" ]; then
+    echo -e "\nConfiguring Factory Droid..."
+    install_file "adapters/droid/.agents/plugins/marketplace.json" "$BASE_DIR/.agents/plugins/marketplace.json"
+    install_file "adapters/droid/.droid/config.json" "$BASE_DIR/.droid/config.json"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/droid/DROID.md" "$HOME/.droid/DROID.md"
+    else
+        install_file "adapters/droid/DROID.md" "./DROID.md"
+    fi
+fi
+
+# 19. Grok Build CLI
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "grok" ] || [ "$HARNESS" = "grok-build" ]; then
+    echo -e "\nConfiguring Grok Build CLI..."
+    install_file "adapters/grok/.grok-plugin/plugin.json" "$BASE_DIR/.grok-plugin/plugin.json"
+    install_file "adapters/grok/.grok/config.json" "$BASE_DIR/.grok/config.json"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/grok/GROK.md" "$HOME/.grok/GROK.md"
+    else
+        install_file "adapters/grok/GROK.md" "./GROK.md"
+    fi
+fi
+
+# 20. Qwen Code
+if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "qwen" ] || [ "$HARNESS" = "qwen-code" ]; then
+    echo -e "\nConfiguring Qwen Code..."
+    install_file "adapters/qwen/.qwenrules" "$BASE_DIR/.qwenrules"
+    install_file "adapters/qwen/.qwen/config.json" "$BASE_DIR/.qwen/config.json"
+    if [ "$TARGET" = "global" ]; then
+        install_file "adapters/qwen/QWEN.md" "$HOME/.qwen/QWEN.md"
+    else
+        install_file "adapters/qwen/QWEN.md" "./QWEN.md"
     fi
 fi
 

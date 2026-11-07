@@ -6,11 +6,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Standard: High--Assurance](https://img.shields.io/badge/Standard-High--Assurance-emerald.svg)](core/CONSTITUTION.md)
-[![Harnesses: Universal](https://img.shields.io/badge/Harnesses-Cursor%20%7C%20Claude%20%7C%20Cline%20%7C%20Roo%20%7C%20Windsurf%20%7C%20Aider%20%7C%20Copilot%20%7C%20Antigravity%20%7C%20OpenCode-purple.svg)](adapters/)
+[![Harnesses: 20 Platforms](https://img.shields.io/badge/Harnesses-20%20Platforms-purple.svg)](adapters/)
 
 *«Evidence Before Assertions» — Turning AI pair-programmers into disciplined Staff Engineers.*
 
-[English](README.md) • [Конституция (RU/EN)](core/CONSTITUTION.md) • [Quickstart](#-quickstart) • [Supported Harnesses](#-supported-harnesses) • [Core Superpowers](#-the-5-unique-superpowers)
+[English](README.md) • [Конституция (RU/EN)](core/CONSTITUTION.md) • [Quickstart](#-quickstart) • [Supported Harnesses](#-supported-harnesses--architecture) • [Core Superpowers](#-the-5-unique-superpowers-of-qed)
 
 </div>
 
@@ -70,7 +70,7 @@ Unlike generic prompt collections, Q.E.D. introduces 5 distinct engineering mech
 | **The Chaos Monkey Test** | ✅ **Standard** | ❌ None | ⚠️ Partial | ❌ None | ❌ None |
 | **Ironclad TDD (Red-Green-Refactor)** | ✅ **Strict** | ❌ None | ✅ **Strict** | ⚠️ Optional | ❌ None |
 | **Token & Overhead Efficiency** | 🚀 **Lean** | 🚀 **Lean** | 🚀 **Lean** | 🐢 Verbose | ⚡ Uncontrolled |
-| **Cross-Agent Drop-in Support** | ✅ **Universal (9 Harnesses)**| ⚠️ CLI-only | ⚠️ Harness | ⚠️ Cursor/Claude | ❌ None |
+| **Cross-Agent Drop-in Support** | ✅ **Universal (20 Harnesses)**| ⚠️ CLI-only | ⚠️ Partial | ⚠️ Cursor/Claude | ❌ None |
 
 ---
 
@@ -106,20 +106,30 @@ flowchart TD
 
 ## 🛠️ Supported Harnesses & Architecture
 
-Q.E.D. provides first-class, native configurations and adapters tailored specifically to the execution models of all major AI coding harnesses:
+Q.E.D. provides first-class, native configurations and adapters tailored specifically to the execution models of **all 20 major AI coding harnesses**:
 
 | Harness | Configuration Files | Special Features |
 | :--- | :--- | :--- |
-| **Cursor** | `.cursorrules` + `.cursor/rules/*.mdc` | Legacy fallback + modern MDC rules with frontmatter (`globs`, `alwaysApply`) for TDD, Blast Radius, Anti-Duplication, and 3 AM readability. |
-| **Claude Code** | `CLAUDE.md` + `.claude/skills/` + `.claude/commands/` | High-fidelity bash execution guidelines, permission scoping, custom skills, and slash commands (`/qed-verify`, `/qed-review`, `/qed-blast-radius`). |
+| **Google Antigravity** | `GEMINI.md` + `.antigravity-plugin/plugin.json` | Multi-agent directives, marketplace plugin support, and Evidence Before Assertions. |
+| **Gemini CLI** | `GEMINI.md` + `gemini-extension.json` | Native extension manifest with `@generalist` subagent mappings and `write_todos` tracking. |
+| **Cursor** | `.cursorrules` + `.cursor-plugin/` + `.cursor/rules/*.mdc` | Legacy fallback + modern MDC rules with frontmatter (`globs`, `alwaysApply`) for TDD and Blast Radius. |
+| **Claude Code** | `CLAUDE.md` + `.claude/skills/` + `.claude/commands/` + `.claude-plugin/` | High-fidelity bash execution rules, custom skills, and slash commands (`/qed-verify`, `/qed-review`). |
+| **OpenAI Codex** | `CODEX.md` + `AGENTS.md` + `.codex-plugin/plugin.json` | Native Codex App & CLI manifest, AGENTS.md instruction convention, and strict terminal TDD. |
+| **Kimi Code** | `KIMI.md` + `.kimi-plugin/plugin.json` | Moonshot AI Kimi manifest, `AskUserQuestion` clarification tool, and `TodoList` integration. |
+| **Pi Coding Agent** | `PI.md` + `package.json` + `.pi/extensions/qed.ts` | In-process extension injecting Q.E.D. constitution on session start, compaction, and context. |
+| **Hermes Agent** | `HERMES.md` + `.hermes-plugin/plugin.yaml` + `__init__.py` | Native Python plugin providing `pre_llm_call` hook injection and tool mappings. |
+| **Muse** | `MUSE.md` + `.muse-plugin/plugin.json` + `marketplace.json` | Native Muse plugin manifest with `SessionStart` hooks and marketplace registration. |
+| **Devin CLI** | `DEVIN.md` + `.devin-plugin/plugin.json` + `.devin/config.json` | Cognition Devin playbook and configuration enforcing Evidence Before Assertions. |
+| **Factory Droid** | `DROID.md` + `.agents/plugins/marketplace.json` + `.droid/config.json` | Factory Droid plugin marketplace integration and workspace rules. |
+| **Grok Build CLI** | `GROK.md` + `.grok-plugin/plugin.json` + `.grok/config.json` | xAI Grok Build CLI plugin ecosystem configuration and anti-duplication radar. |
+| **Qwen Code** | `QWEN.md` + `.qwenrules` + `.qwen/config.json` | Alibaba Qwen Code CLI and extension configuration with 4-state discipline. |
+| **OpenCode** | `opencode.json` + `.opencoderules` + `OPENCODE.md` | Machine-readable schema configuration, sandbox constraints, and verification hooks. |
+| **DeepSeek (dsh & Continue)** | `DEEPSEEK.md` + `.deepseekrules` + `.dsh/` + `.continue/` | DeepSeek-R1 Chain-of-Thought reasoning directives and Continue.dev custom commands. |
 | **Cline** | `.clinerules` | Autonomous agent rules enforcing pre-flight searches, verification gates, and zero secret leaks. |
-| **Roo Code** | `.roomodes` + `.clinerules` | Custom role modes: `Q.E.D. Architect` (specs & blast radius), `Q.E.D. TDD Engineer` (red-green-refactor), and `Q.E.D. QA Reviewer`. |
+| **Roo Code** | `.roomodes` + `.clinerules` | Custom role modes: `Q.E.D. Architect`, `Q.E.D. TDD Engineer`, and `Q.E.D. QA Reviewer`. |
 | **Windsurf** | `.windsurfrules` + `.windsurf/workflows/*.md` | Cascade rules + interactive workflows (`qed-spec-and-blast-radius`, `qed-tdd-cycle`, `qed-verification-gate`). |
 | **Aider** | `.aider.conf.yml` + `.aider.conventions.md` | Auto-testing (`auto-test: true`), Conventional Commits automation, and strict linter integration. |
-| **GitHub Copilot** | `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` | Workspace instructions + reusable prompt files (`qed-spec.prompt.md`, `qed-verify.prompt.md`, `qed-tdd.prompt.md`). |
-| **Google Antigravity** | `GEMINI.md` | Autonomous multi-agent directives enforcing Evidence Before Assertions and dual modes. |
-| **OpenCode** | `opencode.json` + `.opencoderules` + `OPENCODE.md` | Machine-readable schema configuration, sandbox constraints, and verification hooks. |
-| **DeepSeek (dsh & Continue)** | `DEEPSEEK.md` + `.deepseekrules` + `.dsh/` + `.continue/` | DeepSeek-R1 Chain-of-Thought reasoning directives, DeepSeek Harness safety presets, and Continue.dev custom slash commands (`/qed-verify`, `/qed-spec`). |
+| **GitHub Copilot** | `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` | Workspace instructions + reusable prompt files (`qed-spec`, `qed-verify`, `qed-tdd`). |
 
 ---
 
@@ -130,20 +140,30 @@ Q.E.D. provides first-class, native configurations and adapters tailored specifi
 Install for your specific harness or all harnesses at once:
 
 ```powershell
-# Install all harnesses locally in current repository
+# Install all 20 harnesses locally in current repository
 .\install.ps1 -Harness all
 
 # Install for a specific harness
-.\install.ps1 -Harness cursor
-.\install.ps1 -Harness claude
-.\install.ps1 -Harness cline
-.\install.ps1 -Harness roo
-.\install.ps1 -Harness windsurf
-.\install.ps1 -Harness aider
-.\install.ps1 -Harness copilot
-.\install.ps1 -Harness opencode
-.\install.ps1 -Harness deepseek
-.\install.ps1 -Harness antigravity
+.\install.ps1 cursor
+.\install.ps1 claude
+.\install.ps1 codex
+.\install.ps1 gemini
+.\install.ps1 antigravity
+.\install.ps1 kimi
+.\install.ps1 pi
+.\install.ps1 hermes
+.\install.ps1 muse
+.\install.ps1 devin
+.\install.ps1 droid
+.\install.ps1 grok
+.\install.ps1 qwen
+.\install.ps1 opencode
+.\install.ps1 deepseek
+.\install.ps1 windsurf
+.\install.ps1 cline
+.\install.ps1 roo
+.\install.ps1 aider
+.\install.ps1 copilot
 
 # Or install globally to user profile
 .\install.ps1 -Target global -Harness all
@@ -152,22 +172,31 @@ Install for your specific harness or all harnesses at once:
 ### 2. One-Click Installation (Linux / macOS / Bash)
 
 ```bash
-# Install all harnesses locally in current repository
+# Install all 20 harnesses locally in current repository
 ./install.sh local all
 
 # Install for a specific harness
-./install.sh --harness cursor
-./install.sh --harness claude
-./install.sh --harness cline
-./install.sh --harness roo
-./install.sh --harness windsurf
-./install.sh --harness aider
-./install.sh --harness copilot
-./install.sh --harness opencode
-./install.sh --harness deepseek
-./install.sh --harness antigravity
+./install.sh cursor
+./install.sh claude
+./install.sh codex
+./install.sh gemini
+./install.sh kimi
+./install.sh pi
+./install.sh hermes
+./install.sh muse
+./install.sh devin
+./install.sh droid
+./install.sh grok
+./install.sh qwen
+./install.sh opencode
+./install.sh deepseek
+./install.sh windsurf
+./install.sh cline
+./install.sh roo
+./install.sh aider
+./install.sh copilot
 
-# Or install globally
+# Or install globally to user profile
 ./install.sh global all
 ```
 
@@ -205,29 +234,42 @@ iex "& { $(irm https://raw.githubusercontent.com/keelbismark/qed/main/install.ps
 qed/
 ├── README.md               # Framework documentation and manifesto
 ├── LICENSE                 # MIT License
-├── install.ps1             # PowerShell 1-click multi-harness installer
-├── install.sh              # Bash 1-click multi-harness installer
+├── install.ps1             # PowerShell 1-click multi-harness installer (20 harnesses)
+├── install.sh              # Bash 1-click multi-harness installer (20 harnesses)
 ├── core/                   # The Core Q.E.D. Specifications
 │   ├── CONSTITUTION.md     # Universal Engineering Constitution
 │   ├── blast-radius.md     # Blast Radius Analysis Protocol
 │   ├── anti-duplication.md # Anti-Duplication Radar
 │   ├── chaos-monkey.md     # The Chaos Monkey Test Protocol
 │   └── three-am-test.md    # The 3 AM Readability Test
-├── adapters/               # Native Harness Configurations
-│   ├── antigravity/        # Google Antigravity (GEMINI.md)
-│   ├── cursor/             # Cursor AI (.cursorrules & .cursor/rules/*.mdc)
-│   ├── claude-code/        # Claude Code (CLAUDE.md, .claude/skills/*, .claude/commands/*)
+├── adapters/               # Native Configurations for 20 Harnesses
+│   ├── antigravity/        # Google Antigravity (GEMINI.md, .antigravity-plugin/*)
+│   ├── gemini/             # Gemini CLI (GEMINI.md, gemini-extension.json)
+│   ├── cursor/             # Cursor AI (.cursorrules, .cursor-plugin/*, .cursor/rules/*.mdc)
+│   ├── claude-code/        # Claude Code (CLAUDE.md, .claude-plugin/*, skills/*, commands/*)
+│   ├── codex/              # OpenAI Codex (CODEX.md, AGENTS.md, .codex-plugin/*)
+│   ├── kimi/               # Kimi Code (KIMI.md, .kimi-plugin/*)
+│   ├── pi/                 # Pi Coding Agent (PI.md, package.json, .pi/extensions/*)
+│   ├── hermes/             # Hermes Agent (HERMES.md, .hermes-plugin/*)
+│   ├── muse/               # Muse Agent (MUSE.md, .muse-plugin/*)
+│   ├── devin/              # Devin CLI (DEVIN.md, .devin-plugin/*, .devin/*)
+│   ├── droid/              # Factory Droid (DROID.md, .agents/plugins/*, .droid/*)
+│   ├── grok/               # Grok Build CLI (GROK.md, .grok-plugin/*, .grok/*)
+│   ├── qwen/               # Qwen Code (QWEN.md, .qwenrules, .qwen/*)
+│   ├── opencode/           # OpenCode (opencode.json, .opencoderules, OPENCODE.md)
+│   ├── deepseek/           # DeepSeek (DEEPSEEK.md, .deepseekrules, .dsh/*, .continue/*)
 │   ├── cline/              # Cline (.clinerules)
 │   ├── roo-code/           # Roo Code (.roomodes & .clinerules)
 │   ├── windsurf/           # Windsurf Cascade (.windsurfrules & workflows/*)
 │   ├── aider/              # Aider (.aider.conf.yml & .aider.conventions.md)
-│   ├── copilot/            # GitHub Copilot (.github/copilot-instructions.md & prompts/*)
-│   ├── opencode/           # OpenCode (opencode.json, .opencoderules, OPENCODE.md)
-│   └── deepseek/           # DeepSeek Harness (DEEPSEEK.md, .deepseekrules, .dsh/*, .continue/*)
+│   └── copilot/            # GitHub Copilot (.github/copilot-instructions.md & prompts/*)
 ├── templates/              # Standard Artifact Templates
 │   ├── SPEC_TEMPLATE.md    # Specification Template (What & Why)
 │   ├── ADR_TEMPLATE.md     # Architecture Decision Record
 │   └── PLAN_TEMPLATE.md    # Technical Blueprint & Task Breakdown
+├── tests/                  # Cross-Platform Comprehensive Test Suites
+│   ├── verify-adapters.ps1 # PowerShell Verification Suite (25 test suites)
+│   └── verify-adapters.sh  # Bash Verification Suite (26 test suites)
 └── examples/
     └── full-lifecycle-walkthrough.md
 ```

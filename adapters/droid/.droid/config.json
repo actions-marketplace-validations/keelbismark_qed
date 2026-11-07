@@ -1,0 +1,10 @@
+{
+  "standard": "Q.E.D.",
+  "version": "1.0.0",
+  "motto": "Evidence Before Assertions",
+  "mode": "production",
+  "verification": {
+    "requireTests": true,
+    "requireLint": true
+  }
+}

@@ -27,7 +27,7 @@ function Run-Harness-Test([string]$testName, [string]$targetMode, [string]$harne
     Push-Location $targetDir
     try {
         if ($Positional) {
-            # Test positional syntax: install.ps1 cursor
+            # Test positional syntax: install.ps1 <harness>
             & "$RepoRoot\install.ps1" $harness | Out-Null
         } else {
             & "$RepoRoot\install.ps1" -Harness $harness -Target $targetMode | Out-Null
@@ -61,10 +61,19 @@ function Run-Harness-Test([string]$testName, [string]$targetMode, [string]$harne
 # --- SECTION 1: Local Installation ---
 Write-Host "`n--- Section 1: Local Installation Tests ---" -ForegroundColor Yellow
 
-$results += Run-Harness-Test "local-antigravity" "local" "antigravity" @("GEMINI.md")
+$results += Run-Harness-Test "local-antigravity" "local" "antigravity" @(
+    "GEMINI.md",
+    ".antigravity-plugin\plugin.json"
+)
+
+$results += Run-Harness-Test "local-gemini" "local" "gemini" @(
+    "GEMINI.md",
+    "gemini-extension.json"
+)
 
 $results += Run-Harness-Test "local-cursor" "local" "cursor" @(
     ".cursorrules",
+    ".cursor-plugin\plugin.json",
     ".cursor\rules\00-constitution.mdc",
     ".cursor\rules\01-blast-radius.mdc",
     ".cursor\rules\02-anti-duplication.mdc",
@@ -75,6 +84,8 @@ $results += Run-Harness-Test "local-cursor" "local" "cursor" @(
 
 $results += Run-Harness-Test "local-claude" "local" "claude" @(
     "CLAUDE.md",
+    ".claude-plugin\plugin.json",
+    ".claude-plugin\marketplace.json",
     ".claude\skills\qed-verify\SKILL.md",
     ".claude\skills\qed-review\SKILL.md",
     ".claude\skills\qed-blast-radius\SKILL.md",
@@ -124,27 +135,96 @@ $results += Run-Harness-Test "local-deepseek" "local" "deepseek" @(
     ".continue\prompts\qed-verify.prompt"
 )
 
+$results += Run-Harness-Test "local-codex" "local" "codex" @(
+    "CODEX.md",
+    "AGENTS.md",
+    ".codex-plugin\plugin.json"
+)
+
+$results += Run-Harness-Test "local-kimi" "local" "kimi" @(
+    "KIMI.md",
+    ".kimi-plugin\plugin.json"
+)
+
+$results += Run-Harness-Test "local-pi" "local" "pi" @(
+    "PI.md",
+    "package.json",
+    ".pi\extensions\qed.ts"
+)
+
+$results += Run-Harness-Test "local-hermes" "local" "hermes" @(
+    "HERMES.md",
+    ".hermes-plugin\plugin.yaml",
+    ".hermes-plugin\__init__.py"
+)
+
+$results += Run-Harness-Test "local-muse" "local" "muse" @(
+    "MUSE.md",
+    ".muse-plugin\plugin.json",
+    ".muse-plugin\marketplace.json"
+)
+
+$results += Run-Harness-Test "local-devin" "local" "devin" @(
+    "DEVIN.md",
+    ".devin-plugin\plugin.json",
+    ".devin\config.json"
+)
+
+$results += Run-Harness-Test "local-droid" "local" "droid" @(
+    "DROID.md",
+    ".agents\plugins\marketplace.json",
+    ".droid\config.json"
+)
+
+$results += Run-Harness-Test "local-grok" "local" "grok" @(
+    "GROK.md",
+    ".grok-plugin\plugin.json",
+    ".grok\config.json"
+)
+
+$results += Run-Harness-Test "local-qwen" "local" "qwen" @(
+    "QWEN.md",
+    ".qwenrules",
+    ".qwen\config.json"
+)
+
 $results += Run-Harness-Test "local-all" "local" "all" @(
     "GEMINI.md",
+    "gemini-extension.json",
+    ".antigravity-plugin\plugin.json",
     ".cursorrules",
+    ".cursor-plugin\plugin.json",
     ".cursor\rules\00-constitution.mdc",
     "CLAUDE.md",
+    ".claude-plugin\plugin.json",
     ".claude\skills\qed-verify\SKILL.md",
-    ".claude\commands\qed-verify.md",
     ".clinerules",
     ".roomodes",
     ".windsurfrules",
-    ".windsurf\workflows\qed-tdd-cycle.md",
     ".aider.conf.yml",
-    ".aider.conventions.md",
     ".github\copilot-instructions.md",
-    ".github\prompts\qed-spec.prompt.md",
     "opencode.json",
-    ".opencoderules",
     "DEEPSEEK.md",
-    ".deepseekrules",
-    ".dsh\config.json",
-    ".continue\config.json"
+    "CODEX.md",
+    "AGENTS.md",
+    ".codex-plugin\plugin.json",
+    "KIMI.md",
+    ".kimi-plugin\plugin.json",
+    "PI.md",
+    "package.json",
+    ".pi\extensions\qed.ts",
+    "HERMES.md",
+    ".hermes-plugin\plugin.yaml",
+    "MUSE.md",
+    ".muse-plugin\plugin.json",
+    "DEVIN.md",
+    ".devin-plugin\plugin.json",
+    "DROID.md",
+    ".agents\plugins\marketplace.json",
+    "GROK.md",
+    ".grok-plugin\plugin.json",
+    "QWEN.md",
+    ".qwenrules"
 )
 
 # --- SECTION 2: Positional Argument Handling ---
@@ -155,31 +235,48 @@ $results += Run-Harness-Test "positional-cursor" "local" "cursor" @(
     ".cursor\rules\00-constitution.mdc"
 ) -Positional
 
+$results += Run-Harness-Test "positional-codex" "local" "codex" @(
+    "CODEX.md",
+    ".codex-plugin\plugin.json"
+) -Positional
+
+$results += Run-Harness-Test "positional-kimi" "local" "kimi" @(
+    "KIMI.md",
+    ".kimi-plugin\plugin.json"
+) -Positional
+
 # --- SECTION 3: Global Installation Tests ---
 Write-Host "`n--- Section 3: Global Installation Tests ---" -ForegroundColor Yellow
 
 $results += Run-Harness-Test "global-all" "global" "all" @(
     ".gemini\GEMINI.md",
+    ".gemini\gemini-extension.json",
     ".cursorrules",
     ".cursor\rules\00-constitution.mdc",
     ".claude\CLAUDE.md",
     ".claude\skills\qed-verify\SKILL.md",
-    ".claude\commands\qed-verify.md",
     ".clinerules",
     ".roomodes",
     ".windsurfrules",
     ".windsurf\workflows\qed-tdd-cycle.md",
     ".aider.conf.yml",
-    ".aider.conventions.md",
     ".github\copilot-instructions.md",
-    ".github\prompts\qed-spec.prompt.md",
     ".opencoderules",
     ".opencode\opencode.json",
-    ".opencode\OPENCODE.md",
     ".deepseek\DEEPSEEK.md",
     ".deepseekrules",
-    ".dsh\config.json",
-    ".continue\config.json"
+    ".codex\CODEX.md",
+    ".agents\AGENTS.md",
+    ".kimi\KIMI.md",
+    ".pi\PI.md",
+    ".pi\package.json",
+    ".hermes\HERMES.md",
+    ".muse\MUSE.md",
+    ".devin\DEVIN.md",
+    ".droid\DROID.md",
+    ".grok\GROK.md",
+    ".qwen\QWEN.md",
+    ".qwenrules"
 )
 
 # Cleanup

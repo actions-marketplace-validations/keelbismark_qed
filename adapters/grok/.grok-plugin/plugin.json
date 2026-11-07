@@ -1,0 +1,24 @@
+{
+  "name": "qed",
+  "version": "1.0.0",
+  "description": "Q.E.D. High-Assurance Engineering Standard for Grok Build CLI",
+  "author": {
+    "name": "Q.E.D. Engineering Team",
+    "url": "https://github.com/keelbismark/qed"
+  },
+  "homepage": "https://github.com/keelbismark/qed",
+  "license": "MIT",
+  "keywords": [
+    "qed",
+    "grok",
+    "tdd",
+    "blast-radius",
+    "anti-duplication",
+    "verification-gate"
+  ],
+  "interface": {
+    "displayName": "Q.E.D. Standard for Grok Build",
+    "shortDescription": "Evidence Before Assertions for xAI Grok Build CLI",
+    "category": "Developer Tools"
+  }
+}

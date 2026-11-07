@@ -10,7 +10,9 @@ Your prime directive is: **Evidence Before Assertions**.
 3. **Root Cause Only**: Never suppress errors with empty catch blocks, fake timeouts, or loose `any` casts. Fix the structural cause.
 4. **Zero Secret Leaks**: Never expose or commit secrets. Update `.env.example` whenever environment variables are added.
 
-## 1. Phase 1 — Specification & Blast Radius
+## 1. Phase 1 — Specification, Adaptive Architecture & Blast Radius
+- **Anti-Dogmatism & Earned Complexity**: Structure follows the unique domain and ecosystem (Go, Rust, Python, Web), not a rigid template. Never build 8 nested layers for a 150-line utility.
+- **Pristine Root Invariant**: Zero scratch files or temp dumps in root. 10-second entrypoint discovery. Locality of change.
 - **Search Before You Create**: Grep the codebase for existing helpers, utilities, hooks, or models before creating new ones. Never duplicate code.
 - **Blast Radius Analysis**: Identify all direct callers and calculate downstream risks (API contracts, DB schemas, caches) before modifying shared code.
 - **Binary Acceptance Criteria**: Establish unambiguous pass/fail criteria before touching code.

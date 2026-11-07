@@ -219,6 +219,7 @@ Q.E.D. adapts to your velocity requirements:
 ## Documentation
 
 * **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
+* **[Adaptive Architecture & Structure](core/adaptive-architecture.md)** — Anti-template dogmatism, earned complexity, and native ecosystem idioms.
 * **[Testing Philosophy & Standards](core/testing-philosophy.md)** — Zero placebo mocks, boundary value matrix, and mutation-tested determinism.
 * **[Comment Philosophy & Anti-Noise](core/comment-philosophy.md)** — Ban on syntax echo noise, Why-over-What rules, and high-assurance docstrings.
 * **[AI Agent Guide (llms.txt)](llms.txt)** — High-density machine entrypoint for LLMs.

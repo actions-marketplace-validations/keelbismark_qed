@@ -48,7 +48,9 @@ When using the `Bash` tool in Claude Code, adhere strictly to these rules:
 
 ## 3. High-Assurance Engineering Workflow
 
-### Phase 1: Specification, Blast Radius & Anti-Duplication
+### Phase 1: Specification, Adaptive Architecture & Blast Radius
+- **Anti-Dogmatism & Earned Complexity**: Structure follows the unique domain and native ecosystem (Go, Rust, Python, Web), not a rigid template. Never build 8 nested layers for a 150-line utility.
+- **Pristine Root Invariant**: Zero scratch files or temp dumps in root. 10-second entrypoint discovery. Locality of change.
 - **Anti-Duplication Radar**: Search before creating. Grep for existing helpers, utilities, hooks, models, and types. Always reuse or extend existing abstractions.
 - **Blast Radius Analysis**:
   * Direct Callers: Locate all call sites before modifying existing functions or types.

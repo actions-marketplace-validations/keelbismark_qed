@@ -12,9 +12,11 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 - Mode A (Default: Quality > Speed): Full TDD, Blast Radius, Adversarial QA, Verification Gate.
 - Mode B (On-Demand: Speed > Quality): Active only when user explicitly requests speed ("быстро", "прототип", "draft", "quick"). Delivers fast POC with a clear report on shortcuts taken.
 
-## 2. Blast Radius & Anti-Duplication
-- "Search Before You Create": Grep for existing helpers/types before writing new ones. Never duplicate.
-- Calculate Blast Radius: Identify direct callers and indirect API/DB impact before editing shared code.
+## 2. Adaptive Architecture & Blast Radius
+- **Anti-Dogmatism & Earned Complexity**: No rigid cookie-cutter templates. Structure follows actual data flow and native ecosystem idioms (Go, Rust, Python, Web). Scale structure organically; never build enterprise layer bloat for small tools.
+- **Pristine Root Invariant**: Zero scratch files or temporary dumps in root. 10-second entrypoint discovery. Locality of change.
+- **"Search Before You Create"**: Grep for existing helpers/types before writing new ones. Never duplicate.
+- **Calculate Blast Radius**: Identify direct callers and indirect API/DB impact before editing shared code.
 
 ## 3. Adversarial QA & The 4 Mandatory States
 - Always implement: Empty state, Loading state, Error state with retry, Degraded/Offline state.

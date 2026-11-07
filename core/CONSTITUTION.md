@@ -60,6 +60,15 @@ Before writing any non-trivial code:
    - **Specification (What & Why)**: Clarify user stories, functional requirements, and edge cases *without* mixing in code.
    - **Plan (How)**: Formulate the technical blueprint, impacted files, dependencies, and interfaces.
    - Every feature or bug fix must have clear, binary (pass/fail) acceptance criteria before work begins.
+6. **Adaptive Architecture & Structural Hygiene**:
+   - **Anti-Dogmatism**: Structure follows the unique physical constraints and data flow of the project, not a rigid cookie-cutter template.
+   - **Earned Complexity**: Scale structure organically to match project size (Micro -> Focused Tool -> Domain System -> Workspace). Never build 8-layer enterprise hierarchies for a 150-line utility.
+   - **Respect Ecosystem Idioms**: Follow canonical patterns of the language toolchain (Go `internal/`, Rust Cargo, Python `src/`).
+   - **4 Immutable Hygiene Invariants**:
+     * *Pristine Root*: Zero ad-hoc scratch scripts or temp data files in the root.
+     * *10-Second Entrypoint*: Entrypoint is immediately obvious from `README.md` and top-level directory layout.
+     * *Verification Segregation*: Tests and mocks never leak into production releases.
+     * *Locality of Change*: Files that change together live together to minimize blast radius.
 
 ---
 

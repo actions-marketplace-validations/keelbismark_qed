@@ -53,7 +53,50 @@ Under Q.E.D., every visual interface MUST pass the **Three-Filter Human Reality 
 
 ---
 
-## 1. Filter 1: The AI Slop Purge (Generative Design Tropes)
+## 1. The Slop Pendulum: Type 1 (Plastic Carnival) vs. Type 2 (Sterile Hospital Sheet)
+
+Generative AI models operate in destructive extremes. When an agent designs an interface, it falls into **Type 1 Slop**. When told to "remove the slop", it swings the pendulum 180 degrees into **Type 2 Slop**:
+
+```text
+       Type 1 Slop                                                       Type 2 Slop
+  [ PLASTIC CARNIVAL ]      ◀════════════════════════════════════════▶  [ STERILE HOSPITAL SHEET ]
+  • Bento-mania & Box-itis                                              • Monotone depression / brutalism
+  • Purple glow & neon borders                                          • Plain Times New Roman / unstyled text
+  • Emoji salad & fake terminals                                        • Murders unique clever ideas
+  • Floating badges & cyber slashes                                     • Zero soul, zero craft, zero delight
+                                         ▲
+                                         │
+                             [ THE Q.E.D. GOLDEN MEAN ]
+                             «The Signature Spark (Фирменная искра)
+                              liberated from decorative scaffolding»
+```
+
+### A. The Two Failure Modes
+1. **Type 1 Slop (The Plastic Carnival / Synthetic Bloat)**:
+   - Over-engineered cards, glowing gradient borders, floating chips, emoji icons, and fake metrics.
+   - *However*, amidst this circus, the model may occasionally generate a **genuinely brilliant, high-utility feature** (e.g., an interactive pricing slider with live cost breakdowns, an intuitive before/after diff slider, or an elegant interactive filtering canvas).
+2. **Type 2 Slop (The Sterile Hospital Sheet / Anti-Slop Slop)**:
+   - Upon being prompted *"Remove the AI slop"*, the terrified agent swings to performative austerity:
+   - It strips *all* design, turns the screen into a joyless Wikipedia-like document, and **deletes the brilliant interactive feature**, falsely claiming: *"I removed all slop and made it minimal!"*
+   - *Result*: The site loses its soul, its unique identity, and its core competitive advantage.
+
+### B. The Archaeologist Invariant (Don't Bulldoze — Excavate the Artifact)
+> **Never bulldoze an excavation site to clear dust. Excavate the artifact, clean the mud off, and illuminate it.**
+
+When refactoring an interface to remove slop:
+- **Scrap the Scaffolding (Мусор)**: Decorative card borders, glowing shadows, emoji salad, faux-terminal prompts, and meaningless metric badges $\rightarrow$ **Purge mercilessly.**
+- **Preserve the Signature Spark (Фирменная искра)**: The clever interactive widget, the high-utility visualization, the tactile calculation mechanic $\rightarrow$ **Keep and liberate.**
+- **The Execution**: Do not delete the unique mechanic; strip the surrounding neon plastic so the mechanic lives cleanly on the open canvas as the hero component.
+
+### C. The Bathwater Check (Тест «Ребенок и вода»)
+Before finalizing any anti-slop refactoring, answer:
+1. *Did the initial version contain an interactive mechanic or visual rhythm that genuinely engaged or assisted the user?*
+2. *Did I preserve that feature, or did I lazily delete it to make my job easier?*
+3. *Does this page look like a world-class professional tool, or does it look like an amputated, unfinished wireframe?*
+
+---
+
+## 2. Filter 1: The AI Slop Purge (Generative Design Tropes)
 
 ### A. Box Syndrome (Боксомания) $\rightarrow$ The "Unboxed by Default" Invariant
 * **The Symptom**: Every heading, metric, paragraph, and button is wrapped in its own separate rounded card (`border border-slate-800 rounded-xl bg-card p-6 shadow-xs`). The screen resembles an IKEA warehouse of identical gray containers.
@@ -107,7 +150,7 @@ Under Q.E.D., every visual interface MUST pass the **Three-Filter Human Reality 
 
 ---
 
-## 2. Filter 2: The "Who Cares?" Purge (Technical Narcissism)
+## 3. Filter 2: The "Who Cares?" Purge (Technical Narcissism)
 
 What developers and AI assistants love to exhibit on screen that real users actively despise:
 
@@ -131,7 +174,7 @@ What developers and AI assistants love to exhibit on screen that real users acti
 
 ---
 
-## 3. Filter 3: Pure Human Utility (The Affordance Standard)
+## 4. Filter 3: Pure Human Utility (The Affordance Standard)
 
 ### A. Information Density Over Infinite Scrolling
 * Enterprise users, operators, and developers need high information density:
@@ -147,7 +190,7 @@ What developers and AI assistants love to exhibit on screen that real users acti
 
 ---
 
-## 4. The 4 Mandatory Visual States
+## 5. The 4 Mandatory Visual States
 
 Every screen and component MUST implement:
 
@@ -158,10 +201,12 @@ Every screen and component MUST implement:
 
 ---
 
-## 5. The 3 AM Human Reality Checklist
+## 6. The 3 AM Human Reality Checklist
 
 Before approving any UI code or screen mockup:
 
+- [ ] **The Archaeologist Check**: Did you preserve the signature interactive spark (unique calculator, live slider, diff view) while purging the surrounding neon card slop?
+- [ ] **No Type 2 Slop**: Did you avoid turning the site into a depressing, unstyled, sterile hospital sheet under the guise of minimalism?
 - [ ] **Unboxed by Default**: Did you strip unnecessary card wrappers and borders?
 - [ ] **Form Follows Data**: Are tables used for tabular data and lists for lists, rather than forcing everything into Bento tiles?
 - [ ] **Zero Sci-Fi Slop**: Did you purge fake terminal prompts (`$`), code slashes (`//`), and neon cyber glow?

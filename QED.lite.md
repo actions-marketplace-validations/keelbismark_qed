@@ -22,7 +22,7 @@ Every UI flow and data route must handle:
 2. **Loading State**: Predictable indicator preventing layout shift (CLS).
 3. **Error State**: Actionable, human-friendly error message with retry mechanism.
 4. **Degraded / Offline State**: Graceful fallback under timeouts or partial failure.
-5. **Visual Anti-Slop**: Unboxed by default (no gratuitous card borders); form follows data (no Bento/3x3 monotony); zero UI emojis; zero fake terminal/cyber decoration; 100% human-domain utility.
+5. **Visual Anti-Slop & Signature Spark**: The Archaeologist Invariant: preserve unique interactive mechanics while stripping card bloat (unboxed by default); ban Type 2 sterile brutalism; form follows data topology; zero UI emojis; 100% human-domain utility.
 
 ## 3. Ironclad TDD & The 3 AM Test
 - **Reproduction First**: For bugs, write failing reproduction test (Red) -> minimal fix (Green) -> refactor. Features: tests before code.

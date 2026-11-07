@@ -31,7 +31,7 @@ Every UI flow and data endpoint must explicitly handle all 4 states:
 3. **Error State**: Actionable, human-friendly error message with a retry mechanism.
 4. **Degraded / Offline State**: Graceful fallback under timeouts or partial outages.
 
-- **Visual Anti-Slop (Unboxed by Default)**: Zero gratuitous card boxes/borders; zero Bento-mania or 3x3 monotony (form follows data topology); zero emojis in UI chrome; zero faux-terminal prompts (`$`) or cyber glow; zero backend bragging in UI (100% human-domain utility).
+- **Visual Anti-Slop & Signature Spark**: The Archaeologist Invariant: when purging slop, preserve the unique interactive spark/mechanic while stripping card boxes (unboxed by default); ban Type 2 sterile brutalism; zero Bento/3x3 monotony; zero emojis; zero fake terminal prompts; 100% human-domain utility.
 
 ---
 

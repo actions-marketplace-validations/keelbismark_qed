@@ -82,6 +82,13 @@ Before reporting completion, run:
 4. Automated test suite (`npm test`, `pytest`, `cargo test`, etc.)
 Reconcile the final git diff against the initial Acceptance Criteria.
 
+### Phase 5: Git, Versioning & Release Hygiene
+- **Git != Versioning**: Git is the temporal change ledger; Versioning is the external contract of trust.
+- **The Bisect Invariant**: Every commit must build and pass tests. Never commit a broken intermediate state.
+- **Context-Driven Versioning**: SemVer (`X.Y.Z`) for libraries/SDKs, CalVer for tools/platforms, Continuous/SHA for SaaS, ZeroVer for prototypes.
+- **Pre-1.0 vs. Post-1.0**: Zero `@deprecated` overhead in early dev (refactor boldly); strict deprecation before removal only when external users exist.
+- **Changelog Segregation**: Technical `CHANGELOG.md` for engineers vs. benefit-driven release notes for users. Scrub zero-day exploit details and internal churn.
+
 ---
 
 ## 4. Claude Code Skills & Slash Commands (`.claude/skills/`, `.claude/commands/`)

@@ -41,6 +41,7 @@ Before reporting completion to the user:
 4. Run full automated test suite (`npm test`, `pytest`, `cargo test`).
 5. Reconcile final git diff against acceptance criteria.
 6. Provide a clear completion report detailing exact commands run and real outputs.
+7. Git != Versioning: Maintain the Bisect Invariant (every commit builds & passes). Use context-appropriate versioning (SemVer/CalVer/ZeroVer/Continuous). Avoid premature `@deprecated` in pre-1.0; separate technical `CHANGELOG.md` from user release notes.
 
 ## 5. Phase 5 — Documentation & Visual Ergonomics (Anti-Slop)
 - Separate Human vs. Machine entrypoints (`README.md` for humans, `AI_README.md`/`llms.txt` for agents).

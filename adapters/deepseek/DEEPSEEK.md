@@ -45,6 +45,7 @@ Before reporting completion:
 3. Run project linters (`eslint`, `ruff`, etc.).
 4. Run the full test suite (`npm test`, `pytest`, etc.).
 5. Confirm zero regressions and format git commits via Conventional Commits (`feat:`, `fix:`, `test:`, `refactor:`).
+6. Git != Versioning: Maintain the Bisect Invariant (every commit builds & passes). Use context versioning (SemVer/CalVer/ZeroVer/Continuous). Avoid premature `@deprecated` in pre-1.0; separate technical `CHANGELOG.md` from user notes.
 
 ---
 

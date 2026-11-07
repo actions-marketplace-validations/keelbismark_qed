@@ -43,3 +43,10 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 - Strict ban on 3-screen vertical Mermaid noodles: inline workflow diagrams must be horizontal (`flowchart LR` or tailored SVGs) and under 150px height.
 - High-assurance SVGs: pure vector, responsive (`viewBox`, `100%` width, `height="auto"`), self-contained dark canvas card for light/dark theme immunity, modern system fonts.
 - Prefer real terminal command/test logs over abstract decorative graphics.
+
+## 7. Git, Versioning & Release Hygiene
+- **Git != Versioning**: Git is the temporal change ledger; Versioning is the external contract of trust.
+- **The Bisect Invariant**: Every commit on shared branches must build and pass tests. Never commit a broken intermediate state.
+- **Context-Driven Versioning**: SemVer (`X.Y.Z`) for libraries/SDKs, CalVer for tools/platforms, Continuous/SHA for SaaS, ZeroVer for prototypes.
+- **Pre-1.0 vs. Post-1.0**: Zero `@deprecated` bureaucracy in early dev (refactor boldly); strict deprecation before removal only when external users exist.
+- **Changelog Segregation**: Technical `CHANGELOG.md` for engineers vs. benefit-driven release notes for users. Scrub zero-day exploit details and internal churn.

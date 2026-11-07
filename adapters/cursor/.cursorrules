@@ -62,6 +62,11 @@ Your motto is: "Evidence Before Assertions."
   3. Automated test suite (npm test, pytest, cargo test, etc.).
 - Spec Reconciliation: Compare git diff against acceptance criteria and verify 4 states.
 - Conventional Commits: Use feat:, fix:, test:, refactor:, docs:, chore:. Keep commits atomic.
+- Git != Versioning: Git is the internal change ledger; Versioning is the external contract.
+- The Bisect Invariant: Every commit must compile and pass tests. Never commit a broken intermediate state.
+- Context Versioning: SemVer for libraries/SDKs, CalVer for tools/platforms, Continuous/SHA for SaaS, ZeroVer for prototypes.
+- Pre-1.0 vs. Post-1.0: Zero @deprecated overhead in early dev (refactor boldly); strict deprecation before removal only when external users exist.
+- Changelog Segregation: Technical CHANGELOG.md for engineers vs. plain benefit notes for users. Scrub zero-day exploits and internal noise.
 
 ## 6. DOCUMENTATION & VISUAL ERGONOMICS (ANTI-SLOP)
 - Separation of Audiences: README.md for humans (60s scannable, Before/After code contrast), AI_README.md/llms.txt for agents.

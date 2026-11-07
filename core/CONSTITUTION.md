@@ -156,18 +156,18 @@ Execute changes using disciplined software craftsmanship:
 
 ---
 
-## 7. Phase 5 — Atomic Git Discipline & Conventional Commits
+## 7. Phase 5 — Atomic Git Discipline, Versioning & Release Engineering
 
-1. **Atomic Commits**:
-   - Commit in small, logical, self-contained units (e.g., 1 passing TDD phase = 1 commit).
-   - Never dump dozens of unrelated files into a single generic commit.
-2. **Conventional Commits Standard**:
-   - `feat:` for new user-facing functionality.
-   - `fix:` for bug fixes.
-   - `test:` for adding or correcting tests.
-   - `refactor:` for code changes that neither fix a bug nor add a feature.
-   - `docs:` for documentation and ADR additions.
-   - `chore:` for dependency updates and build scripts.
+1. **Git vs. Versioning Separation**:
+   - Git is the internal temporal change ledger; Versioning is the external contract of trust.
+   - **The Bisect Invariant**: Every commit on shared branches must compile and pass tests to ensure `git bisect` functions. Never commit a broken intermediate state.
+   - **Atomic Conventional Commits**: Small, self-contained units (`feat:`, `fix:`, `test:`, `refactor:`, `docs:`, `chore:`, `perf:`). Imperative title, why in body, issue refs.
+2. **Context-Driven Versioning Schemes**:
+   - Choose the scheme that matches the delivery model: SemVer (`X.Y.Z`) for libraries/SDKs, CalVer (`YYYY.MM.PATCH`) for tools/platforms, ZeroVer (`0.x.y`) for prototypes, Continuous/SHA for SaaS/web apps.
+   - **Pre-1.0 vs Post-1.0**: In pre-1.0 (no external users), refactor radically without premature `@deprecated` bureaucracy. In post-1.0 (public contracts), deprecate with warning before removal in the next major version.
+3. **Changelog Separation & Security Filter**:
+   - Separate technical `CHANGELOG.md` (for engineers/DevOps: API changes, migrations, flags) from user-facing Release Notes (plain language benefits, zero technical jargon).
+   - Sanitize sensitive data: scrub zero-day exploit details, internal infrastructure churn, and unannounced partner flags from public notes.
 
 ---
 

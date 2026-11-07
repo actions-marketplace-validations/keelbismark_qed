@@ -219,6 +219,7 @@ Q.E.D. adapts to your velocity requirements:
 ## Documentation
 
 * **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
+* **[Git & Versioning Philosophy](core/git-and-versioning.md)** — Git change ledger vs. SemVer/CalVer/ZeroVer/Continuous trust contracts.
 * **[Adaptive Architecture & Structure](core/adaptive-architecture.md)** — Anti-template dogmatism, earned complexity, and native ecosystem idioms.
 * **[Naming Philosophy & Semantics](core/naming-philosophy.md)** — Scope-proportional length, positive predicates, and semantic contract verbs.
 * **[Testing Philosophy & Standards](core/testing-philosophy.md)** — Zero placebo mocks, boundary value matrix, and mutation-tested determinism.

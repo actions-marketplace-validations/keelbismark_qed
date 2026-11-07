@@ -1,6 +1,6 @@
 ---
 description: Q.E.D. Verification Gate - Final check before claiming task completion
-globs: *
+globs: "*"
 alwaysApply: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: Q.E.D. The 3 AM Test - Code readability, flat structures, guard clauses, and AI anti-slop
-globs: *
+globs: "*"
 alwaysApply: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: Q.E.D. Anti-Duplication Radar - Search codebase before creating new helpers, types, or components
-globs: *
+globs: "*"
 alwaysApply: true
 ---
 

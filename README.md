@@ -111,7 +111,7 @@ Q.E.D. provides first-class, native configurations and adapters tailored specifi
 | Harness | Configuration Files | Special Features |
 | :--- | :--- | :--- |
 | **Cursor** | `.cursorrules` + `.cursor/rules/*.mdc` | Legacy fallback + modern MDC rules with frontmatter (`globs`, `alwaysApply`) for TDD, Blast Radius, Anti-Duplication, and 3 AM readability. |
-| **Claude Code** | `CLAUDE.md` + `.claude/skills/` | High-fidelity bash execution guidelines, permission scoping, and custom skills (`qed-verify`, `qed-review`, `qed-blast-radius`). |
+| **Claude Code** | `CLAUDE.md` + `.claude/skills/` + `.claude/commands/` | High-fidelity bash execution guidelines, permission scoping, custom skills, and slash commands (`/qed-verify`, `/qed-review`, `/qed-blast-radius`). |
 | **Cline** | `.clinerules` | Autonomous agent rules enforcing pre-flight searches, verification gates, and zero secret leaks. |
 | **Roo Code** | `.roomodes` + `.clinerules` | Custom role modes: `Q.E.D. Architect` (specs & blast radius), `Q.E.D. TDD Engineer` (red-green-refactor), and `Q.E.D. QA Reviewer`. |
 | **Windsurf** | `.windsurfrules` + `.windsurf/workflows/*.md` | Cascade rules + interactive workflows (`qed-spec-and-blast-radius`, `qed-tdd-cycle`, `qed-verification-gate`). |
@@ -170,6 +170,7 @@ Install for your specific harness or all harnesses at once:
 
 ### 3. Remote One-Liner Quick-Install
 
+**Linux / macOS (Bash):**
 ```bash
 # Install Cursor rules locally
 curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | bash -s -- --harness cursor
@@ -179,6 +180,18 @@ curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | b
 
 # Install all adapters
 curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | bash -s -- --harness all
+```
+
+**Windows (PowerShell):**
+```powershell
+# Install Cursor rules locally
+iex "& { $(irm https://raw.githubusercontent.com/keelbismark/qed/main/install.ps1) } -Harness cursor"
+
+# Install Claude Code rules locally
+iex "& { $(irm https://raw.githubusercontent.com/keelbismark/qed/main/install.ps1) } -Harness claude"
+
+# Install all adapters
+iex "& { $(irm https://raw.githubusercontent.com/keelbismark/qed/main/install.ps1) } -Harness all"
 ```
 
 ---
@@ -200,7 +213,7 @@ qed/
 ├── adapters/               # Native Harness Configurations
 │   ├── antigravity/        # Google Antigravity (GEMINI.md)
 │   ├── cursor/             # Cursor AI (.cursorrules & .cursor/rules/*.mdc)
-│   ├── claude-code/        # Claude Code (CLAUDE.md & .claude/skills/*)
+│   ├── claude-code/        # Claude Code (CLAUDE.md, .claude/skills/*, .claude/commands/*)
 │   ├── cline/              # Cline (.clinerules)
 │   ├── roo-code/           # Roo Code (.roomodes & .clinerules)
 │   ├── windsurf/           # Windsurf Cascade (.windsurfrules & workflows/*)

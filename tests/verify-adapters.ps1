@@ -1,49 +1,69 @@
 # Q.E.D. Adapter & Installer Verification Test Suite
-# Tests install.ps1 across each harness and validates created file structures
+# Tests install.ps1 across each harness in local, global, and positional modes
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Split-Path -Parent $ScriptDir
 
-Write-Host "Running Q.E.D. Verification Suite..." -ForegroundColor Cyan
+Write-Host "Running Q.E.D. Comprehensive Verification Suite (PowerShell)..." -ForegroundColor Cyan
 
 $testRunDir = Join-Path ([System.IO.Path]::GetTempPath()) ("qed-test-" + [System.Guid]::NewGuid().ToString().Substring(0, 8))
 New-Item -ItemType Directory -Path $testRunDir -Force | Out-Null
 
 $results = @()
 
-function Run-Harness-Test([string]$harness, [string[]]$expectedFiles) {
-    $targetDir = Join-Path $testRunDir $harness
+function Run-Harness-Test([string]$testName, [string]$targetMode, [string]$harness, [string[]]$expectedFiles, [switch]$Positional) {
+    $targetDir = Join-Path $testRunDir $testName
     New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     
+    $origHome = $env:USERPROFILE
+    if ($targetMode -eq "global") {
+        $fakeHome = Join-Path $testRunDir ("home-" + $testName)
+        New-Item -ItemType Directory -Path $fakeHome -Force | Out-Null
+        $env:USERPROFILE = $fakeHome
+        $env:HOME = $fakeHome
+    }
+
     Push-Location $targetDir
     try {
-        & "$RepoRoot\install.ps1" -Harness $harness -Target "local" | Out-Null
+        if ($Positional) {
+            # Test positional syntax: install.ps1 cursor
+            & "$RepoRoot\install.ps1" $harness | Out-Null
+        } else {
+            & "$RepoRoot\install.ps1" -Harness $harness -Target $targetMode | Out-Null
+        }
         
         $missing = @()
+        $checkBase = if ($targetMode -eq "global") { $fakeHome } else { $targetDir }
         foreach ($file in $expectedFiles) {
-            if (!(Test-Path $file)) {
+            $fullPath = Join-Path $checkBase $file
+            if (!(Test-Path $fullPath)) {
                 $missing += $file
             }
         }
         
         if ($missing.Count -eq 0) {
-            Write-Host "  [PASS] Harness: $harness ($($expectedFiles.Count) files verified)" -ForegroundColor Green
-            return [PSCustomObject]@{ Harness = $harness; Status = "PASS"; Missing = "" }
+            Write-Host "  [PASS] $testName ($($expectedFiles.Count) files verified)" -ForegroundColor Green
+            return [PSCustomObject]@{ Test = $testName; Status = "PASS"; Missing = "" }
         } else {
-            Write-Host "  [FAIL] Harness: $harness (Missing: $($missing -join ', '))" -ForegroundColor Red
-            return [PSCustomObject]@{ Harness = $harness; Status = "FAIL"; Missing = ($missing -join ', ') }
+            Write-Host "  [FAIL] $testName (Missing: $($missing -join ', '))" -ForegroundColor Red
+            return [PSCustomObject]@{ Test = $testName; Status = "FAIL"; Missing = ($missing -join ', ') }
         }
     } finally {
         Pop-Location
+        if ($targetMode -eq "global") {
+            $env:USERPROFILE = $origHome
+            $env:HOME = $origHome
+        }
     }
 }
 
-# 1. Antigravity
-$results += Run-Harness-Test "antigravity" @("GEMINI.md")
+# --- SECTION 1: Local Installation ---
+Write-Host "`n--- Section 1: Local Installation Tests ---" -ForegroundColor Yellow
 
-# 2. Cursor
-$results += Run-Harness-Test "cursor" @(
+$results += Run-Harness-Test "local-antigravity" "local" "antigravity" @("GEMINI.md")
+
+$results += Run-Harness-Test "local-cursor" "local" "cursor" @(
     ".cursorrules",
     ".cursor\rules\00-constitution.mdc",
     ".cursor\rules\01-blast-radius.mdc",
@@ -53,59 +73,55 @@ $results += Run-Harness-Test "cursor" @(
     ".cursor\rules\05-verification-gate.mdc"
 )
 
-# 3. Claude Code
-$results += Run-Harness-Test "claude" @(
+$results += Run-Harness-Test "local-claude" "local" "claude" @(
     "CLAUDE.md",
     ".claude\skills\qed-verify\SKILL.md",
     ".claude\skills\qed-review\SKILL.md",
-    ".claude\skills\qed-blast-radius\SKILL.md"
+    ".claude\skills\qed-blast-radius\SKILL.md",
+    ".claude\commands\qed-verify.md",
+    ".claude\commands\qed-review.md",
+    ".claude\commands\qed-blast-radius.md"
 )
 
-# 4. Cline
-$results += Run-Harness-Test "cline" @(".clinerules")
+$results += Run-Harness-Test "local-cline" "local" "cline" @(".clinerules")
 
-# 5. Roo Code
-$results += Run-Harness-Test "roo" @(
+$results += Run-Harness-Test "local-roo" "local" "roo" @(
     ".clinerules",
     ".roomodes"
 )
 
-# 6. Windsurf
-$results += Run-Harness-Test "windsurf" @(
+$results += Run-Harness-Test "local-windsurf" "local" "windsurf" @(
     ".windsurfrules",
     ".windsurf\workflows\qed-spec-and-blast-radius.md",
     ".windsurf\workflows\qed-tdd-cycle.md",
     ".windsurf\workflows\qed-verification-gate.md"
 )
 
-# 7. Aider
-$results += Run-Harness-Test "aider" @(
+$results += Run-Harness-Test "local-aider" "local" "aider" @(
     ".aider.conf.yml",
     ".aider.conventions.md"
 )
 
-# 8. GitHub Copilot
-$results += Run-Harness-Test "copilot" @(
+$results += Run-Harness-Test "local-copilot" "local" "copilot" @(
     ".github\copilot-instructions.md",
     ".github\prompts\qed-spec.prompt.md",
     ".github\prompts\qed-verify.prompt.md",
     ".github\prompts\qed-tdd.prompt.md"
 )
 
-# 9. OpenCode
-$results += Run-Harness-Test "opencode" @(
+$results += Run-Harness-Test "local-opencode" "local" "opencode" @(
     "opencode.json",
     ".opencoderules",
     "OPENCODE.md"
 )
 
-# 10. All
-$results += Run-Harness-Test "all" @(
+$results += Run-Harness-Test "local-all" "local" "all" @(
     "GEMINI.md",
     ".cursorrules",
     ".cursor\rules\00-constitution.mdc",
     "CLAUDE.md",
     ".claude\skills\qed-verify\SKILL.md",
+    ".claude\commands\qed-verify.md",
     ".clinerules",
     ".roomodes",
     ".windsurfrules",
@@ -118,13 +134,44 @@ $results += Run-Harness-Test "all" @(
     ".opencoderules"
 )
 
+# --- SECTION 2: Positional Argument Handling ---
+Write-Host "`n--- Section 2: Positional Argument Tests ---" -ForegroundColor Yellow
+
+$results += Run-Harness-Test "positional-cursor" "local" "cursor" @(
+    ".cursorrules",
+    ".cursor\rules\00-constitution.mdc"
+) -Positional
+
+# --- SECTION 3: Global Installation Tests ---
+Write-Host "`n--- Section 3: Global Installation Tests ---" -ForegroundColor Yellow
+
+$results += Run-Harness-Test "global-all" "global" "all" @(
+    ".gemini\GEMINI.md",
+    ".cursorrules",
+    ".cursor\rules\00-constitution.mdc",
+    ".claude\CLAUDE.md",
+    ".claude\skills\qed-verify\SKILL.md",
+    ".claude\commands\qed-verify.md",
+    ".clinerules",
+    ".roomodes",
+    ".windsurfrules",
+    ".windsurf\workflows\qed-tdd-cycle.md",
+    ".aider.conf.yml",
+    ".aider.conventions.md",
+    ".github\copilot-instructions.md",
+    ".github\prompts\qed-spec.prompt.md",
+    ".opencoderules",
+    ".opencode\opencode.json",
+    ".opencode\OPENCODE.md"
+)
+
 # Cleanup
 Remove-Item -Path $testRunDir -Recurse -Force -ErrorAction SilentlyContinue
 
 $failed = $results | Where-Object { $_.Status -eq "FAIL" }
 if ($failed.Count -gt 0) {
-    Write-Error "Verification failed: $($failed.Count) harness tests failed."
+    Write-Error "Verification failed: $($failed.Count) tests failed."
     exit 1
 } else {
-    Write-Host "`nAll $($results.Count) harness tests PASSED successfully!" -ForegroundColor Green
+    Write-Host "`nAll $($results.Count) verification tests PASSED successfully!" -ForegroundColor Green
 }

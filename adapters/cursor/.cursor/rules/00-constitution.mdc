@@ -1,6 +1,6 @@
 ---
 description: Q.E.D. Core Constitution - Quality over Speed and Evidence Before Assertions
-globs: *
+globs: "*"
 alwaysApply: true
 ---
 

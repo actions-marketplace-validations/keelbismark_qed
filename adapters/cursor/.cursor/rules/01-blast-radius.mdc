@@ -1,6 +1,6 @@
 ---
 description: Q.E.D. Blast Radius Analysis protocol for modifying shared code, models, schemas, and APIs
-globs: *
+globs: "*"
 alwaysApply: true
 ---
 

@@ -7,6 +7,15 @@ This document details the operational mechanics, anti-patterns, and code example
 ## 1. Blast Radius Analysis
 *Prevents the "butterfly effect" where changing one function silently breaks distant features.*
 
+```mermaid
+flowchart LR
+    A["Proposed Change"] --> B{"Direct Callers"}
+    B -->|"<= 2 Callers"| C["Low Risk: Unit Test Verification"]
+    B -->|"> 2 Callers"| D{"Transitive Impact"}
+    D -->|"Internal only"| E["Medium Risk: Caller Regression Suite"]
+    D -->|"Public API / DB Schema / Auth"| F["Critical Risk: ADR + Isolated Branch"]
+```
+
 ### The Protocol:
 Before modifying any shared function, database schema, or API interface:
 1. Identify all direct call sites using grep or AST search.
@@ -34,6 +43,19 @@ Before creating any new function, hook, or type:
 
 ## 3. The 4 Mandatory States of Any UI & Data Flow
 *Eliminates the "Happy Path Only" syndrome.*
+
+```mermaid
+stateDiagram-v2
+    [*] --> Loading : Request Initiated
+    Loading --> Empty : Data length == 0
+    Loading --> Success : Valid records received
+    Loading --> Error : HTTP 4xx / 5xx / Network Crash
+    Error --> Loading : User Clicks Retry
+    Loading --> Degraded : Timeout (>5s) / Partial Response
+    Degraded --> Loading : User Refreshes
+    Empty --> [*]
+    Success --> [*]
+```
 
 Every user-facing component or backend route must handle 4 states:
 1. **Empty State**: What the user sees when 0 items exist (informative message + clear call-to-action).

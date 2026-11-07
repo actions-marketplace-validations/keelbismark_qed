@@ -43,6 +43,67 @@ Automated tests must include adversarial edge cases: rapid duplicate clicks (500
 
 ---
 
+## Workflow Lifecycle
+
+Q.E.D. replaces guesswork with a deterministic state machine:
+
+```mermaid
+flowchart TD
+    subgraph Spec["1. Specification & Scope"]
+        A["Task Input"] --> B["Anti-Duplication Grep"]
+        B --> C["Blast Radius Assessment"]
+        C --> D["Binary Acceptance Criteria"]
+    end
+
+    subgraph QA["2. Adversarial Modeling"]
+        D --> E["4 Mandatory States\n(Empty, Loading, Error, Degraded)"]
+        E --> F["Chaos Monkey Edge Cases"]
+    end
+
+    subgraph TDD["3. Ironclad TDD"]
+        F --> G["Write Failing Test (RED)"]
+        G --> H["Implement Minimal Fix (GREEN)"]
+        H --> I["The 3 AM Test Refactoring\n(Guard clauses, clear variables)"]
+    end
+
+    subgraph Gate["4. Verification Gate"]
+        I --> J["Linter & Static Analysis"]
+        J --> K["Full Regression Suite"]
+        K --> L["Atomic Conventional Commit"]
+    end
+```
+
+### Execution Example
+
+```text
+$ qed-agent "Implement idempotent wallet debit"
+
+[1/4] ANTI-DUPLICATION & BLAST RADIUS
+      Searching codebase for existing balance utilities...
+      -> Found 'db.wallets.updateBalance()' in src/services/wallet.ts (reused).
+      -> Direct callers: CheckoutController, SubscriptionCron (Risk: Medium).
+
+[2/4] IRONCLAD TDD (RED STAGE)
+      Writing reproduction test: test/wallet.test.ts:42
+      $ npm test -- test/wallet.test.ts
+      FAIL: Concurrent duplicate requests executed twice. Expected 1 charge.
+      -> Failure verified.
+
+[3/4] ROOT CAUSE FIX (GREEN STAGE)
+      Adding unique idempotencyKey constraint & distributed lock...
+      $ npm test -- test/wallet.test.ts
+      PASS: 2 concurrent calls -> 1 debit, 1 cached response.
+
+[4/4] VERIFICATION GATE & 3 AM AUDIT
+      -> Flattened nested if/else into early guard clauses.
+      -> Typecheck: OK (0 errors).
+      -> Linter: OK (0 warnings).
+      -> Full test suite: 64/64 passed (0 regressions).
+      -> Created commit: feat(wallet): implement idempotent debit with lock
+```
+
+---
+
 ## Installation
 
 ### Windows (PowerShell)

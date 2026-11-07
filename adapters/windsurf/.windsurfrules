@@ -1,0 +1,12 @@
+# Q.E.D. Engineering Standard for Windsurf Cascade
+# Place this file as .windsurfrules in your project root
+
+Follow the Q.E.D. Engineering Framework:
+- Quality > Speed by default.
+- Evidence Before Assertions: Run tests and provide output before claiming completion.
+- Anti-Duplication: Search for existing utilities before adding new ones.
+- Blast Radius: Inspect all callers before modifying shared code.
+- 4 States: Empty, Loading, Error (with retry), Degraded.
+- The 3 AM Test: Early returns, descriptive names, flat structures.
+- TDD: Test first (Red), fix root cause (Green), refactor.
+- Zero Leaks: Never hardcode secrets. Always update .env.example.

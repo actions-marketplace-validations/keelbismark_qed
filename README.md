@@ -1,9 +1,22 @@
-# Q.E.D.
-### *Quod Erat Demonstrandum · Evidence Before Assertions*
+<p align="center">
+  <img src="assets/banner.svg" alt="Q.E.D. Banner" width="100%">
+</p>
 
-**The high-assurance engineering standard that turns AI coding assistants into disciplined Staff Engineers.**
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"></a>
+  <a href="docs/harnesses.md"><img src="https://img.shields.io/badge/harnesses-20%20platforms-8b5cf6.svg?style=flat-square" alt="Harnesses: 20 Platforms"></a>
+  <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standard-high--assurance-10b981.svg?style=flat-square" alt="Standard: High-Assurance"></a>
+  <a href="llms.txt"><img src="https://img.shields.io/badge/agent-llms.txt-f59e0b.svg?style=flat-square" alt="LLM Entrypoint: llms.txt"></a>
+</p>
 
-[Quickstart](#quickstart) • [The Problem](#the-problem) • [How It Works](#how-it-works) • [The 5 Protocols](#the-5-core-protocols) • [20 Supported Platforms](docs/harnesses.md) • [llms.txt](llms.txt)
+<p align="center">
+  <a href="#quickstart">Quickstart</a> •
+  <a href="#the-problem">The Problem</a> •
+  <a href="#how-it-works">How It Works</a> •
+  <a href="#the-5-core-protocols">The 5 Protocols</a> •
+  <a href="docs/harnesses.md">20 Platforms</a> •
+  <a href="llms.txt">llms.txt</a>
+</p>
 
 ---
 
@@ -94,9 +107,9 @@ Automated test suites must include adversarial edge cases: 10 rapid duplicate cl
 
 Q.E.D. enforces a deterministic 4-phase verification loop on every task:
 
-```text
-Task ──> [ 1. Scope & Blast Radius ] ──> [ 2. Adversarial QA ] ──> [ 3. Ironclad TDD ] ──> [ 4. Verification Gate ] ──> Clean Commit
-```
+<p align="center">
+  <img src="assets/pipeline.svg" alt="Q.E.D. Workflow Pipeline" width="100%">
+</p>
 
 ### Execution Example
 

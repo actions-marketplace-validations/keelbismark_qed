@@ -101,6 +101,15 @@ Before writing any non-trivial code:
     - **Zero Emoji Salad**: Strict ban on emojis in UI chrome, headers, buttons, and list bullets. Use calibrated, accessible SVG vector icons (`aria-hidden="true"`).
     - **Eradicate Technical Narcissism**: Strip backend bragging (database sharding, Dijkstra algorithms, internal UUIDs) from user interfaces. Speak 100% in user-domain concepts; use human-scale approximations over pseudo-math micro-precision ("~3 min walk" not "2.381 minutes").
     - **Zero KPI Hallucinations**: Sparklines and percentages must be backed by real historical telemetry; ban on purely decorative static green SVG trend lines.
+13. **Workflow Ergonomics & Human Affordances Standard**:
+    - **State-in-URL Invariant**: View state (filters, search, tabs, pagination, active drawers) MUST be reflected in URL query parameters (`?tab=...&q=...`) to survive refresh, back navigation, and sharing.
+    - **The Unbreakable Draft**: Multi-field forms must auto-save in-progress input to `sessionStorage`/`localStorage`. Zero data loss on tab closure or session expiration.
+    - **The Anchor Invariant**: All page and view navigations must use semantic `<a href="...">` links (supporting middle-click and open in new tab). Never `<div onClick>`.
+    - **Keyboard Velocity & Focus Return**: Deterministic focus return when closing dialogs; focus next item when deleting list rows. Global command palette (`Cmd+K` / `Ctrl+K`).
+    - **Frictionless Clipboard**: Ban on blocking paste (`onPaste` prevention forbidden). 1-click copy affordance with visual feedback on all IDs, hashes, tokens, and code snippets.
+    - **Undo Over Modal Friction**: Reversible actions execute immediately with a 7–10s Undo toast. Modal confirmation reserved solely for catastrophic irreversible actions. Soft deletes by default with 30-day retention.
+    - **Optimistic UI & Non-Shouting Validation**: 0ms optimistic updates on binary toggles (with graceful rollback). Field validation executes on `onBlur` or debounce $\ge 800\text{ms}$, never screaming on first keystroke.
+    - **Incident Correlation IDs**: Every error banner must show a copyable `#req-...` correlation ID for 3-second backend log discovery.
 
 ---
 

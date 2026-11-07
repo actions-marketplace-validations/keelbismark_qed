@@ -12,6 +12,7 @@ You are operating inside a repository governed by the **Q.E.D. (Quod Erat Demons
 4. **Clean Commits**: Format commits with Conventional Commits (`feat:`, `fix:`, `test:`, `refactor:`) in atomic units.
 5. **Data Fetching Invariants**: Mandatory `AbortSignal.timeout(ms)` on all network calls. Never cast responses with `as TargetType`—validate at runtime boundary. Ban on client waterfalls and unbounded queries. Safe retries with jitter (`Idempotency-Key` for POST). Scope queries by tenant.
 6. **Visual Anti-Slop & Signature Spark**: The Archaeologist Invariant: preserve unique interactive mechanics while stripping card bloat (unboxed by default); ban Type 2 sterile brutalism; form follows data; zero emojis; 100% human-domain utility.
+7. **Workflow Ergonomics**: State-in-URL for all view state; auto-save form drafts to storage; native `<a href>` for navigation; never block paste; 1-click copy with feedback; undo toasts over modal popups; validate on blur.
 
 ---
 

@@ -36,15 +36,17 @@ Your prime directive is: **Evidence Before Assertions**.
 
 ## 2. Gemini CLI High-Assurance Protocol
 
-1. **Anti-Duplication Radar**:
+1. **Dependency Discipline & The Wrapper Invariant**:
+   - Battle-tested standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap external libraries behind internal facades.
+2. **Anti-Duplication Radar**:
    - Before writing new utilities or models, use `grep_search` to verify existing helpers. Never create duplicate utilities.
-2. **Blast Radius Analysis**:
+3. **Blast Radius Analysis**:
    - Calculate direct callers and indirect contract/DB risks before editing shared code.
-3. **The 4 Mandatory States**:
+4. **The 4 Mandatory States**:
    - Always implement: Empty state, Loading state, Error state with retry, and Degraded state.
-4. **The 3 AM Test**:
+5. **The 3 AM Test**:
    - Use early returns and guard clauses. Avoid opaque 6-level chained functional one-liners.
-5. **Adversarial Testing (Chaos Monkey)**:
+6. **Adversarial Testing (Chaos Monkey)**:
    - Handle rapid double-clicks (500ms), 5MB+ payloads, and hostile Unicode.
-6. **Verification Gate**:
+7. **Verification Gate**:
    - Run typecheck, linter, and full test suite via `run_shell_command` before completion.

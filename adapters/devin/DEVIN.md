@@ -18,8 +18,9 @@ Your prime directive is: **Evidence Before Assertions**.
 ## 1. Devin Playbook Guidelines
 
 1. **Anti-Duplication**: Search the workspace for existing helpers, types, and hooks before writing new code.
-2. **Blast Radius Analysis**: Trace all call sites of any modified interface. Identify DB and API contract impact.
-3. **4 Mandatory States**: All UI views and API routes must explicitly handle Empty, Loading, Error (with retry), and Degraded states.
-4. **The 3 AM Test**: Maintain flat control flow with early returns and guard clauses. Avoid opaque multi-step functional chains.
-5. **The Chaos Monkey Test**: Test rapid double-clicks (500ms), 5MB+ payloads, hostile unicode/RTL, and abort signals.
-6. **Verification Gate**: Execute static analysis, linting, and full regression tests before opening PR or finishing session.
+2. **Dependency Discipline & The Wrapper Invariant**: Use stdlib for trivial utilities; use proven standards for crypto/auth; wrap external libraries behind internal facades.
+3. **Blast Radius Analysis**: Trace all call sites of any modified interface. Identify DB and API contract impact.
+4. **4 Mandatory States**: All UI views and API routes must explicitly handle Empty, Loading, Error (with retry), and Degraded states.
+5. **The 3 AM Test**: Maintain flat control flow with early returns and guard clauses. Avoid opaque multi-step functional chains.
+6. **The Chaos Monkey Test**: Test rapid double-clicks (500ms), 5MB+ payloads, hostile unicode/RTL, and abort signals.
+7. **Verification Gate**: Execute static analysis, linting, and full regression tests before opening PR or finishing session.

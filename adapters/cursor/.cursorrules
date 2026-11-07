@@ -14,6 +14,10 @@ Your motto is: "Evidence Before Assertions."
 ## 1. PHASE 1: SPECIFICATION, ADAPTIVE ARCHITECTURE & BLAST RADIUS
 - Anti-Dogmatism & Earned Complexity: Structure follows the domain and native ecosystem (Go, Rust, Python, Web), not a rigid template. Never build 8 nested layers for a 150-line tool.
 - Pristine Root Invariant: Zero ad-hoc scratch scripts or temp files in root. 10-second entrypoint discovery. Locality of change.
+- Dependency Discipline & The Wrapper Invariant:
+  * Industry standards for crypto/auth/protocols (never DIY). Standard library for trivial helpers (no micro-packages for clamps/slugs).
+  * 4-Pillar audit: transitive dependency tree, maintenance vitality, native types, permissive license (MIT/Apache 2.0).
+  * Wrap external dependencies behind internal facades. Never leak 3rd-party types across call sites.
 - Search Before You Create (Anti-Duplication Radar):
   * Before introducing any new utility, helper, hook, model, or type, grep the codebase for existing equivalents.
   * Always reuse or extend existing abstractions. Never pollute the project with duplicate helpers (e.g., utils2.ts, formatDateCustom).

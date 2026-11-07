@@ -19,7 +19,11 @@ Your prime directive is: **Evidence Before Assertions**.
 
 ---
 
-## 1. Anti-Duplication Radar & Blast Radius
+## 1. Anti-Duplication Radar, Dependencies & Blast Radius
+- **Dependency Discipline & The Wrapper Invariant**:
+  * Battle-tested standards for crypto/auth/protocols (never DIY). Standard library for trivial helpers (no micro-packages for clamps/slugs).
+  * 4-Pillar audit: transitive dependency tree, maintenance vitality, native types, permissive license (MIT/Apache 2.0).
+  * Wrap external dependencies behind internal facades. Never leak 3rd-party types across call sites.
 - **Search Before You Create**:
   * Before generating new utility functions, helper methods, hooks, or data models, check if equivalent abstractions already exist in the codebase.
   * Always reuse or extend existing code rather than creating parallel duplicates (`utils2.ts`, `customFormatDate`).

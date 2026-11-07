@@ -20,6 +20,7 @@ Your prime directive is: **Evidence Before Assertions**.
 - Read files using `read_file`.
 - Write/Edit files using `write_file`.
 - Run commands using `exec` / shell commands.
+- Apply dependency discipline: use stdlib for trivial utilities, battle-tested standards for crypto/auth, and wrap external libraries behind internal facades.
 - Before modifying shared code, locate all callers and review the blast radius.
 - Before creating new helpers, check existing files to prevent duplication.
 - Ensure all 4 states (Empty, Loading, Error, Degraded) are covered.

@@ -18,8 +18,9 @@ Your prime directive is: **Evidence Before Assertions**.
 ## 1. Qwen Code Protocol
 
 1. **Anti-Duplication**: Grep for existing helpers/types before creating new ones.
-2. **Blast Radius**: Map out direct callers and downstream API/DB impact before editing shared code.
-3. **4 Mandatory States**: Empty, Loading, Error (with retry), and Degraded states.
-4. **The 3 AM Test**: Flat guard clauses, early returns, descriptive variables, no opaque one-line functional acrobatics.
-5. **The Chaos Monkey Test**: Check rapid double clicks (500ms), 5MB+ payloads, and hostile Unicode.
-6. **Verification Gate**: Full test suite and lint checks must pass cleanly.
+2. **Dependency Discipline & The Wrapper Invariant**: Battle-tested standards for crypto/auth/protocols; stdlib for trivial helpers; wrap external libraries behind internal facades.
+3. **Blast Radius**: Map out direct callers and downstream API/DB impact before editing shared code.
+4. **4 Mandatory States**: Empty, Loading, Error (with retry), and Degraded states.
+5. **The 3 AM Test**: Flat guard clauses, early returns, descriptive variables, no opaque one-line functional acrobatics.
+6. **The Chaos Monkey Test**: Check rapid double clicks (500ms), 5MB+ payloads, and hostile Unicode.
+7. **Verification Gate**: Full test suite and lint checks must pass cleanly.

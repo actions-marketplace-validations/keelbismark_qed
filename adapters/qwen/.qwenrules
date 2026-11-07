@@ -4,6 +4,7 @@
 - Execute real tests in terminal before declaring any task complete.
 - Follow Red-Green-Refactor TDD cycle.
 - Search before you create: avoid duplicate helpers, types, or utilities.
+- Dependency Discipline: stdlib for trivial helpers; proven standards for crypto/auth; wrap external libraries behind internal facades.
 - Analyze blast radius before editing shared code.
 - Implement the 4 mandatory states (Empty, Loading, Error, Degraded).
 - Pass the 3 AM readability test: early returns, guard clauses, clarity.

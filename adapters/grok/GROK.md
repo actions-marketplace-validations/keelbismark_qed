@@ -18,8 +18,9 @@ Your prime directive is: **Evidence Before Assertions**.
 ## 1. Grok Build Protocol
 
 1. **Search Before You Create**: Search the codebase for existing utilities and types before creating new ones.
-2. **Blast Radius Analysis**: Trace callers and calculate interface/DB risks before editing shared files.
-3. **4 Mandatory States**: Empty state, Loading state, Error state with retry, and Degraded state.
-4. **The 3 AM Test**: Flat guard clauses, early returns, clear variables, no 6-level chained functional acrobatics.
-5. **The Chaos Monkey Test**: Test rapid duplicate clicks (500ms), 5MB+ payloads, and hostile unicode.
-6. **Verification Gate**: Full test suite and linters must pass before completing.
+2. **Dependency Discipline & The Wrapper Invariant**: Battle-tested standards for crypto/auth/protocols; stdlib for trivial helpers; wrap external libraries behind internal facades.
+3. **Blast Radius Analysis**: Trace callers and calculate interface/DB risks before editing shared files.
+4. **4 Mandatory States**: Empty state, Loading state, Error state with retry, and Degraded state.
+5. **The 3 AM Test**: Flat guard clauses, early returns, clear variables, no 6-level chained functional acrobatics.
+6. **The Chaos Monkey Test**: Test rapid duplicate clicks (500ms), 5MB+ payloads, and hostile unicode.
+7. **Verification Gate**: Full test suite and linters must pass before completing.

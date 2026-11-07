@@ -4,6 +4,7 @@
 Directives:
 - Adhere strictly to Q.E.D. (Evidence Before Assertions).
 - Quality > Speed by default.
+- Dependencies: Standard library for trivial helpers; industry standards for crypto/auth; wrap external libraries behind internal facades.
 - Anti-Duplication: Search repository before introducing any new function, hook, or type.
 - Blast Radius: Map direct callers and indirect API/DB side-effects before editing shared code.
 - 4 Mandatory States: Implement Empty, Loading, Error (actionable with retry), and Degraded states.

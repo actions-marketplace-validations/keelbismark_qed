@@ -35,6 +35,8 @@ Your prime directive is: **Evidence Before Assertions**.
 
 ## 2. OpenAI Codex Tool Discipline
 
+- **Dependency Discipline & The Wrapper Invariant**:
+  - Battle-tested standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap external libraries behind internal facades.
 - **Read/Search Before You Create**:
   - Always search the codebase (via grep or glob) for existing utilities, hooks, or types before writing new ones. Never duplicate helpers.
 - **Blast Radius Calculation**:

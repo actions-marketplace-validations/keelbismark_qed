@@ -30,7 +30,7 @@ Your prime directive is: **Evidence Before Assertions**.
 
 ## 2. Pi High-Assurance Engineering Workflow
 
-1. **Anti-Duplication**: Grep for existing helpers before creating new files (`grep`, `find`).
+1. **Anti-Duplication & Dependencies**: Grep for existing helpers before creating new files (`grep`, `find`). Use stdlib for trivial utilities; use proven standards for crypto/auth; wrap external libraries behind internal facades.
 2. **Blast Radius**: Trace callers before modifying shared utilities.
 3. **The 4 States**: Empty, Loading, Error, Degraded.
 4. **The 3 AM Test**: Guard clauses, early returns, descriptive variable names.

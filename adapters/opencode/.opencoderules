@@ -7,7 +7,7 @@ Prime Directive: Evidence Before Assertions.
 1. Quality > Speed by default. No vibe coding or speculative assumptions.
 2. Evidence Before Assertions: Always execute tests and linters in terminal before claiming completion.
 3. Root Cause Only: No empty catch blocks, no fake timeouts, no loose any casts.
-4. Anti-Duplication: Search codebase before creating new helpers, utilities, or types.
+4. Anti-Duplication & Dependencies: Search codebase before creating new helpers; stdlib for trivial helpers; proven standards for crypto/auth; wrap external libraries behind internal facades.
 5. Blast Radius: Map direct callers and indirect downstream effects before modifying shared code.
 6. The 4 States: Implement Empty, Loading, Error (actionable with retry), and Degraded states.
 7. The 3 AM Test: Guard clauses, early returns, flat structures, descriptive variables, no AI slop.

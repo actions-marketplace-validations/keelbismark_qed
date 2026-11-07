@@ -35,5 +35,8 @@ Your prime directive is: **Evidence Before Assertions**.
     - `subagent_type: "coder"` for code modification and TDD cycles.
     - `subagent_type: "explore"` for anti-duplication codebase search.
     - `subagent_type: "plan"` for architectural review.
+- **Dependency Discipline & The Wrapper Invariant**:
+  - Evaluate dependencies against 4 pillars (transitive blast radius, vitality, native types, permissive license).
+  - Wrap third-party packages behind internal application facades.
 - **Verification Gate**:
   - Run typecheck, lint, and full test suite via `Bash` before claiming completion.

@@ -51,6 +51,7 @@ When using the `Bash` tool in Claude Code, adhere strictly to these rules:
 ### Phase 1: Specification, Adaptive Architecture & Blast Radius
 - **Anti-Dogmatism & Earned Complexity**: Structure follows the unique domain and native ecosystem (Go, Rust, Python, Web), not a rigid template. Never build 8 nested layers for a 150-line utility.
 - **Pristine Root Invariant**: Zero scratch files or temp dumps in root. 10-second entrypoint discovery. Locality of change.
+- **Dependency Discipline & The Wrapper Invariant**: Standards for crypto/auth/protocols (never DIY); stdlib for trivial helpers (no micro-packages for clamps/slugs). Audit transitive dependencies and licenses. Wrap 3rd-party libraries behind internal facades.
 - **Anti-Duplication Radar**: Search before creating. Grep for existing helpers, utilities, hooks, models, and types. Always reuse or extend existing abstractions.
 - **Blast Radius Analysis**:
   * Direct Callers: Locate all call sites before modifying existing functions or types.

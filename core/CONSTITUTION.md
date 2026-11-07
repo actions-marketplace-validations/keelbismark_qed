@@ -69,6 +69,10 @@ Before writing any non-trivial code:
      * *10-Second Entrypoint*: Entrypoint is immediately obvious from `README.md` and top-level directory layout.
      * *Verification Segregation*: Tests and mocks never leak into production releases.
      * *Locality of Change*: Files that change together live together to minimize blast radius.
+7. **Dependency Discipline & The Wrapper Invariant**:
+   - **Build vs. Buy Matrix**: Use industry standards for security/crypto/auth/protocols (never roll your own); use standard library for trivial utilities (zero packages for clamps, slugs, or simple clones). Avoid unmaintained micro-packages.
+   - **Package Health Audit**: Audit transitive dependency count, maintenance vitality (>12m abandonment check), native type definitions, and permissive licensing (MIT/Apache 2.0).
+   - **The Wrapper Invariant**: Encapsulate third-party libraries behind an internal application facade/adapter. Never leak vendor types across dozens of call sites.
 
 ---
 

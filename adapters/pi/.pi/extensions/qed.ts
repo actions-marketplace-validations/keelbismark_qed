@@ -28,8 +28,16 @@ export default function qedPiExtension(pi: any) {
       timestamp: Date.now(),
     };
 
+    const messages = event.messages ? [...event.messages] : [];
+    // Insert after any leading compactionSummary messages
+    let insertIndex = 0;
+    while (insertIndex < messages.length && messages[insertIndex]?.role === "compactionSummary") {
+      insertIndex++;
+    }
+    messages.splice(insertIndex, 0, bootstrapMessage);
+
     return {
-      messages: [bootstrapMessage, ...(event.messages || [])],
+      messages,
     };
   });
 }
@@ -47,5 +55,12 @@ Prime Directive: **Evidence Before Assertions**.
 5. The 4 Mandatory States: Always implement Empty, Loading, Error (with retry), and Degraded states.
 6. The 3 AM Test: Flat guard clauses, early returns, descriptive variables, no 6-level chained one-liners.
 7. Verification Gate: Verify type checks, linters, and full test suite before declaring completion.
+
+Pi tool mapping:
+- Read a file: \`read_file\`
+- Edit a file: \`edit_file\` / \`write_file\`
+- Run a shell command: \`bash\`
+- Task tracking: maintain markdown todo checklist or plan file
+- Subagents: run tasks inline with isolated context
 </EXTREMELY_IMPORTANT>`;
 }

@@ -113,23 +113,23 @@ Q.E.D. provides first-class, native configurations and adapters tailored specifi
 | **Google Antigravity** | `GEMINI.md` + `.antigravity-plugin/plugin.json` | Multi-agent directives, marketplace plugin support, and Evidence Before Assertions. |
 | **Gemini CLI** | `GEMINI.md` + `gemini-extension.json` | Native extension manifest with `@generalist` subagent mappings and `write_todos` tracking. |
 | **Cursor** | `.cursorrules` + `.cursor-plugin/` + `.cursor/rules/*.mdc` | Legacy fallback + modern MDC rules with frontmatter (`globs`, `alwaysApply`) for TDD and Blast Radius. |
-| **Claude Code** | `CLAUDE.md` + `.claude/skills/` + `.claude/commands/` + `.claude-plugin/` | High-fidelity bash execution rules, custom skills, and slash commands (`/qed-verify`, `/qed-review`). |
+| **Claude Code** | `CLAUDE.md` + `.claude/skills/` + `skills/` + `.claude/commands/` + `.claude-plugin/` | High-fidelity bash execution rules, custom skills, and slash commands (`/boost`, `/qed-boost`, `/qed-verify`, `/qed-review`, `/qed-blast-radius`). |
 | **OpenAI Codex** | `CODEX.md` + `AGENTS.md` + `.codex-plugin/plugin.json` | Native Codex App & CLI manifest, AGENTS.md instruction convention, and strict terminal TDD. |
-| **Kimi Code** | `KIMI.md` + `.kimi-plugin/plugin.json` | Moonshot AI Kimi manifest, `AskUserQuestion` clarification tool, and `TodoList` integration. |
-| **Pi Coding Agent** | `PI.md` + `package.json` + `.pi/extensions/qed.ts` | In-process extension injecting Q.E.D. constitution on session start, compaction, and context. |
-| **Hermes Agent** | `HERMES.md` + `.hermes-plugin/plugin.yaml` + `__init__.py` | Native Python plugin providing `pre_llm_call` hook injection and tool mappings. |
+| **Kimi Code** | `KIMI.md` + `.kimi-plugin/plugin.json` | Moonshot AI Kimi manifest with auto `sessionStart.skill`, `AskUserQuestion` clarification tool, and `TodoList` integration. |
+| **Pi Coding Agent** | `PI.md` + `package.json` + `.pi/extensions/qed.ts` | In-process extension injecting Q.E.D. constitution on session start, compaction (ordered after summaries), and context. |
+| **Hermes Agent** | `HERMES.md` + `.hermes-plugin/plugin.yaml` + `__init__.py` | Native Python plugin providing kwargs-tolerant `pre_llm_call` hook injection and tool mappings. |
 | **Muse** | `MUSE.md` + `.muse-plugin/plugin.json` + `marketplace.json` | Native Muse plugin manifest with `SessionStart` hooks and marketplace registration. |
 | **Devin CLI** | `DEVIN.md` + `.devin-plugin/plugin.json` + `.devin/config.json` | Cognition Devin playbook and configuration enforcing Evidence Before Assertions. |
 | **Factory Droid** | `DROID.md` + `.agents/plugins/marketplace.json` + `.droid/config.json` | Factory Droid plugin marketplace integration and workspace rules. |
 | **Grok Build CLI** | `GROK.md` + `.grok-plugin/plugin.json` + `.grok/config.json` | xAI Grok Build CLI plugin ecosystem configuration and anti-duplication radar. |
 | **Qwen Code** | `QWEN.md` + `.qwenrules` + `.qwen/config.json` | Alibaba Qwen Code CLI and extension configuration with 4-state discipline. |
-| **OpenCode** | `opencode.json` + `.opencoderules` + `OPENCODE.md` | Machine-readable schema configuration, sandbox constraints, and verification hooks. |
-| **DeepSeek (dsh & Continue)** | `DEEPSEEK.md` + `.deepseekrules` + `.dsh/` + `.continue/` | DeepSeek-R1 Chain-of-Thought reasoning directives and Continue.dev custom commands. |
+| **OpenCode** | `opencode.json` + `.opencoderules` + `OPENCODE.md` + `.opencode/plugins/qed.js` + `index.js` | Machine-readable schema configuration, sandbox constraints, and in-process V1/V2 lifecycle plugins. |
+| **DeepSeek (dsh & Continue)** | `DEEPSEEK.md` + `.deepseekrules` + `.dsh/` + `.continue/` | DeepSeek-R1 Chain-of-Thought reasoning directives and Continue.dev custom commands (`/qed-boost`). |
 | **Cline** | `.clinerules` | Autonomous agent rules enforcing pre-flight searches, verification gates, and zero secret leaks. |
 | **Roo Code** | `.roomodes` + `.clinerules` | Custom role modes: `Q.E.D. Architect`, `Q.E.D. TDD Engineer`, and `Q.E.D. QA Reviewer`. |
-| **Windsurf** | `.windsurfrules` + `.windsurf/workflows/*.md` | Cascade rules + interactive workflows (`qed-spec-and-blast-radius`, `qed-tdd-cycle`, `qed-verification-gate`). |
+| **Windsurf** | `.windsurfrules` + `.windsurf/workflows/*.md` | Cascade rules + interactive workflows (`qed-boost`, `qed-spec-and-blast-radius`, `qed-tdd-cycle`, `qed-verification-gate`). |
 | **Aider** | `.aider.conf.yml` + `.aider.conventions.md` | Auto-testing (`auto-test: true`), Conventional Commits automation, and strict linter integration. |
-| **GitHub Copilot** | `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` | Workspace instructions + reusable prompt files (`qed-spec`, `qed-verify`, `qed-tdd`). |
+| **GitHub Copilot** | `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` | Workspace instructions + reusable prompt files (`qed-boost`, `qed-spec`, `qed-verify`, `qed-tdd`). |
 
 ---
 

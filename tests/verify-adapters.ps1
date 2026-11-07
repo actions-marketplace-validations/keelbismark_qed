@@ -89,9 +89,16 @@ $results += Run-Harness-Test "local-claude" "local" "claude" @(
     ".claude\skills\qed-verify\SKILL.md",
     ".claude\skills\qed-review\SKILL.md",
     ".claude\skills\qed-blast-radius\SKILL.md",
+    ".claude\skills\qed-boost\SKILL.md",
+    "skills\qed-verify\SKILL.md",
+    "skills\qed-review\SKILL.md",
+    "skills\qed-blast-radius\SKILL.md",
+    "skills\qed-boost\SKILL.md",
     ".claude\commands\qed-verify.md",
     ".claude\commands\qed-review.md",
-    ".claude\commands\qed-blast-radius.md"
+    ".claude\commands\qed-blast-radius.md",
+    ".claude\commands\qed-boost.md",
+    ".claude\commands\boost.md"
 )
 
 $results += Run-Harness-Test "local-cline" "local" "cline" @(".clinerules")
@@ -105,7 +112,8 @@ $results += Run-Harness-Test "local-windsurf" "local" "windsurf" @(
     ".windsurfrules",
     ".windsurf\workflows\qed-spec-and-blast-radius.md",
     ".windsurf\workflows\qed-tdd-cycle.md",
-    ".windsurf\workflows\qed-verification-gate.md"
+    ".windsurf\workflows\qed-verification-gate.md",
+    ".windsurf\workflows\qed-boost.md"
 )
 
 $results += Run-Harness-Test "local-aider" "local" "aider" @(
@@ -117,13 +125,16 @@ $results += Run-Harness-Test "local-copilot" "local" "copilot" @(
     ".github\copilot-instructions.md",
     ".github\prompts\qed-spec.prompt.md",
     ".github\prompts\qed-verify.prompt.md",
-    ".github\prompts\qed-tdd.prompt.md"
+    ".github\prompts\qed-tdd.prompt.md",
+    ".github\prompts\qed-boost.prompt.md"
 )
 
 $results += Run-Harness-Test "local-opencode" "local" "opencode" @(
     "opencode.json",
     ".opencoderules",
-    "OPENCODE.md"
+    "OPENCODE.md",
+    ".opencode\plugins\qed.js",
+    "index.js"
 )
 
 $results += Run-Harness-Test "local-deepseek" "local" "deepseek" @(
@@ -132,7 +143,8 @@ $results += Run-Harness-Test "local-deepseek" "local" "deepseek" @(
     ".dsh\config.json",
     ".continue\config.json",
     ".continue\prompts\qed-spec.prompt",
-    ".continue\prompts\qed-verify.prompt"
+    ".continue\prompts\qed-verify.prompt",
+    ".continue\prompts\qed-boost.prompt"
 )
 
 $results += Run-Harness-Test "local-codex" "local" "codex" @(
@@ -198,13 +210,20 @@ $results += Run-Harness-Test "local-all" "local" "all" @(
     "CLAUDE.md",
     ".claude-plugin\plugin.json",
     ".claude\skills\qed-verify\SKILL.md",
+    ".claude\skills\qed-boost\SKILL.md",
+    ".claude\commands\boost.md",
     ".clinerules",
     ".roomodes",
     ".windsurfrules",
+    ".windsurf\workflows\qed-boost.md",
     ".aider.conf.yml",
     ".github\copilot-instructions.md",
+    ".github\prompts\qed-boost.prompt.md",
     "opencode.json",
+    ".opencode\plugins\qed.js",
+    "index.js",
     "DEEPSEEK.md",
+    ".continue\prompts\qed-boost.prompt",
     "CODEX.md",
     "AGENTS.md",
     ".codex-plugin\plugin.json",
@@ -255,16 +274,22 @@ $results += Run-Harness-Test "global-all" "global" "all" @(
     ".cursor\rules\00-constitution.mdc",
     ".claude\CLAUDE.md",
     ".claude\skills\qed-verify\SKILL.md",
+    ".claude\skills\qed-boost\SKILL.md",
+    ".claude\commands\boost.md",
     ".clinerules",
     ".roomodes",
     ".windsurfrules",
     ".windsurf\workflows\qed-tdd-cycle.md",
+    ".windsurf\workflows\qed-boost.md",
     ".aider.conf.yml",
     ".github\copilot-instructions.md",
+    ".github\prompts\qed-boost.prompt.md",
     ".opencoderules",
     ".opencode\opencode.json",
+    ".opencode\plugins\qed.js",
     ".deepseek\DEEPSEEK.md",
     ".deepseekrules",
+    ".continue\prompts\qed-boost.prompt",
     ".codex\CODEX.md",
     ".agents\AGENTS.md",
     ".kimi\KIMI.md",

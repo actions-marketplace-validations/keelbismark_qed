@@ -1,0 +1,12 @@
+---
+name: qed-boost
+description: Instant Q.E.D. High-Assurance Context Boost & Actuality Health Check
+---
+
+Boost context with the Q.E.D. High-Assurance Engineering Standard:
+1. **Prime Directive**: Evidence Before Assertions.
+2. **Anti-Duplication Radar**: Grep for existing helpers, types, and hooks before writing new code.
+3. **Blast Radius Analysis**: Map direct callers and indirect contract impact.
+4. **4 Mandatory States**: Verify Empty, Loading, Error, and Degraded state handling.
+5. **Actuality Audit**: Check for deprecated APIs, dead code, and leaked secrets.
+6. **Verification Gate**: Run typecheck, linter, and tests with verified evidence.

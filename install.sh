@@ -159,18 +159,19 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "claude" ] || [ "$HARNESS" = "claude
     if [ "$TARGET" = "global" ]; then
         CLAUDE_ROOT="$HOME/.claude"
         install_file "adapters/claude-code/CLAUDE.md" "$CLAUDE_ROOT/CLAUDE.md"
-        for skill in qed-verify qed-review qed-blast-radius; do
+        for skill in qed-verify qed-review qed-blast-radius qed-boost; do
             install_file "adapters/claude-code/.claude/skills/$skill/SKILL.md" "$CLAUDE_ROOT/skills/$skill/SKILL.md"
         done
-        for cmd in qed-verify.md qed-review.md qed-blast-radius.md; do
+        for cmd in qed-verify.md qed-review.md qed-blast-radius.md qed-boost.md boost.md; do
             install_file "adapters/claude-code/.claude/commands/$cmd" "$CLAUDE_ROOT/commands/$cmd"
         done
     else
         install_file "adapters/claude-code/CLAUDE.md" "./CLAUDE.md"
-        for skill in qed-verify qed-review qed-blast-radius; do
+        for skill in qed-verify qed-review qed-blast-radius qed-boost; do
             install_file "adapters/claude-code/.claude/skills/$skill/SKILL.md" "./.claude/skills/$skill/SKILL.md"
+            install_file "adapters/claude-code/skills/$skill/SKILL.md" "./skills/$skill/SKILL.md"
         done
-        for cmd in qed-verify.md qed-review.md qed-blast-radius.md; do
+        for cmd in qed-verify.md qed-review.md qed-blast-radius.md qed-boost.md boost.md; do
             install_file "adapters/claude-code/.claude/commands/$cmd" "./.claude/commands/$cmd"
         done
     fi
@@ -193,7 +194,7 @@ fi
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "windsurf" ]; then
     echo -e "\nConfiguring Windsurf Cascade (Rules & Workflows)..."
     install_file "adapters/windsurf/.windsurfrules" "$BASE_DIR/.windsurfrules"
-    for wf in qed-spec-and-blast-radius.md qed-tdd-cycle.md qed-verification-gate.md; do
+    for wf in qed-spec-and-blast-radius.md qed-tdd-cycle.md qed-verification-gate.md qed-boost.md; do
         install_file "adapters/windsurf/.windsurf/workflows/$wf" "$BASE_DIR/.windsurf/workflows/$wf"
     done
 fi
@@ -209,7 +210,7 @@ fi
 if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "copilot" ] || [ "$HARNESS" = "github-copilot" ]; then
     echo -e "\nConfiguring GitHub Copilot (Instructions & Prompt Files)..."
     install_file "adapters/copilot/.github/copilot-instructions.md" "$BASE_DIR/.github/copilot-instructions.md"
-    for pr in qed-spec.prompt.md qed-tdd.prompt.md qed-verify.prompt.md; do
+    for pr in qed-spec.prompt.md qed-tdd.prompt.md qed-verify.prompt.md qed-boost.prompt.md; do
         install_file "adapters/copilot/.github/prompts/$pr" "$BASE_DIR/.github/prompts/$pr"
     done
 fi
@@ -221,10 +222,13 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "opencode" ]; then
         install_file "adapters/opencode/.opencoderules" "$HOME/.opencoderules"
         install_file "adapters/opencode/opencode.json" "$HOME/.opencode/opencode.json"
         install_file "adapters/opencode/OPENCODE.md" "$HOME/.opencode/OPENCODE.md"
+        install_file "adapters/opencode/.opencode/plugins/qed.js" "$HOME/.opencode/plugins/qed.js"
     else
         install_file "adapters/opencode/opencode.json" "./opencode.json"
         install_file "adapters/opencode/.opencoderules" "./.opencoderules"
         install_file "adapters/opencode/OPENCODE.md" "./OPENCODE.md"
+        install_file "adapters/opencode/.opencode/plugins/qed.js" "./.opencode/plugins/qed.js"
+        install_file "adapters/opencode/index.js" "./index.js"
     fi
 fi
 
@@ -236,6 +240,9 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "deepseek" ] || [ "$HARNESS" = "dsh"
         install_file "adapters/deepseek/.deepseekrules" "$HOME/.deepseekrules"
         install_file "adapters/deepseek/.dsh/config.json" "$HOME/.dsh/config.json"
         install_file "adapters/deepseek/.continue/config.json" "$HOME/.continue/config.json"
+        install_file "adapters/deepseek/.continue/prompts/qed-spec.prompt" "$HOME/.continue/prompts/qed-spec.prompt"
+        install_file "adapters/deepseek/.continue/prompts/qed-verify.prompt" "$HOME/.continue/prompts/qed-verify.prompt"
+        install_file "adapters/deepseek/.continue/prompts/qed-boost.prompt" "$HOME/.continue/prompts/qed-boost.prompt"
     else
         install_file "adapters/deepseek/DEEPSEEK.md" "./DEEPSEEK.md"
         install_file "adapters/deepseek/.deepseekrules" "./.deepseekrules"
@@ -243,6 +250,7 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "deepseek" ] || [ "$HARNESS" = "dsh"
         install_file "adapters/deepseek/.continue/config.json" "./.continue/config.json"
         install_file "adapters/deepseek/.continue/prompts/qed-spec.prompt" "./.continue/prompts/qed-spec.prompt"
         install_file "adapters/deepseek/.continue/prompts/qed-verify.prompt" "./.continue/prompts/qed-verify.prompt"
+        install_file "adapters/deepseek/.continue/prompts/qed-boost.prompt" "./.continue/prompts/qed-boost.prompt"
     fi
 fi
 

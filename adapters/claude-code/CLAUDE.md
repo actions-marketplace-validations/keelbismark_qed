@@ -78,9 +78,10 @@ Reconcile the final git diff against the initial Acceptance Criteria.
 
 ---
 
-## 4. Claude Code Skills (`.claude/skills/`)
+## 4. Claude Code Skills & Slash Commands (`.claude/skills/`, `.claude/commands/`)
 
-This repository provides custom Q.E.D. skills located in `.claude/skills/`:
-- **`qed-verify`**: Executes the automated verification gate (typechecker, linter, tests) and produces an evidence-based report.
-- **`qed-review`**: Conducts an adversarial code review on recent git diffs, checking Blast Radius, Anti-Duplication, the 4 States, and the 3 AM Test.
-- **`qed-blast-radius`**: Maps direct and indirect dependencies for any proposed modification to shared code.
+This repository provides custom Q.E.D. skills and slash commands:
+- **`qed-boost`** / **`/boost`**: Instantly boosts agent context with the Q.E.D. Engineering Standard, performs pre-flight Anti-Duplication search, evaluates Blast Radius, and runs an actuality and health audit.
+- **`qed-verify`** / **`/qed-verify`**: Executes the automated verification gate (typechecker, linter, tests) and produces an evidence-based report.
+- **`qed-review`** / **`/qed-review`**: Conducts an adversarial code review on recent git diffs, checking Blast Radius, Anti-Duplication, the 4 States, and the 3 AM Test.
+- **`qed-blast-radius`** / **`/qed-blast-radius`**: Maps direct and indirect dependencies for any proposed modification to shared code.

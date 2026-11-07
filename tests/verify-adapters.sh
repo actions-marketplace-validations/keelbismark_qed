@@ -67,16 +67,22 @@ run_global_test() {
             "$fake_home/.cursor/rules/00-constitution.mdc"
             "$fake_home/.claude/CLAUDE.md"
             "$fake_home/.claude/skills/qed-verify/SKILL.md"
+            "$fake_home/.claude/skills/qed-boost/SKILL.md"
+            "$fake_home/.claude/commands/boost.md"
             "$fake_home/.clinerules"
             "$fake_home/.roomodes"
             "$fake_home/.windsurfrules"
             "$fake_home/.windsurf/workflows/qed-tdd-cycle.md"
+            "$fake_home/.windsurf/workflows/qed-boost.md"
             "$fake_home/.aider.conf.yml"
             "$fake_home/.github/copilot-instructions.md"
+            "$fake_home/.github/prompts/qed-boost.prompt.md"
             "$fake_home/.opencoderules"
             "$fake_home/.opencode/opencode.json"
+            "$fake_home/.opencode/plugins/qed.js"
             "$fake_home/.deepseek/DEEPSEEK.md"
             "$fake_home/.deepseekrules"
+            "$fake_home/.continue/prompts/qed-boost.prompt"
             "$fake_home/.codex/CODEX.md"
             "$fake_home/.agents/AGENTS.md"
             "$fake_home/.kimi/KIMI.md"
@@ -138,14 +144,14 @@ echo "--- Section 1: Local Installation Tests ---"
 run_local_test "antigravity" "GEMINI.md" ".antigravity-plugin/plugin.json"
 run_local_test "gemini" "GEMINI.md" "gemini-extension.json"
 run_local_test "cursor" ".cursorrules" ".cursor/rules/00-constitution.mdc" ".cursor-plugin/plugin.json"
-run_local_test "claude" "CLAUDE.md" ".claude/skills/qed-verify/SKILL.md" ".claude-plugin/plugin.json"
+run_local_test "claude" "CLAUDE.md" ".claude/skills/qed-verify/SKILL.md" ".claude/commands/boost.md" "skills/qed-verify/SKILL.md" ".claude-plugin/plugin.json"
 run_local_test "cline" ".clinerules"
 run_local_test "roo" ".clinerules" ".roomodes"
-run_local_test "windsurf" ".windsurfrules" ".windsurf/workflows/qed-tdd-cycle.md"
+run_local_test "windsurf" ".windsurfrules" ".windsurf/workflows/qed-tdd-cycle.md" ".windsurf/workflows/qed-boost.md"
 run_local_test "aider" ".aider.conf.yml" ".aider.conventions.md"
-run_local_test "copilot" ".github/copilot-instructions.md" ".github/prompts/qed-spec.prompt.md"
-run_local_test "opencode" "opencode.json" ".opencoderules" "OPENCODE.md"
-run_local_test "deepseek" "DEEPSEEK.md" ".deepseekrules" ".dsh/config.json" ".continue/config.json"
+run_local_test "copilot" ".github/copilot-instructions.md" ".github/prompts/qed-spec.prompt.md" ".github/prompts/qed-boost.prompt.md"
+run_local_test "opencode" "opencode.json" ".opencoderules" "OPENCODE.md" ".opencode/plugins/qed.js" "index.js"
+run_local_test "deepseek" "DEEPSEEK.md" ".deepseekrules" ".dsh/config.json" ".continue/config.json" ".continue/prompts/qed-boost.prompt"
 run_local_test "codex" "CODEX.md" "AGENTS.md" ".codex-plugin/plugin.json"
 run_local_test "kimi" "KIMI.md" ".kimi-plugin/plugin.json"
 run_local_test "pi" "PI.md" "package.json" ".pi/extensions/qed.ts"
@@ -161,13 +167,20 @@ run_local_test "all" \
     "gemini-extension.json" \
     ".cursorrules" \
     "CLAUDE.md" \
+    ".claude/commands/boost.md" \
+    "skills/qed-verify/SKILL.md" \
     ".clinerules" \
     ".roomodes" \
     ".windsurfrules" \
+    ".windsurf/workflows/qed-boost.md" \
     ".aider.conf.yml" \
     ".github/copilot-instructions.md" \
+    ".github/prompts/qed-boost.prompt.md" \
     "opencode.json" \
+    ".opencode/plugins/qed.js" \
+    "index.js" \
     "DEEPSEEK.md" \
+    ".continue/prompts/qed-boost.prompt" \
     "CODEX.md" \
     "AGENTS.md" \
     "KIMI.md" \

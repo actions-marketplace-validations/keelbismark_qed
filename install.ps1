@@ -144,7 +144,7 @@ if ($Harness -eq "all" -or $Harness -eq "claude" -or $Harness -eq "claude-code")
     Install-File "adapters\claude-code\.claude-plugin\marketplace.json" (Join-Path $baseDir ".claude-plugin\marketplace.json")
     
     # Skills
-    $claudeSkills = @("qed-verify", "qed-review", "qed-blast-radius")
+    $claudeSkills = @("qed-verify", "qed-review", "qed-blast-radius", "qed-boost")
     foreach ($skill in $claudeSkills) {
         $destPath = if ($Target -eq "global") {
             Join-Path $claudeRoot "skills\$skill\SKILL.md"
@@ -152,10 +152,13 @@ if ($Harness -eq "all" -or $Harness -eq "claude" -or $Harness -eq "claude-code")
             ".\.claude\skills\$skill\SKILL.md"
         }
         Install-File "adapters\claude-code\.claude\skills\$skill\SKILL.md" $destPath
+        if ($Target -ne "global") {
+            Install-File "adapters\claude-code\skills\$skill\SKILL.md" ".\skills\$skill\SKILL.md"
+        }
     }
 
     # Slash commands
-    $claudeCommands = @("qed-verify.md", "qed-review.md", "qed-blast-radius.md")
+    $claudeCommands = @("qed-verify.md", "qed-review.md", "qed-blast-radius.md", "qed-boost.md", "boost.md")
     foreach ($cmd in $claudeCommands) {
         $destPath = if ($Target -eq "global") {
             Join-Path $claudeRoot "commands\$cmd"
@@ -187,7 +190,8 @@ if ($Harness -eq "all" -or $Harness -eq "windsurf") {
     $windsurfWorkflows = @(
         "qed-spec-and-blast-radius.md",
         "qed-tdd-cycle.md",
-        "qed-verification-gate.md"
+        "qed-verification-gate.md",
+        "qed-boost.md"
     )
     foreach ($wf in $windsurfWorkflows) {
         Install-File "adapters\windsurf\.windsurf\workflows\$wf" (Join-Path $baseDir ".windsurf\workflows\$wf")
@@ -209,7 +213,8 @@ if ($Harness -eq "all" -or $Harness -eq "copilot" -or $Harness -eq "github-copil
     $copilotPrompts = @(
         "qed-spec.prompt.md",
         "qed-tdd.prompt.md",
-        "qed-verify.prompt.md"
+        "qed-verify.prompt.md",
+        "qed-boost.prompt.md"
     )
     foreach ($pr in $copilotPrompts) {
         Install-File "adapters\copilot\.github\prompts\$pr" (Join-Path $baseDir ".github\prompts\$pr")
@@ -223,10 +228,13 @@ if ($Harness -eq "all" -or $Harness -eq "opencode") {
         Install-File "adapters\opencode\.opencoderules" (Join-Path $userHome ".opencoderules")
         Install-File "adapters\opencode\opencode.json" (Join-Path $userHome ".opencode\opencode.json")
         Install-File "adapters\opencode\OPENCODE.md" (Join-Path $userHome ".opencode\OPENCODE.md")
+        Install-File "adapters\opencode\.opencode\plugins\qed.js" (Join-Path $userHome ".opencode\plugins\qed.js")
     } else {
         Install-File "adapters\opencode\opencode.json" ".\opencode.json"
         Install-File "adapters\opencode\.opencoderules" ".\.opencoderules"
         Install-File "adapters\opencode\OPENCODE.md" ".\OPENCODE.md"
+        Install-File "adapters\opencode\.opencode\plugins\qed.js" ".\.opencode\plugins\qed.js"
+        Install-File "adapters\opencode\index.js" ".\index.js"
     }
 }
 
@@ -238,6 +246,9 @@ if ($Harness -eq "all" -or $Harness -eq "deepseek" -or $Harness -eq "dsh" -or $H
         Install-File "adapters\deepseek\.deepseekrules" (Join-Path $userHome ".deepseekrules")
         Install-File "adapters\deepseek\.dsh\config.json" (Join-Path $userHome ".dsh\config.json")
         Install-File "adapters\deepseek\.continue\config.json" (Join-Path $userHome ".continue\config.json")
+        Install-File "adapters\deepseek\.continue\prompts\qed-spec.prompt" (Join-Path $userHome ".continue\prompts\qed-spec.prompt")
+        Install-File "adapters\deepseek\.continue\prompts\qed-verify.prompt" (Join-Path $userHome ".continue\prompts\qed-verify.prompt")
+        Install-File "adapters\deepseek\.continue\prompts\qed-boost.prompt" (Join-Path $userHome ".continue\prompts\qed-boost.prompt")
     } else {
         Install-File "adapters\deepseek\DEEPSEEK.md" ".\DEEPSEEK.md"
         Install-File "adapters\deepseek\.deepseekrules" ".\.deepseekrules"
@@ -245,6 +256,7 @@ if ($Harness -eq "all" -or $Harness -eq "deepseek" -or $Harness -eq "dsh" -or $H
         Install-File "adapters\deepseek\.continue\config.json" ".\.continue\config.json"
         Install-File "adapters\deepseek\.continue\prompts\qed-spec.prompt" ".\.continue\prompts\qed-spec.prompt"
         Install-File "adapters\deepseek\.continue\prompts\qed-verify.prompt" ".\.continue\prompts\qed-verify.prompt"
+        Install-File "adapters\deepseek\.continue\prompts\qed-boost.prompt" ".\.continue\prompts\qed-boost.prompt"
     }
 }
 

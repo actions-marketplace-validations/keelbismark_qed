@@ -5,44 +5,56 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"></a>
   <a href="docs/harnesses.md"><img src="https://img.shields.io/badge/harnesses-20%20platforms-8b5cf6.svg?style=flat-square" alt="Harnesses: 20 Platforms"></a>
-  <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standard-high--assurance-10b981.svg?style=flat-square" alt="Standard: High-Assurance"></a>
+  <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-10%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 10 Core Specs"></a>
+  <a href="tests/verify-adapters.ps1"><img src="https://img.shields.io/badge/tests-25%2F25%20passing-38bdf8.svg?style=flat-square" alt="Verification: 100% Passing"></a>
   <a href="llms.txt"><img src="https://img.shields.io/badge/agent-llms.txt-f59e0b.svg?style=flat-square" alt="LLM Entrypoint: llms.txt"></a>
 </p>
 
 <p align="center">
   <a href="#quickstart">Quickstart</a> •
-  <a href="#the-problem">The Problem</a> •
-  <a href="#how-it-works">How It Works</a> •
-  <a href="#the-5-core-protocols">The 5 Protocols</a> •
-  <a href="docs/harnesses.md">20 Platforms</a> •
+  <a href="#the-problem-codebase-erosion">The Problem</a> •
+  <a href="#framework-architecture">Architecture</a> •
+  <a href="#the-10-pillars-of-qed">The 10 Pillars</a> •
+  <a href="#how-it-works">Lifecycle</a> •
+  <a href="#20-supported-platforms">20 Platforms</a> •
   <a href="llms.txt">llms.txt</a>
 </p>
 
 ---
 
-## The Problem
+## The Problem: Codebase Erosion
 
-AI pair-programming promised a 10x engineer. In practice, it often feels like reviewing PRs from an overcaffeinated intern:
+AI pair-programming promised a 10x engineer. In practice, it frequently feels like reviewing PRs from an overcaffeinated junior developer:
 
 > *"I've resolved the issue!"* — the agent announces.  
-> You pull the branch. It never ran the test. It broke three database queries. It created a second `formatDateHelper.ts` in another folder. And it silenced a fatal error with `catch (e) {}`.
+> You pull the branch. It never ran the tests. It broke three database queries. It hallucinated a deprecated library version. It created a second `formatDateHelper.ts` in another directory. And it silenced a fatal defect with `catch (e) {}`.
 
-Code generated without discipline is technical debt on compound interest. We call it **codebase erosion**.
+Code generated without physical boundaries is technical debt accumulating compound interest. We call it **codebase erosion**.
 
-**Q.E.D.** (*Latin: "which was to be demonstrated"*) is an open-source engineering standard and configuration layer for AI coding environments. It replaces vibes, guesses, and unverified assumptions with deterministic engineering discipline.
+**Q.E.D.** (*Latin: "quod erat demonstrandum" — which was to be demonstrated*) is an open-source, high-assurance engineering standard and configuration layer for AI coding environments. It replaces vibes, guesses, and unverified assertions with deterministic engineering discipline.
 
 ---
 
-## Before & After
+## Framework Architecture
+
+Q.E.D. organizes engineering discipline across three coordinated tiers: **Universal Invariants**, the **4-Phase Verification Engine**, and the **External Trust Contract**.
+
+<p align="center">
+  <img src="assets/framework.svg" alt="Q.E.D. Architectural Framework" width="100%">
+</p>
+
+---
+
+## Before & After: Real-World Evidence
 
 ```typescript
-// [WITHOUT Q.E.D.] Standard AI Output
-// Silent error swallowing, loose typing, happy-path assumption, zero tests run
+// [WITHOUT Q.E.D.] Standard AI Generative Output
+// Silent error swallowing, loose typing, happy-path assumption, zero tests executed
 async function checkout(cart: any) {
   try {
     if (cart.items) {
       const total = cart.items.reduce((a: any, b: any) => a + b.price, 0);
-      return await api.charge(total); // What if total <= 0? What if user double-clicked?
+      return await api.charge(total); // Floating point bug: 0.1 + 0.2 !== 0.3! No idempotency!
     }
   } catch (e) {
     console.log("error"); // Swallowed failure. UI hangs indefinitely.
@@ -52,20 +64,22 @@ async function checkout(cart: any) {
 
 ```typescript
 // [WITH Q.E.D.] High-Assurance Output
-// Guard clauses, typed contracts, 4 states handled, reproduction test verified RED first
+// Guard clauses, integer minor units, 4 states handled, reproduction test verified RED first
 async function checkout(cart: Cart): Promise<CheckoutResult> {
   if (!cart.items || cart.items.length === 0) {
     return { status: "empty", message: "Cart is empty" };
   }
   
-  const totalAmount = calculateCartTotal(cart.items); // Reused existing helper (Anti-Duplication)
-  if (totalAmount <= 0) {
+  // Reused existing helper (Anti-Duplication) & Integer Minor Units (No floating-point currency)
+  const totalMinorUnits = calculateCartTotalMinorUnits(cart.items);
+  if (totalMinorUnits <= 0) {
     throw new InvalidOrderError("Total amount must be greater than zero");
   }
 
   // Idempotent charge with explicit timeout and retry boundary (Chaos Monkey verified)
   return await paymentGateway.chargeWithIdempotency({
-    amount: totalAmount,
+    amountMinorUnits: totalMinorUnits,
+    currency: cart.currency, // ISO 4217 Invariant
     idempotencyKey: cart.idempotencyKey,
   });
 }
@@ -73,72 +87,64 @@ async function checkout(cart: Cart): Promise<CheckoutResult> {
 
 ---
 
-## The 5 Core Protocols
+## How It Works: The 4-Phase Verification Loop
 
-Q.E.D. is built on five non-negotiable engineering laws:
-
-### 1. Blast Radius Analysis
-> **Rule:** *Look before you leap.*  
-Before editing a shared function, model, or schema, the agent must map every caller and evaluate transitive impacts on API contracts, database migrations, and background queues. Changes are tagged **Low**, **Medium**, or **Critical**.
-
-### 2. Anti-Duplication Radar
-> **Rule:** *Search before you create.*  
-AI agents love inventing new helpers because generating code is cheaper than searching for it. Under Q.E.D., the agent must grep the repository for existing utilities, hooks, and types before writing a single line. Duplicate files like `utils2.ts` or `dateFormatterCustom.ts` are forbidden.
-
-### 3. The 4 Mandatory States
-> **Rule:** *No happy-path delusions.*  
-Real software runs in a hostile world. Every interface component and backend route must explicitly handle:
-* **Empty**: What happens when zero records exist?
-* **Loading**: Visual placeholder preventing layout shift (CLS).
-* **Error**: Actionable, human-friendly message with a retry trigger.
-* **Degraded / Offline**: Graceful fallback under network timeouts.
-
-### 4. The "3 AM Test"
-> **Rule:** *Code must be readable by an exhausted engineer during a production outage at 3:00 AM.*  
-Guard clauses and early returns over deep nesting. Clear intermediate variables over opaque 6-level chained functional one-liners. Concrete input/output examples in comments for non-obvious algorithms.
-
-### 5. The Chaos Monkey Test
-> **Rule:** *Assault the code with real-world hostility.*  
-Automated test suites must include adversarial edge cases: 10 rapid duplicate clicks within 500ms (debouncing), 5MB+ payloads, complex Unicode/RTL strings, and mid-flight network drops.
-
----
-
-## How It Works
-
-Q.E.D. enforces a deterministic 4-phase verification loop on every task:
+Every task executed under Q.E.D. traverses an ironclad, evidence-backed lifecycle:
 
 <p align="center">
-  <img src="assets/pipeline.svg" alt="Q.E.D. Workflow Pipeline" width="100%">
+  <img src="assets/pipeline.svg" alt="Q.E.D. Verification Pipeline" width="100%">
 </p>
 
-### Execution Example
+### Execution Trace Example
 
 ```text
 $ qed "Add idempotent debit to wallet API"
 
-[1/4] ANTI-DUPLICATION & BLAST RADIUS
-      Searching codebase for existing wallet balance helpers...
+[1/4] SPECIFICATION, ANTI-DUPLICATION & BLAST RADIUS
+      -> Grepping codebase for existing wallet balance helpers...
       -> Found 'db.wallets.updateBalance()' in src/services/wallet.ts (reused).
-      -> Callers: CheckoutController, SubscriptionCron (Risk: Medium).
+      -> Callers: CheckoutController, SubscriptionCron (Blast Risk: Medium).
 
-[2/4] IRONCLAD TDD (RED STAGE)
-      Writing reproduction test: test/wallet.test.ts:42
+[2/4] ADVERSARIAL QA & 4 MANDATORY STATES
+      -> Mapping edge cases: double-click in 50ms, expired JWT, zero balance, timeout.
+      -> Implementing: Empty, Loading, Error (retryable), Degraded states.
+
+[3/4] IRONCLAD TDD (REPRODUCTION FIRST)
+      -> Authoring reproduction test: test/wallet.test.ts:42
       $ npm test -- test/wallet.test.ts
       FAIL: Concurrent duplicate debit executed twice. Expected 1 charge.
-      -> Failure verified.
-
-[3/4] ROOT CAUSE FIX (GREEN STAGE)
-      Adding unique idempotencyKey constraint & distributed lock...
+      -> Red state verified.
+      -> Implementing minimal fix (row lock + unique idempotency constraint)...
       $ npm test -- test/wallet.test.ts
-      PASS: 2 concurrent calls -> 1 debit, 1 cached response.
+      PASS: 2 concurrent calls -> 1 debit, 1 cached response (Green verified).
 
-[4/4] VERIFICATION GATE & 3 AM AUDIT
-      -> Flattened nested if/else into early guard clauses.
-      -> Typecheck: OK (0 errors).
+[4/4] THE 3 AM AUDIT, SANITIZATION & VERIFICATION GATE
+      -> Refactored nested if/else pyramids into early return guard clauses.
+      -> Sanitization sweep: 0 console.log, 0 throwaway scripts, 0 dead imports.
+      -> Static Typecheck: OK (0 errors).
       -> Linter: OK (0 warnings).
-      -> Full test suite: 64/64 passed (0 regressions).
+      -> Full Regression Suite: 64/64 passed (100% green).
       -> Commit: feat(wallet): implement idempotent debit with distributed lock
 ```
+
+---
+
+## The 10 Pillars of Q.E.D.
+
+The standard is codified in 10 formal specification documents under [`core/`](core/):
+
+| # | Pillar & Specification | Core Invariant | Risk Eliminated |
+| :-: | :--- | :--- | :--- |
+| **0** | **[Universal Constitution](core/CONSTITUTION.md)** | Quality > Speed by default; evidence before assertions; root cause only. | Speculative coding, cosmetic hacks, placebo fixes. |
+| **1** | **[Testing Philosophy](core/testing-philosophy.md)** | Zero placebo mocks; mandatory boundary matrix; reproduction RED $\rightarrow$ GREEN. | Testing mocks instead of real software; flaky tests. |
+| **2** | **[Adaptive Architecture](core/adaptive-architecture.md)** | Earned complexity; form follows data flow; pristine root; 10-second entrypoint. | Enterprise boilerplate on small tools; cluttered project roots. |
+| **3** | **[Dependency Philosophy](core/dependency-philosophy.md)** | Build vs. Buy matrix; 4-pillar package health audit; The Wrapper Invariant. | Supply chain trojans, bloatware, unmaintained micro-packages. |
+| **4** | **[Threat-Adaptive Security](core/security-philosophy.md)** | 4 Security Tiers; tenant-isolated IDOR checks; anti-security-theater UX (NIST 800). | IDOR leaks, mass assignment, user-hostile login barriers. |
+| **5** | **[Earned Regionality & I18n](core/regionality-and-i18n.md)** | Level 0 baseline (UTF-8, UTC, integer money); native `Intl`; sovereign data residency. | Timezone shift bugs, float money bugs, GDPR fines. |
+| **6** | **[Cache & Resource Hygiene](core/cache-memory-and-file-hygiene.md)** | Bounded LRU cache + TTL; tenant cache isolation; streams for >10MB; scoped temp cleanup. | Out-of-memory (OOM) crashes, 100% disk exhaustion, ghost data. |
+| **7** | **[Git & Pragmatic Versioning](core/git-and-versioning.md)** | Git change ledger $\neq$ Versioning trust contract; Bisect Invariant; changelog split. | Broken git bisect, unearned deprecation, leaked security flaws. |
+| **8** | **[Naming & Semantics](core/naming-philosophy.md)** | Scope-proportional length; positive predicates; contract verbs (`get` vs `fetch`). | Ambiguous names (`data`, `temp`, `res`), misleading predicates. |
+| **9** | **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** | Zero debug prints; throwaway script purge; clean git status before commit. | Production debug logs, leaked tokens, commit pollution. |
 
 ---
 
@@ -156,13 +162,13 @@ irm https://raw.githubusercontent.com/keelbismark/qed/main/install.ps1 | iex
 curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | bash
 ```
 
-### Targeted Tool Setup
-Install configurations for a specific harness only:
+### Targeted Platform Setup
+Install configurations for a specific AI harness only:
 
 ```bash
 ./install.sh cursor      # Cursor AI (.cursorrules & modern .cursor/rules/*.mdc)
 ./install.sh claude      # Claude Code (CLAUDE.md, slash commands, skills)
-./install.sh deepseek    # DeepSeek Harness & Continue.dev
+./install.sh deepseek    # DeepSeek Harness (dsh) & Continue.dev
 ./install.sh roo         # Roo Code custom modes (Architect, TDD, Reviewer)
 ./install.sh global all  # Machine-wide installation across user profile
 ```
@@ -171,17 +177,17 @@ Install configurations for a specific harness only:
 
 ## 20 Supported Platforms
 
-Q.E.D. provides native drop-in adapters and configuration files tailored to each tool's architecture:
+Q.E.D. provides native drop-in adapters and configuration manifests tailored to each tool's architecture:
 
-| Environment | Primary File | Key Features |
+| Environment | Primary Manifest | Key Capabilities |
 | :--- | :--- | :--- |
 | **Cursor AI** | `.cursorrules`, `.cursor/rules/*.mdc` | Modern MDC rules with YAML frontmatter for TDD and Blast Radius |
 | **Claude Code** | `CLAUDE.md`, `.claude/commands/` | Slash commands (`/boost`, `/qed-verify`, `/qed-review`), skills |
-| **Google Antigravity** | `GEMINI.md`, plugin manifest | Multi-agent orchestration, Evidence Before Assertions |
+| **Google Antigravity** | `GEMINI.md`, `.antigravity-plugin/` | Multi-agent orchestration, Evidence Before Assertions |
 | **DeepSeek (dsh & Continue)**| `DEEPSEEK.md`, `.dsh/`, `.continue/` | R1 Chain-of-Thought directives, safety presets, slash commands |
 | **Roo Code & Cline** | `.roomodes`, `.clinerules` | 3 custom roles: `Architect`, `TDD Engineer`, and `Reviewer` |
 | **Windsurf Cascade** | `.windsurfrules`, workflows | Interactive workflows (`qed-boost`, `qed-tdd-cycle`) |
-| **Aider** | `.aider.conf.yml` | Auto-test on commit (`auto-test: true`), Conventional Commits |
+| **Aider** | `.aider.conventions.md` | Auto-test on commit (`auto-test: true`), Conventional Commits |
 | **GitHub Copilot** | `copilot-instructions.md`, prompts | Instructions and prompt templates (`qed-boost`, `qed-spec`) |
 | **OpenCode** | `opencode.json`, `plugins/qed.js` | In-process V1/V2 lifecycle plugin, sandbox constraints |
 | **Codex, Grok, Kimi, Pi, Devin...** | Native manifests & configs | Full parity across 20 environments |
@@ -194,44 +200,46 @@ Q.E.D. provides native drop-in adapters and configuration files tailored to each
 
 Q.E.D. adapts to your velocity requirements:
 
-* **Production Mode (Default: `Quality > Speed`)**  
-  Full engineering rigor. Red-green TDD cycles, blast radius calculation, adversarial testing, and verification before declaring work complete.
-* **Speed Mode (On-Demand: `Speed > Quality`)**  
-  Triggered when you explicitly ask for speed (*"quick"*, *"prototype"*, *"draft"*, *"быстро"*, *"набросок"*). Delivers a working proof-of-concept immediately, with an honest report on shortcuts taken.
+* **Mode A (Production Mode — Default: `Quality > Speed`)**  
+  Full engineering rigor. Red-Green-Refactor TDD cycles, blast radius calculation, adversarial testing, and verification gate before declaring work complete.
+* **Mode B (Speed Mode — On-Demand: `Speed > Quality`)**  
+  Triggered when you explicitly ask for speed (*"quick"*, *"prototype"*, *"draft"*, *"быстро"*, *"набросок"*). Delivers a working proof-of-concept immediately, accompanied by an explicit report detailing shortcuts taken and required hardening steps.
 
 ---
 
-## Comparison
+## Comparison Matrix
 
 | Capability | Q.E.D. | GitHub Spec-Kit | obra/superpowers | BMad Method | Default AI |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Evidence Before Assertions** | Enforced | Partial | Enforced | Partial | None |
-| **Blast Radius Analysis** | Yes | No | No | No | No |
-| **Anti-Duplication Radar** | Mandatory | No | No | No | No |
-| **4 Mandatory States** | Enforced | Partial | No | Partial | None |
-| **3 AM Readability Test** | Enforced | No | Partial | No | None |
-| **Chaos Monkey Edge Cases** | Standard | No | Partial | No | None |
-| **Supported Platforms** | 20 | 1 | 20 | 2 | None |
-| **Context Overhead** | Minimal | Minimal | Minimal | Heavy | Uncontrolled |
+| **Evidence Before Assertions** | **Enforced** | Partial | Enforced | Partial | None |
+| **Blast Radius Analysis** | **Yes** | No | No | No | No |
+| **Anti-Duplication Radar** | **Mandatory** | No | No | No | No |
+| **Threat-Adaptive Security (4 Tiers)**| **Enforced** | No | No | No | None |
+| **Earned Regionality & I18n** | **Enforced** | No | No | No | None |
+| **Bounded Caches & Resource Hygiene**| **Enforced** | No | No | No | None |
+| **4 Mandatory States** | **Enforced** | Partial | No | Partial | None |
+| **3 AM Readability Test** | **Enforced** | No | Partial | No | None |
+| **Chaos Monkey Edge Cases** | **Standard** | No | Partial | No | None |
+| **Supported Platforms** | **20** | 1 | 20 | 2 | None |
+| **Context Overhead** | **Minimal** | Minimal | Minimal | Heavy | Uncontrolled |
 
 ---
 
-## Documentation
+## Specification & Standards Library
 
-* **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
-* **[Cache, Memory & Resource Hygiene](core/cache-memory-and-file-hygiene.md)** — Bounded LRU caches, leak-free streams, temp file lifecycles, and atomic writes.
-* **[Regionality, Localization & Data Sovereignty](core/regionality-and-i18n.md)** — Earned complexity ladder, Level 0 invariants (UTF-8/UTC/money), and data residency.
-* **[Security Philosophy & Threat-Adaptive Tiers](core/security-philosophy.md)** — Context-driven threat modeling, 4 security tiers, and anti-security-theater UX.
-* **[Git & Versioning Philosophy](core/git-and-versioning.md)** — Git change ledger vs. SemVer/CalVer/ZeroVer/Continuous trust contracts.
-* **[Adaptive Architecture & Structure](core/adaptive-architecture.md)** — Anti-template dogmatism, earned complexity, and native ecosystem idioms.
-* **[Dependency Philosophy & Supply Chain](core/dependency-philosophy.md)** — Build vs. Buy matrix, package health audits, and the Wrapper Invariant.
-* **[Naming Philosophy & Semantics](core/naming-philosophy.md)** — Scope-proportional length, positive predicates, and semantic contract verbs.
-* **[Testing Philosophy & Standards](core/testing-philosophy.md)** — Zero placebo mocks, boundary value matrix, and mutation-tested determinism.
-* **[Hygiene & Pre-Commit Sanitization](core/hygiene-and-cleanup.md)** — Zero-debug print invariant, scratch scaffolding purge, and dead code elimination.
-* **[Comment Philosophy & Anti-Noise](core/comment-philosophy.md)** — Ban on syntax echo noise, Why-over-What rules, and high-assurance docstrings.
+* **[Universal Constitution](core/CONSTITUTION.md)** — Foundational articles governing agent behavior.
+* **[Testing Philosophy](core/testing-philosophy.md)** — Zero placebo mocks, boundary matrix, mutation testing.
+* **[Adaptive Architecture](core/adaptive-architecture.md)** — Anti-template dogmatism, earned complexity.
+* **[Dependency Philosophy](core/dependency-philosophy.md)** — Build vs. Buy, 4-pillar audit, Wrapper Invariant.
+* **[Threat-Adaptive Security](core/security-philosophy.md)** — 4 Security Tiers, NIST 800-63B, Tenant Isolation.
+* **[Earned Regionality & I18n](core/regionality-and-i18n.md)** — Level 0-3 ladder, UTC wire, minor integer money.
+* **[Cache, Memory & Resource Hygiene](core/cache-memory-and-file-hygiene.md)** — Bounded LRU, leak-free streams, temp cleanup.
+* **[Git & Pragmatic Versioning](core/git-and-versioning.md)** — Change ledger vs. trust contract, Bisect Invariant.
+* **[Naming & Semantics](core/naming-philosophy.md)** — Scope-proportional names, positive predicates, contract verbs.
+* **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** — Zero-debug print invariant, dead code elimination.
+* **[Comment Philosophy & Anti-Noise](core/comment-philosophy.md)** — Ban on syntax echo noise, Why-over-What rules.
+* **[Documentation & Visual Standards](core/documentation-and-visuals.md)** — Human vs. AI separation, responsive SVG graphics.
 * **[AI Agent Guide (llms.txt)](llms.txt)** — High-density machine entrypoint for LLMs.
-* **[Documentation & Visual Standards](core/documentation-and-visuals.md)** — Human vs. AI separation, responsive SVG graphics, and anti-slop rules.
-* **[Core Protocols](docs/protocols.md)** — In-depth guide to Blast Radius, Anti-Duplication, and Chaos Monkey.
 * **[Harness Guide](docs/harnesses.md)** — Setup reference for all 20 platforms.
 * **[Templates](templates/)** — Templates for Specs, Architecture Decision Records (ADRs), and Plans.
 * **[End-to-End Walkthrough](examples/full-lifecycle-walkthrough.md)** — Real-world example building a feature under Q.E.D.

@@ -4,12 +4,12 @@
 
 <p align="center">
   <a href="https://github.com/keelbismark/qed/actions/workflows/ci.yml"><img src="https://github.com/keelbismark/qed/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/keelbismark/qed/releases"><img src="https://img.shields.io/github/v/release/keelbismark/qed?style=flat-square&color=blue" alt="GitHub Release"></a>
+  <a href="https://github.com/keelbismark/qed/releases"><img src="https://img.shields.io/badge/release-v1.0.1-blue.svg?style=flat-square" alt="GitHub Release: v1.0.1"></a>
   <a href="https://www.npmjs.com/package/qed-standard"><img src="https://img.shields.io/npm/v/qed-standard.svg?style=flat-square&logo=npm&color=cb3837" alt="npm: qed-standard"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"></a>
   <a href="docs/harnesses.md"><img src="https://img.shields.io/badge/harnesses-20%20platforms-8b5cf6.svg?style=flat-square" alt="Harnesses: 20 Platforms"></a>
   <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-16%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 16 Core Specs"></a>
-  <a href="core/CONSTITUTION.lite.md"><img src="https://img.shields.io/badge/edition-Q.E.D.%20Lite%20(<500%20tokens)-ec4899.svg?style=flat-square" alt="Edition: Q.E.D. Lite"></a>
+  <a href="core/CONSTITUTION.lite.md"><img src="https://img.shields.io/badge/includes-Q.E.D.%20Lite%20(<500%20tokens)-ec4899.svg?style=flat-square" alt="Includes: Q.E.D. Lite"></a>
   <a href="tests/verify-adapters.ps1"><img src="https://img.shields.io/badge/tests-36%2F36%20passing-38bdf8.svg?style=flat-square" alt="Verification: 100% Passing"></a>
   <a href="llms.txt"><img src="https://img.shields.io/badge/agent-llms.txt-f59e0b.svg?style=flat-square" alt="LLM Entrypoint: llms.txt"></a>
 </p>

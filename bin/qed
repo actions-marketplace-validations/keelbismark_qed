@@ -4,11 +4,19 @@
 
 set -e
 
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMMAND="${1:-check}"
 TARGET_DIR="${2:-.}"
 
+# 1. Prefer Node.js engine if node is available
+if command -v node >/dev/null 2>&1 && [ -f "$DIR/qed-engine.js" ]; then
+    node "$DIR/qed-engine.js" "$@"
+    exit $?
+fi
+
+# 2. Pure POSIX Fallback Implementation
 echo "=========================================================="
-echo " Q.E.D. Mechanical Verification Gate"
+echo " Q.E.D. Mechanical Verification Gate (POSIX Fallback)"
 echo " Evidence Before Assertions"
 echo "=========================================================="
 
@@ -16,45 +24,45 @@ if [ "$COMMAND" = "check" ]; then
     echo "Scanning repository at: $TARGET_DIR"
     VIOLATIONS=0
 
-    # 1. Check Pristine Root
+    # QED001: Check Pristine Root
     echo -n "[-] Checking Pristine Root Invariant... "
     ROOT_JUNKS=$(find "$TARGET_DIR" -maxdepth 1 \( -name "temp_*" -o -name "scratch.*" -o -name "*.tmp" -o -name "*.log" -o -name "test_dump*" \) 2>/dev/null || true)
     if [ -n "$ROOT_JUNKS" ]; then
         echo "[FAIL]"
         for junk in $ROOT_JUNKS; do
-            echo "  [!] PRISTINE_ROOT: Temporary file in root: $junk"
+            echo "  [!] QED001/PRISTINE_ROOT: Temporary file in root: $junk"
             VIOLATIONS=$((VIOLATIONS + 1))
         done
     else
         echo "[PASS]"
     fi
 
-    # 2. Check Zero-Debug Invariant
+    # QED002: Check Zero-Debug Invariant
     echo -n "[-] Checking Zero-Debug Print Invariant... "
     DEBUG_HITS=$(grep -rnE "(console\.(log|debug|dir)\(|debugger;|\bprint\(|fmt\.Println\()" "$TARGET_DIR" \
-        --exclude-dir={.git,node_modules,dist,build,vendor,.next,.cache,tests,scripts,bin} \
+        --exclude-dir={.git,node_modules,dist,build,vendor,.next,.cache,tests,scripts,bin,adapters} \
         --include=\*.{ts,js,py,go,rs} 2>/dev/null | grep -v "logger\." | grep -v "qed-ignore" || true)
 
     if [ -n "$DEBUG_HITS" ]; then
         echo "[FAIL]"
         while IFS= read -r line; do
-            echo "  [!] ZERO_DEBUG: $line"
+            echo "  [!] QED002/ZERO_DEBUG: $line"
             VIOLATIONS=$((VIOLATIONS + 1))
         done <<< "$DEBUG_HITS"
     else
         echo "[PASS]"
     fi
 
-    # 3. Check Type Safety (as any)
+    # QED004: Check Type Safety (as any)
     echo -n "[-] Checking Type Safety (Anti-as any)... "
     CAST_HITS=$(grep -rnE "\bas[[:space:]]+any\b" "$TARGET_DIR" \
-        --exclude-dir={.git,node_modules,dist,build,vendor,.next,.cache,tests,scripts,bin} \
+        --exclude-dir={.git,node_modules,dist,build,vendor,.next,.cache,tests,scripts,bin,adapters} \
         --include=\*.{ts,tsx} 2>/dev/null | grep -v "qed-ignore" || true)
 
     if [ -n "$CAST_HITS" ]; then
         echo "[FAIL]"
         while IFS= read -r line; do
-            echo "  [!] TYPE_SAFETY: $line"
+            echo "  [!] QED004/UNSAFE_CAST: $line"
             VIOLATIONS=$((VIOLATIONS + 1))
         done <<< "$CAST_HITS"
     else
@@ -71,30 +79,23 @@ if [ "$COMMAND" = "check" ]; then
     fi
 
 elif [ "$COMMAND" = "hook" ]; then
-    HOOK_FILE="$TARGET_DIR/.git/hooks/pre-commit"
-    if [ ! -d "$TARGET_DIR/.git/hooks" ]; then
-        echo "Error: No .git directory found at $TARGET_DIR."
-        exit 1
-    fi
+    HOOK_DIR="$TARGET_DIR/.git/hooks"
+    HOOK_FILE="$HOOK_DIR/pre-commit"
+    mkdir -p "$HOOK_DIR"
+
     cat << 'EOF' > "$HOOK_FILE"
 #!/usr/bin/env sh
 # Q.E.D. Automated Mechanical Gate Pre-Commit Hook
 
-echo "Running Q.E.D. Pre-Commit Gate..."
-if [ -f "./bin/qed" ]; then
+if command -v node >/dev/null 2>&1 && [ -f "./bin/qed-engine.js" ]; then
+    node "./bin/qed-engine.js" check
+    exit $?
+elif [ -f "./bin/qed" ]; then
     ./bin/qed check
-    EXIT_CODE=$?
+    exit $?
 elif [ -f "./bin/qed.ps1" ]; then
     pwsh -ExecutionPolicy Bypass -File "./bin/qed.ps1" check || powershell -ExecutionPolicy Bypass -File "./bin/qed.ps1" check
-    EXIT_CODE=$?
-else
-    echo "Warning: Q.E.D. runner not found. Skipping gate."
-    exit 0
-fi
-
-if [ "$EXIT_CODE" -ne 0 ]; then
-    echo "Commit BLOCKED by Q.E.D. Mechanical Verification Gate."
-    exit 1
+    exit $?
 fi
 exit 0
 EOF

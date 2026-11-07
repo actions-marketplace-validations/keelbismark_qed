@@ -1,0 +1,25 @@
+---
+description: Q.E.D. Documentation, Visual Ergonomics and Anti-Slop Standard
+globs: "*"
+alwaysApply: true
+---
+
+# Documentation & Visual Ergonomics Standard (Q.E.D.)
+
+When authoring documentation, diagrams, or visual assets in this repository:
+
+## 1. Audience Separation
+- **`README.md` (Human)**: Scannable in 60s. Start with the concrete problem, show Before/After code contrast, keep main text concise, and offload deep tables to `docs/`.
+- **`AI_README.md` / `llms.txt` (Machine)**: Maximum token density, zero conversational fluff, explicit invariants, and exact file structure mappings.
+- **Zero Emoji Salad**: Never prepend every header with cartoon emojis.
+
+## 2. Diagram Ergonomics (Ban on Diagram Slop)
+- **Strict Ban on 3-Screen Vertical Noodles**: Never generate multi-subgraph vertical Mermaid diagrams (`flowchart TD`) that create 2000px gray towers.
+- **Horizontal & Compact**: Inline workflow diagrams must be horizontal (`flowchart LR`, SVGs) and stay under 150px in vertical height.
+- **Evidence Over Abstract Art**: Prefer real terminal command and test logs showing Red/Green cycles over abstract diagrams.
+
+## 3. High-Assurance SVG Standard
+- **Pure Vector**: Responsive `viewBox="0 0 W H"` with `width="100%" height="auto" preserveAspectRatio="xMidYMid meet"`.
+- **Theme Immunity**: Include an outer canvas card container (`fill="url(#canvasGrad)" rx="14"`) so contrast is 100% stable in both Dark and Light themes.
+- **Typography**: Use modern system font stacks (`-apple-system, BlinkMacSystemFont, Segoe UI`).
+- **Badges**: Use `style=flat-square` shields with calibrated color tokens.

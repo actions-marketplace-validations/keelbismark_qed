@@ -64,3 +64,12 @@ Refer to workspace workflows in `.windsurf/workflows/`:
 - `qed-spec-and-blast-radius.md`: Pre-implementation specification and blast radius analysis.
 - `qed-tdd-cycle.md`: Red-green-refactor workflow.
 - `qed-verification-gate.md`: Final verification and commit gate.
+
+---
+
+## 5. Phase 5 — Documentation & Visual Ergonomics (Anti-Slop)
+- Separate Human vs. Machine entrypoints (`README.md` for humans, `AI_README.md`/`llms.txt` for agents).
+- Zero cartoon emoji salad in headers; no marketing puffery.
+- Strict ban on 3-screen vertical Mermaid noodles: inline workflow diagrams must be horizontal and under 150px height.
+- High-assurance SVGs: pure vector, responsive (`viewBox`, `100%` width, `height="auto"`), self-contained dark canvas card for theme immunity, system font typography.
+- Prefer real terminal command/test logs over abstract decorative graphics.

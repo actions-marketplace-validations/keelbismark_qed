@@ -85,3 +85,13 @@ This repository provides custom Q.E.D. skills and slash commands:
 - **`qed-verify`** / **`/qed-verify`**: Executes the automated verification gate (typechecker, linter, tests) and produces an evidence-based report.
 - **`qed-review`** / **`/qed-review`**: Conducts an adversarial code review on recent git diffs, checking Blast Radius, Anti-Duplication, the 4 States, and the 3 AM Test.
 - **`qed-blast-radius`** / **`/qed-blast-radius`**: Maps direct and indirect dependencies for any proposed modification to shared code.
+
+---
+
+## 5. Documentation & Visual Ergonomics (Anti-Slop)
+
+- **Separation of Audiences**: Human front door (`README.md`, scannable in 60s, Before/After code contrast) vs. machine front door (`AI_README.md` / `llms.txt`).
+- **Zero Emoji Salad**: Never prepend every header with cartoon emojis; no marketing puffery.
+- **No 3-Screen Vertical Noodles**: Inline workflow diagrams must be horizontal (`flowchart LR` or SVGs) and under 150px vertical height.
+- **High-Assurance SVGs**: Pure vector, responsive (`viewBox`, `100%` width, `height="auto"`), self-contained dark canvas card for theme immunity, system font typography.
+- **Evidence Over Abstract Art**: Prefer real terminal command and test logs over speculative diagrams.

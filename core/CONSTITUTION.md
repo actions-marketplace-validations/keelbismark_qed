@@ -150,3 +150,22 @@ Before reporting completion:
    - Confirm all 4 states (Empty, Loading, Error, Success) and edge cases are safely handled.
 3. **Clean Report**:
    - Summarize what was verified with real output/evidence, note any relevant architectural decisions, and outline how the user can test the change.
+
+---
+
+## 9. Phase 7 — Documentation, Visual Integrity & Anti-Slop Standard
+
+Any documentation or visual asset produced under Q.E.D. must obey these rules:
+
+1. **Separation of Audiences (Human vs. Machine)**:
+   - **`README.md` (Human Front Door)**: Scannable within 60 seconds. Starts with a concrete developer pain point, provides immediate Before/After code contrast, and offloads deep references to `docs/`. Zero cartoon emoji spam.
+   - **`AI_README.md` / `llms.txt` (Machine Front Door)**: Maximum token density, zero conversational fluff, exact command sequences, architectural invariants, and directory mappings.
+2. **Strict Ban on Diagram Slop**:
+   - **No 3-Screen Vertical Noodles**: Multi-subgraph vertical Mermaid diagrams (`flowchart TD`) that stretch into 2000px gray towers are strictly forbidden.
+   - **Horizontal & Compact**: Main workflow illustrations must flow horizontally (`flowchart LR` or compact SVGs) and stay under 150px in vertical height.
+   - **Evidence Over Abstract Art**: Prefer crisp, monospaced terminal logs showing failing (Red) and passing (Green) test runs over speculative shapes.
+3. **High-Assurance SVG & Illustration Standard**:
+   - **Theme Resilience**: Diagram SVGs must feature their own background canvas card so they render with pristine contrast in both Dark and Light themes.
+   - **Responsive Scaling**: Always declare `viewBox`, `width="100%"`, `height="auto"`, and `preserveAspectRatio="xMidYMid meet"`.
+   - **Typography**: Use modern system font stacks (`-apple-system, BlinkMacSystemFont, 'Segoe UI'`) with calibrated letter-spacing on small caps and badge pills.
+   - **Developer Badges**: Use `style=flat-square` shields for factual metadata; avoid decorative badge spam.

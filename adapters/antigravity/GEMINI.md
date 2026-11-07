@@ -26,3 +26,10 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 ## 5. Ironclad TDD & Verification Gate
 - For bug fixes: Write reproduction test first (Red), fix root cause, confirm passing (Green).
 - Verify type checks, linters, and full test suite before declaring completion.
+
+## 6. Documentation & Visual Ergonomics (Anti-Slop)
+- Separate Human vs. Machine entrypoints (`README.md` for humans, `AI_README.md`/`llms.txt` for agents).
+- Zero emoji salad in headers; no marketing puffery.
+- Strict ban on 3-screen vertical Mermaid noodles: inline workflow diagrams must be horizontal (`flowchart LR` or tailored SVGs) and under 150px height.
+- High-assurance SVGs: pure vector, responsive (`viewBox`, `100%` width, `height="auto"`), self-contained dark canvas card for light/dark theme immunity, modern system fonts.
+- Prefer real terminal command/test logs over abstract decorative graphics.

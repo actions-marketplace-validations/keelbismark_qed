@@ -53,3 +53,10 @@ Your motto is: "Evidence Before Assertions."
   3. Automated test suite (npm test, pytest, cargo test, etc.).
 - Spec Reconciliation: Compare git diff against acceptance criteria and verify 4 states.
 - Conventional Commits: Use feat:, fix:, test:, refactor:, docs:, chore:. Keep commits atomic.
+
+## 6. DOCUMENTATION & VISUAL ERGONOMICS (ANTI-SLOP)
+- Separation of Audiences: README.md for humans (60s scannable, Before/After code contrast), AI_README.md/llms.txt for agents.
+- Zero cartoon emoji salad in headers; no marketing puffery.
+- No 3-screen vertical Mermaid noodles: inline workflow diagrams must be horizontal and under 150px height.
+- High-assurance SVGs: pure vector, responsive (viewBox, 100% width, height=auto), self-contained dark canvas card for theme immunity, system font typography.
+- Prefer real terminal command and test logs over abstract decorative graphics.

@@ -35,3 +35,10 @@ Before reporting completion to the user:
 3. Run full automated test suite (`npm test`, `pytest`, `cargo test`).
 4. Reconcile final git diff against acceptance criteria.
 5. Provide a clear completion report detailing exact commands run and real outputs.
+
+## 5. Phase 5 — Documentation & Visual Ergonomics (Anti-Slop)
+- Separate Human vs. Machine entrypoints (`README.md` for humans, `AI_README.md`/`llms.txt` for agents).
+- Zero cartoon emoji salad in headers; no marketing puffery.
+- Strict ban on 3-screen vertical Mermaid noodles: inline workflow diagrams must be horizontal and under 150px height.
+- High-assurance SVGs: pure vector, responsive (`viewBox`, `100%` width, `height="auto"`), self-contained dark canvas card for theme immunity, system font typography.
+- Prefer real terminal command/test logs over abstract decorative graphics.

@@ -186,7 +186,7 @@ Q.E.D. provides native drop-in adapters and configuration files tailored to each
 | **OpenCode** | `opencode.json`, `plugins/qed.js` | In-process V1/V2 lifecycle plugin, sandbox constraints |
 | **Codex, Grok, Kimi, Pi, Devin...** | Native manifests & configs | Full parity across 20 environments |
 
-👉 **[View Full Harness Details & Manual Configurations →](docs/harnesses.md)**
+[View Full Harness Details & Manual Configurations →](docs/harnesses.md)
 
 ---
 
@@ -218,12 +218,13 @@ Q.E.D. adapts to your velocity requirements:
 
 ## Documentation
 
-* 📘 **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
-* 🤖 **[AI Agent Guide (llms.txt)](llms.txt)** — High-density machine entrypoint for LLMs.
-* 🛡️ **[Core Protocols](docs/protocols.md)** — In-depth guide to Blast Radius, Anti-Duplication, and Chaos Monkey.
-* 🔌 **[Harness Guide](docs/harnesses.md)** — Setup reference for all 20 platforms.
-* 📝 **[Templates](templates/)** — Templates for Specs, Architecture Decision Records (ADRs), and Plans.
-* 💡 **[End-to-End Walkthrough](examples/full-lifecycle-walkthrough.md)** — Real-world example building a feature under Q.E.D.
+* **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
+* **[AI Agent Guide (llms.txt)](llms.txt)** — High-density machine entrypoint for LLMs.
+* **[Documentation & Visual Standards](core/documentation-and-visuals.md)** — Human vs. AI separation, responsive SVG graphics, and anti-slop rules.
+* **[Core Protocols](docs/protocols.md)** — In-depth guide to Blast Radius, Anti-Duplication, and Chaos Monkey.
+* **[Harness Guide](docs/harnesses.md)** — Setup reference for all 20 platforms.
+* **[Templates](templates/)** — Templates for Specs, Architecture Decision Records (ADRs), and Plans.
+* **[End-to-End Walkthrough](examples/full-lifecycle-walkthrough.md)** — Real-world example building a feature under Q.E.D.
 
 ---
 

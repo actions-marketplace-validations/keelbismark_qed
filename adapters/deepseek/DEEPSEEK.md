@@ -44,3 +44,12 @@ Before reporting completion:
 2. Run project linters (`eslint`, `ruff`, etc.).
 3. Run the full test suite (`npm test`, `pytest`, etc.).
 4. Confirm zero regressions and format git commits via Conventional Commits (`feat:`, `fix:`, `test:`, `refactor:`).
+
+---
+
+## 5. Documentation & Visual Ergonomics (Anti-Slop)
+- Separate Human vs. Machine entrypoints (`README.md` for humans, `AI_README.md`/`llms.txt` for agents).
+- Zero emoji salad in headers; no marketing puffery.
+- Strict ban on 3-screen vertical Mermaid noodles: inline workflow diagrams must be horizontal and under 150px height.
+- High-assurance SVGs: pure vector, responsive (`viewBox`, `100%` width, `height="auto"`), self-contained dark canvas card for theme immunity, system font typography.
+- Prefer real terminal command/test logs over abstract decorative graphics.

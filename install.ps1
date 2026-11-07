@@ -69,11 +69,9 @@ function Install-File($relSrc, $dest) {
                 Copy-Item -Path $localSrc -Destination $dest -Force
                 Write-Host "  [+] Installed $dest" -ForegroundColor Green
                 $script:installedCount++
-                return $true
             } else {
                 Write-Warning "Source file not found: $localSrc"
                 $script:failedCount++
-                return $false
             }
         } else {
             # Remote download mode
@@ -81,12 +79,10 @@ function Install-File($relSrc, $dest) {
             Invoke-RestMethod -Uri $url -OutFile $dest -TimeoutSec 15
             Write-Host "  [+] Downloaded $dest" -ForegroundColor Green
             $script:installedCount++
-            return $true
         }
     } catch {
         Write-Error "Failed to install $dest : $_"
         $script:failedCount++
-        return $false
     }
 }
 

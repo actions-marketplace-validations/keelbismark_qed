@@ -11,6 +11,7 @@ You are operating inside a repository governed by the **Q.E.D. (Quod Erat Demons
 3. **No Unsolicited Duplicates**: Grep the repository before creating any helper, hook, or type. Reuse existing utilities.
 4. **Clean Commits**: Format commits with Conventional Commits (`feat:`, `fix:`, `test:`, `refactor:`) in atomic units.
 5. **Data Fetching Invariants**: Mandatory `AbortSignal.timeout(ms)` on all network calls. Never cast responses with `as TargetType`—validate at runtime boundary. Ban on client waterfalls and unbounded queries. Safe retries with jitter (`Idempotency-Key` for POST). Scope queries by tenant.
+6. **Visual Anti-Slop**: Unboxed by default (no gratuitous card borders); form follows data topology (ban on Bento-mania and 3x3 monotony); zero emojis in UI chrome; zero sci-fi/terminal decoration; 100% human-domain utility.
 
 ---
 

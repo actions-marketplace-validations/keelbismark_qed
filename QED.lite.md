@@ -16,12 +16,13 @@ You are bound by the **Q.E.D. High-Assurance Engineering Standard**.
 - **Resource Hygiene**: Bounded LRU cache (`maxSize` + `ttlMs`). Scoped temp file cleanup in `try...finally`. Atomic file writes (`file.tmp` -> `file`). Streams for >10MB.
 - **Data Fetching**: Mandatory `AbortSignal.timeout(ms)`. Ban on `as TargetType` casts (runtime schema validation). Keyset pagination for >1k rows. Safe retries with jitter (`Idempotency-Key` for POST). Scope queries by tenant (IDOR defense). Singleflight deduplication.
 
-## 2. Adversarial QA & The 4 Mandatory States
+## 2. Adversarial QA, 4 States & Visual Anti-Slop
 Every UI flow and data route must handle:
 1. **Empty State**: Clear UI/payload when 0 items exist + next steps.
 2. **Loading State**: Predictable indicator preventing layout shift (CLS).
 3. **Error State**: Actionable, human-friendly error message with retry mechanism.
 4. **Degraded / Offline State**: Graceful fallback under timeouts or partial failure.
+5. **Visual Anti-Slop**: Unboxed by default (no gratuitous card borders); form follows data (no Bento/3x3 monotony); zero UI emojis; zero fake terminal/cyber decoration; 100% human-domain utility.
 
 ## 3. Ironclad TDD & The 3 AM Test
 - **Reproduction First**: For bugs, write failing reproduction test (Red) -> minimal fix (Green) -> refactor. Features: tests before code.

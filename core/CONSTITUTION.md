@@ -86,12 +86,20 @@ Before writing any non-trivial code:
     - **Invalidation & Tenant Isolation**: Cache keys must be tenant-scoped (`tenant:${orgId}:${id}`); keys must be purged/updated immediately upon DB mutation (zero phantom data); protect hot keys with Singleflight.
     - **Resource Lifecycle Hygiene**: Guaranteed cleanup of temporary files (`try...finally` / `withTempFile`); atomic file writes (`file.tmp` -> `file`); stream processing with backpressure for payloads > 10MB (zero buffering gigabytes into RAM).
 11. **Data Fetching, Transport Resilience & Boundary Integrity**:
+    - **Earned Complexity Ladder**: Level 0 (zero-cost baseline: native fetch + AbortSignal.timeout + Zod boundary parse + tenant ID filter); Level 1 (Singleflight + Keyset pagination + local LRU SWR); Level 2 (distributed Redis cache + Invalidate-on-Write + PgBouncer); Level 3 (CQRS + CDC event streaming + Edge replicas). Never deploy Level 2-3 for Level 0 workloads.
     - **Mandatory Timeout Deadline**: Zero naked `fetch()` calls without an explicit `AbortSignal.timeout(ms)` or context deadline (no hanging worker threads).
     - **The Retry Triad & Idempotency**: Exponential backoff with full randomized jitter; retries restricted to transient errors (429 with `Retry-After`, 502/503/504, network breaks). Strict ban on auto-retrying `POST` mutations without an `Idempotency-Key`.
     - **Strict Boundary Parsing (The Anti-`as` Invariant)**: Inbound network payloads are untrusted `unknown`. Parsing must occur through runtime schemas (Zod, ArkType, typed DTOs). Never use `as TargetType` casts. Follow Tolerant Reader for backwards compatibility.
     - **Topology & Pagination**: Ban on client/server $N+1$ waterfalls; Keyset/Cursor pagination for datasets $>1,000$ rows ($O(1)$ index seek); mandatory server-side limit clamping (`Math.min(limit, 100)`).
     - **Race Elimination & 4 Fetch States**: Abort stale in-flight requests on input changes (`AbortController`); deduplicate concurrent identical requests via Singleflight; explicitly handle Idle, Loading (no CLS), Empty (with CTA), and Error (with Retry).
     - **Tenant Scoping & DTO Projections**: Always enforce `tenant_id` filters in query predicates (IDOR defense); project strictly necessary fields via read DTOs (ban on leaking internal password hashes or audit columns via `SELECT *`).
+12. **Visual Anti-Slop, Unboxed-by-Default & Human Reality Standard**:
+    - **Unboxed by Default**: Ban on gratuitous card containers (`border rounded-xl bg-card p-6`). Layouts live directly on the open canvas structured by typography and whitespace; borders are reserved solely for distinct interactive frames (modals, data tables, sidebars).
+    - **Form Follows Data Topology**: Ban on Bento-mania and arbitrary equal-height tiling. Tabular data belongs in high-density tables; sequences belong in timelines; hierarchies belong in trees.
+    - **Zero Sci-Fi / Terminal Clutter**: Ban on faux-terminal prompts (`$`), code slashes (`// 01`), neon cyberpunk laser gradients, and fake GPS coordinates in business applications.
+    - **Zero Emoji Salad**: Strict ban on emojis in UI chrome, headers, buttons, and list bullets. Use calibrated, accessible SVG vector icons (`aria-hidden="true"`).
+    - **Eradicate Technical Narcissism**: Strip backend bragging (database sharding, Dijkstra algorithms, internal UUIDs) from user interfaces. Speak 100% in user-domain concepts; use human-scale approximations over pseudo-math micro-precision ("~3 min walk" not "2.381 minutes").
+    - **Zero KPI Hallucinations**: Sparklines and percentages must be backed by real historical telemetry; ban on purely decorative static green SVG trend lines.
 
 ---
 

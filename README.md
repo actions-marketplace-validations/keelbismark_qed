@@ -57,6 +57,15 @@ npm install -g qed-standard
 qed check
 ```
 
+Automate in **GitHub Actions**:
+
+```yaml
+- name: Q.E.D. Verification Gate
+  uses: keelbismark/qed@main
+  with:
+    strict: true
+```
+
 ### 2. Give your agent the rules
 
 Clone this repository and run its installer **from your target project**. The following example installs Cursor rules:

@@ -57,6 +57,15 @@ npm install -g qed-standard
 qed check
 ```
 
+Автоматизация в **GitHub Actions**:
+
+```yaml
+- name: Q.E.D. Verification Gate
+  uses: keelbismark/qed@main
+  with:
+    strict: true
+```
+
 ### 2. Передайте агенту правила
 
 Клонируйте этот репозиторий и запустите его установщик **из каталога своего проекта**. Пример для Cursor:

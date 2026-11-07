@@ -57,6 +57,15 @@ npm install -g qed-standard
 qed check
 ```
 
+在 **GitHub Actions** 中自动运行：
+
+```yaml
+- name: Q.E.D. Verification Gate
+  uses: keelbismark/qed@main
+  with:
+    strict: true
+```
+
 ### 2. 把规则交给智能体
 
 克隆本仓库，然后**在目标项目目录中**运行安装脚本。以下示例安装 Cursor 规则：

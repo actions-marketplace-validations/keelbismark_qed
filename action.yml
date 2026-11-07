@@ -1,0 +1,42 @@
+name: 'Q.E.D. Verification Gate'
+description: 'Zero-dependency mechanical verification engine enforcing engineering discipline and anti-slop invariants.'
+author: 'KeelBismarck'
+branding:
+  icon: 'check-square'
+  color: 'green'
+
+inputs:
+  target:
+    description: 'Target directory to inspect (defaults to repository root)'
+    required: false
+    default: '.'
+  strict:
+    description: 'Treat warnings as errors (strict mode)'
+    required: false
+    default: 'false'
+  compact:
+    description: 'Produce dense, token-efficient output for AI agents'
+    required: false
+    default: 'false'
+  json:
+    description: 'Produce machine-readable JSON output'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Q.E.D. Verification Engine
+      shell: bash
+      run: |
+        CMD_ARGS="check ${{ inputs.target }}"
+        if [ "${{ inputs.strict }}" = "true" ]; then
+          CMD_ARGS="$CMD_ARGS --strict"
+        fi
+        if [ "${{ inputs.compact }}" = "true" ]; then
+          CMD_ARGS="$CMD_ARGS --compact"
+        fi
+        if [ "${{ inputs.json }}" = "true" ]; then
+          CMD_ARGS="$CMD_ARGS --json"
+        fi
+        node "${{ github.action_path }}/bin/qed-engine.js" $CMD_ARGS

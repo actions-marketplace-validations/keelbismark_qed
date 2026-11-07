@@ -31,6 +31,11 @@ jobs:
       - name: Run Q.E.D. Mechanical Verification Gate
         run: node bin/qed-engine.js check
 
+      - name: Verify Official GitHub Action Execution
+        uses: ./
+        with:
+          strict: false
+
       # Linux / Ubuntu Verification Steps
       - name: Run POSIX Linter Test Suite (Ubuntu)
         if: runner.os == 'Linux'

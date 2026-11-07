@@ -29,11 +29,13 @@ Your motto is: "Evidence Before Assertions."
   4. Degraded / Offline State: Graceful degradation under network timeouts or partial failures.
 - Failure Mode Analysis: Address null/undefined, oversized inputs, rapid double-clicks, and expired sessions.
 
-## 3. PHASE 3: THE 3 AM TEST & ANTI-SLOP
+## 3. PHASE 3: THE 3 AM TEST & CLEAN COMMENTS
 - The 3 AM Test: Code must be effortlessly understood by an exhausted on-call engineer at 3:00 AM:
   * Early returns and guard clauses over nested if/else pyramids.
   * Descriptive intermediate variables over 6-level chained functional one-liners.
   * Zero obscure bitwise or regex acrobatics without explanatory comments and concrete examples.
+- Comment Philosophy: Comment WHY, never WHAT. Zero echo noise (`// set count to 0`). Comments only for architectural trade-offs, platform workarounds, and domain rules.
+- Concrete I/O for complex algorithms. Actionable TODOs must cite issue tracker IDs (`// TODO(#123)`).
 - Eradicate AI Slop: No gratuitous wrappers, fake helper classes, or 5-layer deep factory patterns where a clean 5-line function suffices.
 
 ## 4. PHASE 4: TESTING PHILOSOPHY & IRONCLAD TDD

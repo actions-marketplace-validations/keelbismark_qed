@@ -1,10 +1,10 @@
 ---
-description: Q.E.D. The 3 AM Test - Code readability, flat structures, guard clauses, and AI anti-slop
+description: Q.E.D. The 3 AM Test - Code readability, clean comments, guard clauses, and AI anti-slop
 globs: "*"
 alwaysApply: false
 ---
 
-# Q.E.D. The 3 AM Readability Test & Anti-Slop Directive
+# Q.E.D. The 3 AM Readability Test & Comment Standard
 
 ## 1. The 3 AM Standard
 Write code that an exhausted on-call engineer can instantly understand and debug at 3:00 AM without cognitive strain:
@@ -12,12 +12,22 @@ Write code that an exhausted on-call engineer can instantly understand and debug
 - **Descriptive Intermediate Variables**: Avoid 5+ level chained functional operations (`.map().filter().reduce()`). Break into named variables explaining intent.
 - **Cognitive Clarity**: No clever bitwise hacks, multi-level ternaries, or unreadable regexes without explanatory comments and concrete examples.
 
-## 2. Eradicate AI Generative Slop
+## 2. Comment Philosophy & Anti-Noise Standard
+- **Code explains WHAT, Comments explain WHY**: Never add narrative echo comments that merely translate adjacent syntax into English (`// Set status to active`).
+- **Self-Documenting Code First**: Extract complex logic into descriptive boolean variables and helper functions before reaching for comments.
+- **4 Permitted Categories**:
+  * *Architectural Why*: Documenting why an obvious alternative was rejected.
+  * *Platform Workarounds*: Documenting vendor/browser quirks with issue/bug tracker links.
+  * *Domain Invariants*: Regulatory, legal, or non-obvious business rules.
+  * *Concrete I/O Examples*: Input/output tables for complex regexes, parsers, or math.
+- **Actionable TODOs Only**: Ban on vague apologies (`// TODO: fix later`). All TODOs must cite an issue tracker (`// TODO(#102): ...`).
+
+## 3. Eradicate AI Generative Slop
 - Eliminate fake wrappers, boilerplate abstractions, or 5-layer deep factories when a 5-line plain function works.
 - Keep dependencies lean; do not pull in heavy external packages for trivial operations.
 - In UI: eliminate cliché terminal aesthetics, monotonous 3x3 Bento grids, and decorative borders that provide zero user utility.
 
-## 3. The 4 Mandatory States
+## 4. The 4 Mandatory States
 Every UI view and API route must implement:
 1. **Empty State**: Friendly UI when 0 records exist, offering a clear CTA.
 2. **Loading State**: Skeleton or indicator preventing layout shifts.

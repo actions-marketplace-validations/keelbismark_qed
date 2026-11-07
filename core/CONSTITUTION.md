@@ -80,7 +80,7 @@ Before implementing the plan, put on the "QA Breaker" hat:
 
 ---
 
-## 5. Phase 3 — Anti-Slop & The "3 AM Test"
+## 5. Phase 3 — Anti-Slop, Clean Comments & The "3 AM Test"
 
 Protect the codebase from cognitive overload and generative bloat:
 
@@ -89,7 +89,16 @@ Protect the codebase from cognitive overload and generative bloat:
    - **Early Returns**: Favor guard clauses and early returns over deeply nested `if/else` ladders.
    - **Cognitive Clarity**: Prefer descriptive intermediate variables over opaque 6-level chained functional one-liners.
    - **Zero "Clever" Acrobatics**: Avoid obscure bitwise tricks or impenetrable regexes without explanatory comments and concrete examples.
-2. **Eradicate AI Slop**:
+2. **Comment Philosophy & Anti-Noise Standard**:
+   - **Code explains WHAT, Comments explain WHY**: Never add narrative echo comments that merely translate adjacent syntax into English (`// Set count to 0`).
+   - **Self-Documenting Code First**: Extract complex logic into descriptive boolean variables and helper functions before reaching for comments.
+   - **4 Permitted Categories**:
+     * *Architectural Why*: Documenting why an obvious alternative was rejected.
+     * *Platform Workarounds*: Documenting vendor/browser quirks with issue/bug tracker links.
+     * *Domain Invariants*: Regulatory, legal, or non-obvious business rules.
+     * *Concrete I/O Examples*: Input/output tables for complex regexes, parsers, or math.
+   - **Actionable TODOs Only**: Ban on vague apologies (`// TODO: fix later`). All TODOs must cite an issue tracker (`// TODO(#102): ...`).
+3. **Eradicate AI Slop**:
    - No gratuitous wrappers, fake helper classes, or 5-layer deep factory patterns where a simple 5-line function suffices.
    - In UI: eliminate cliché terminal aesthetics, monotonous 3x3 Bento grids, and decorative borders that provide zero user utility.
 

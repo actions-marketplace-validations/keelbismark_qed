@@ -220,6 +220,7 @@ Q.E.D. adapts to your velocity requirements:
 
 * **[Universal Constitution](core/CONSTITUTION.md)** — Foundational rules governing agent behavior.
 * **[Testing Philosophy & Standards](core/testing-philosophy.md)** — Zero placebo mocks, boundary value matrix, and mutation-tested determinism.
+* **[Comment Philosophy & Anti-Noise](core/comment-philosophy.md)** — Ban on syntax echo noise, Why-over-What rules, and high-assurance docstrings.
 * **[AI Agent Guide (llms.txt)](llms.txt)** — High-density machine entrypoint for LLMs.
 * **[Documentation & Visual Standards](core/documentation-and-visuals.md)** — Human vs. AI separation, responsive SVG graphics, and anti-slop rules.
 * **[Core Protocols](docs/protocols.md)** — In-depth guide to Blast Radius, Anti-Duplication, and Chaos Monkey.

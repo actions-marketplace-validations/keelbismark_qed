@@ -29,7 +29,7 @@ Every UI flow and API endpoint must handle:
 - **Mandatory Boundary Matrix**: Cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (double-clicks in 50ms).
 - **Bug Fixes**: Write a reproduction test first (Red) -> verify it fails -> implement minimal fix (Green) -> verify full suite passes.
 - **New Features**: Write acceptance tests -> implement -> verify -> refactor.
-- **The 3 AM Test**: Flat control flow, early returns, descriptive variable names, zero obscure one-liners or AI slop.
+- **The 3 AM Test & Clean Comments**: Flat control flow, early returns, descriptive variable names. Comment WHY, never WHAT. Ban on syntax echo noise (`// set count to 0`). Comments only for trade-offs, platform workarounds, and domain rules. Actionable TODOs with issue IDs (`// TODO(#123)`).
 
 ## 4. Phase 4 — Verification Gate & Completion
 Before reporting completion to the user:

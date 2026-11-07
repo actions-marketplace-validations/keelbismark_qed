@@ -1,97 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 130" width="100%" height="auto" preserveAspectRatio="xMidYMid meet">
-  <defs>
-    <!-- Canvas & Card Gradients -->
-    <linearGradient id="pipelineBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#070a0f"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#070a0f"/>
-    </linearGradient>
-    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b"/>
-      <stop offset="100%" stop-color="#0f172a"/>
-    </linearGradient>
-    <linearGradient id="finalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#132e2b"/>
-      <stop offset="100%" stop-color="#091a18"/>
-    </linearGradient>
-    <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.4"/>
-    </filter>
-  </defs>
-
-  <!-- Outer Protective Container: Renders perfectly on both dark & light GitHub backgrounds -->
-  <rect x="2" y="2" width="916" height="126" rx="14" fill="url(#pipelineBg)" stroke="#1e293b" stroke-width="1.5"/>
-
-  <!-- Stage 1: Scope & Impact -->
-  <g transform="translate(14, 15)" filter="url(#subtleGlow)">
-    <rect x="0" y="0" width="198" height="100" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2"/>
-    <rect x="12" y="12" width="26" height="20" rx="4" fill="#3b82f6" opacity="0.25"/>
-    <text x="25" y="26" fill="#60a5fa" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" text-anchor="middle">01</text>
-    <text x="46" y="27" fill="#f8fafc" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">Scope &amp; Impact</text>
-    <circle cx="20" cy="52" r="2.5" fill="#3b82f6"/>
-    <text x="28" y="55" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Anti-Duplication Grep</text>
-    <circle cx="20" cy="70" r="2.5" fill="#3b82f6"/>
-    <text x="28" y="73" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Blast Radius Mapping</text>
-    <circle cx="20" cy="88" r="2.5" fill="#3b82f6"/>
-    <text x="28" y="91" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Binary Acceptance Gate</text>
-  </g>
-
-  <!-- Connector 1 -> 2 -->
-  <g transform="translate(216, 57)">
-    <line x1="2" y1="8" x2="20" y2="8" stroke="#3b82f6" stroke-width="2" stroke-dasharray="3 2"/>
-    <polygon points="20,4 28,8 20,12" fill="#3b82f6"/>
-  </g>
-
-  <!-- Stage 2: Adversarial QA -->
-  <g transform="translate(248, 15)" filter="url(#subtleGlow)">
-    <rect x="0" y="0" width="198" height="100" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2"/>
-    <rect x="12" y="12" width="26" height="20" rx="4" fill="#8b5cf6" opacity="0.25"/>
-    <text x="25" y="26" fill="#a78bfa" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" text-anchor="middle">02</text>
-    <text x="46" y="27" fill="#f8fafc" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">Adversarial QA</text>
-    <circle cx="20" cy="52" r="2.5" fill="#8b5cf6"/>
-    <text x="28" y="55" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">4 Mandatory States</text>
-    <circle cx="20" cy="70" r="2.5" fill="#8b5cf6"/>
-    <text x="28" y="73" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Chaos Monkey Edges</text>
-    <circle cx="20" cy="88" r="2.5" fill="#8b5cf6"/>
-    <text x="28" y="91" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Concurrency &amp; Payloads</text>
-  </g>
-
-  <!-- Connector 2 -> 3 -->
-  <g transform="translate(450, 57)">
-    <line x1="2" y1="8" x2="20" y2="8" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="3 2"/>
-    <polygon points="20,4 28,8 20,12" fill="#8b5cf6"/>
-  </g>
-
-  <!-- Stage 3: Ironclad TDD -->
-  <g transform="translate(482, 15)" filter="url(#subtleGlow)">
-    <rect x="0" y="0" width="198" height="100" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2"/>
-    <rect x="12" y="12" width="26" height="20" rx="4" fill="#ec4899" opacity="0.25"/>
-    <text x="25" y="26" fill="#f472b6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" text-anchor="middle">03</text>
-    <text x="46" y="27" fill="#f8fafc" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">Ironclad TDD</text>
-    <circle cx="20" cy="52" r="2.5" fill="#ef4444"/>
-    <text x="28" y="55" fill="#f87171" font-family="system-ui, -apple-system, sans-serif" font-size="11">Failing Test First (RED)</text>
-    <circle cx="20" cy="70" r="2.5" fill="#10b981"/>
-    <text x="28" y="73" fill="#34d399" font-family="system-ui, -apple-system, sans-serif" font-size="11">Minimal Fix (GREEN)</text>
-    <circle cx="20" cy="88" r="2.5" fill="#ec4899"/>
-    <text x="28" y="91" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">The 3 AM Test Polish</text>
-  </g>
-
-  <!-- Connector 3 -> 4 -->
-  <g transform="translate(684, 57)">
-    <line x1="2" y1="8" x2="20" y2="8" stroke="#10b981" stroke-width="2"/>
-    <polygon points="20,4 28,8 20,12" fill="#10b981"/>
-  </g>
-
-  <!-- Stage 4: Verification Gate -->
-  <g transform="translate(716, 15)" filter="url(#subtleGlow)">
-    <rect x="0" y="0" width="190" height="100" rx="10" fill="url(#finalGrad)" stroke="#10b981" stroke-width="1.5"/>
-    <rect x="12" y="12" width="26" height="20" rx="4" fill="#10b981" opacity="0.3"/>
-    <text x="25" y="26" fill="#34d399" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" text-anchor="middle">04</text>
-    <text x="46" y="27" fill="#f8fafc" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">Verification Gate</text>
-    <circle cx="20" cy="52" r="2.5" fill="#10b981"/>
-    <text x="28" y="55" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Typecheck &amp; Linter</text>
-    <circle cx="20" cy="70" r="2.5" fill="#10b981"/>
-    <text x="28" y="73" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Full Regression Suite</text>
-    <text x="20" y="91" fill="#34d399" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">✓ Atomic Commit</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 144" width="100%" height="auto" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <title id="title">From task to evidence</title>
+  <desc id="desc">Scope, challenge, reproduce, and verify. The engineering workflow is guidance for the agent, not a pipeline automatically executed by the CLI.</desc>
+  <defs><linearGradient id="canvas" x2="1" y2="1"><stop stop-color="#0b0f17"/><stop offset="1" stop-color="#111827"/></linearGradient></defs>
+  <rect x="2" y="2" width="956" height="140" rx="14" fill="url(#canvas)" stroke="#334155"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <path d="M47 37H913" stroke="#334155"/>
+    <g fill="#111827" stroke="#3b82f6"><circle cx="40" cy="37" r="15"/><circle cx="278" cy="37" r="15"/><circle cx="516" cy="37" r="15"/><circle cx="754" cy="37" r="15" stroke="#10b981"/></g>
+    <g font-size="11" font-weight="600" fill="#f8fafc" text-anchor="middle"><text x="40" y="41">01</text><text x="278" y="41">02</text><text x="516" y="41">03</text><text x="754" y="41">04</text></g>
+    <g font-size="19" font-weight="600" fill="#f8fafc"><text x="25" y="83">Scope</text><text x="263" y="83">Challenge</text><text x="501" y="83">Reproduce</text><text x="739" y="83">Verify</text></g>
+    <g font-size="13" fill="#94a3b8"><text x="25" y="110">Search. Map the impact.</text><text x="263" y="110">States. Inputs. Concurrency.</text><text x="501" y="110">Failing test → minimal fix.</text><text x="739" y="110">Run checks. Report evidence.</text></g>
+    <path d="M909 30h13v13h-13z" fill="#10b981"/>
   </g>
 </svg>

@@ -18,6 +18,9 @@
     "install.ps1",
     "LICENSE",
     "README.md",
+    "README.ru.md",
+    "README.zh-CN.md",
+    "assets",
     "llms.txt",
     "QED.lite.md"
   ],

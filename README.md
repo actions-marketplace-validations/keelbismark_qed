@@ -1,353 +1,187 @@
-<p align="center">
-  <img src="assets/banner.svg" alt="Q.E.D. Banner" width="100%">
-</p>
+![Q.E.D. — Evidence before assertions.](assets/banner.svg)
 
-<p align="center">
-  <a href="https://github.com/keelbismark/qed/actions/workflows/ci.yml"><img src="https://github.com/keelbismark/qed/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/keelbismark/qed/releases"><img src="https://img.shields.io/badge/release-v1.0.1-blue.svg?style=flat-square" alt="GitHub Release: v1.0.1"></a>
-  <a href="https://www.npmjs.com/package/qed-standard"><img src="https://img.shields.io/npm/v/qed-standard.svg?style=flat-square&logo=npm&color=cb3837" alt="npm: qed-standard"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"></a>
-  <a href="docs/harnesses.md"><img src="https://img.shields.io/badge/harnesses-20%20platforms-8b5cf6.svg?style=flat-square" alt="Harnesses: 20 Platforms"></a>
-  <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-16%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 16 Core Specs"></a>
-  <a href="core/CONSTITUTION.lite.md"><img src="https://img.shields.io/badge/includes-Q.E.D.%20Lite%20(<500%20tokens)-ec4899.svg?style=flat-square" alt="Includes: Q.E.D. Lite"></a>
-  <a href="tests/verify-adapters.ps1"><img src="https://img.shields.io/badge/tests-36%2F36%20passing-38bdf8.svg?style=flat-square" alt="Verification: 100% Passing"></a>
-  <a href="llms.txt"><img src="https://img.shields.io/badge/agent-llms.txt-f59e0b.svg?style=flat-square" alt="LLM Entrypoint: llms.txt"></a>
-</p>
+[English](README.md) · [Русский](README.ru.md) · [简体中文](README.zh-CN.md)
 
-<p align="center">
-  <a href="#quickstart">Quickstart</a> •
-  <a href="#the-problem-codebase-erosion">The Problem</a> •
-  <a href="#framework-architecture">Architecture</a> •
-  <a href="#the-16-pillars-of-qed">The 16 Pillars</a> •
-  <a href="#mechanical-verification-gate-qed-check">Mechanical Gate</a> •
-  <a href="#how-it-works">Lifecycle</a> •
-  <a href="#20-supported-platforms">20 Platforms</a> •
-  <a href="llms.txt">llms.txt</a>
-</p>
+# Better code needs evidence, not confidence.
+
+**Q.E.D. is an engineering standard and a zero-dependency CLI for AI-assisted development.** Give your coding agent explicit rules, then check a practical subset of those rules with a mechanical verification gate.
+
+[CI status](https://github.com/keelbismark/qed/actions/workflows/ci.yml) · [npm package](https://www.npmjs.com/package/qed-standard) · [MIT license](LICENSE)
+
+[Get started](#get-started) · [How it works](#how-it-works) · [CLI reference](#cli-reference) · [Documentation](#documentation)
 
 ---
 
-## The Problem: Codebase Erosion
+## “Fixed” is not the same as verified.
 
-AI pair-programming promised a 10x engineer. In practice, it frequently feels like reviewing PRs from an overcaffeinated junior developer:
+An agent can produce a convincing explanation while leaving a hanging request, a swallowed exception, or a duplicate helper behind. Q.E.D. makes the expectations explicit: search before creating, reproduce before fixing, and run checks before claiming success.
 
-> *"I've resolved the issue!"* — the agent announces.  
-> You pull the branch. It never ran the tests. It broke three database queries. It hallucinated a deprecated library version. It created a second `formatDateHelper.ts` in another directory. And it silenced a fatal defect with `catch (e) {}`.
+**Before — an unbounded network request**
 
-Code generated without physical boundaries is technical debt accumulating compound interest. We call it **codebase erosion**.
-
-**Q.E.D.** (*Latin: "quod erat demonstrandum" — which was to be demonstrated*) is an open-source, high-assurance engineering standard and configuration layer for AI coding environments. It replaces vibes, guesses, and unverified assertions with deterministic engineering discipline.
-
----
-
-## Framework Architecture
-
-Q.E.D. organizes engineering discipline across three coordinated tiers: **Universal Invariants**, the **4-Phase Verification Engine**, and the **External Trust Contract**.
-
-<p align="center">
-  <img src="assets/framework.svg" alt="Q.E.D. Architectural Framework" width="100%">
-</p>
-
----
-
-## Before & After: Real-World Evidence
-
-```typescript
-// [WITHOUT Q.E.D.] Standard AI Generative Output
-// Silent error swallowing, loose typing, happy-path assumption, zero tests executed
-async function checkout(cart: any) {
-  try {
-    if (cart.items) {
-      const total = cart.items.reduce((a: any, b: any) => a + b.price, 0);
-      return await api.charge(total); // Floating point bug: 0.1 + 0.2 !== 0.3! No idempotency!
-    }
-  } catch (e) {
-    console.log("error"); // Swallowed failure. UI hangs indefinitely.
-  }
-}
+```js
+const response = await fetch(url);
 ```
 
-```typescript
-// [WITH Q.E.D.] High-Assurance Output
-// Guard clauses, integer minor units, 4 states handled, reproduction test verified RED first
-async function checkout(cart: Cart): Promise<CheckoutResult> {
-  if (!cart.items || cart.items.length === 0) {
-    return { status: "empty", message: "Cart is empty" };
-  }
-  
-  // Reused existing helper (Anti-Duplication) & Integer Minor Units (No floating-point currency)
-  const totalMinorUnits = calculateCartTotalMinorUnits(cart.items);
-  if (totalMinorUnits <= 0) {
-    throw new InvalidOrderError("Total amount must be greater than zero");
-  }
+**After — an explicit deadline**
 
-  // Idempotent charge with explicit timeout and retry boundary (Chaos Monkey verified)
-  return await paymentGateway.chargeWithIdempotency({
-    amountMinorUnits: totalMinorUnits,
-    currency: cart.currency, // ISO 4217 Invariant
-    idempotencyKey: cart.idempotencyKey,
-  });
-}
+```js
+const response = await fetch(url, {
+  signal: AbortSignal.timeout(5000),
+});
 ```
 
----
+The CLI checks for a missing timeout/signal pattern. It does **not** prove that the endpoint is secure or the response is valid: status handling, schema validation, and behavior tests still belong to your application.
 
-## How It Works: The 4-Phase Verification Loop
+| Layer | What it gives you |
+| :--- | :--- |
+| **Standard** | Written engineering practices for testing, security, data, architecture, and UX. |
+| **Agent adapters** | Native instructions and configuration for 20 coding environments. |
+| **Verification CLI** | Local checks for selected anti-patterns, plus test and hook commands. |
 
-Every task executed under Q.E.D. traverses an ironclad, evidence-backed lifecycle:
+## Get started
 
-<p align="center">
-  <img src="assets/pipeline.svg" alt="Q.E.D. Verification Pipeline" width="100%">
-</p>
+### 1. Check your project
 
-### Execution Trace Example
+Requires **Node.js 18+**. Run inside the repository you want to inspect:
 
-```text
-$ qed "Add idempotent debit to wallet API"
-
-[1/4] SPECIFICATION, ANTI-DUPLICATION & BLAST RADIUS
-      -> Grepping codebase for existing wallet balance helpers...
-      -> Found 'db.wallets.updateBalance()' in src/services/wallet.ts (reused).
-      -> Callers: CheckoutController, SubscriptionCron (Blast Risk: Medium).
-
-[2/4] ADVERSARIAL QA & 4 MANDATORY STATES
-      -> Mapping edge cases: double-click in 50ms, expired JWT, zero balance, timeout.
-      -> Implementing: Empty, Loading, Error (retryable), Degraded states.
-
-[3/4] IRONCLAD TDD (REPRODUCTION FIRST)
-      -> Authoring reproduction test: test/wallet.test.ts:42
-      $ npm test -- test/wallet.test.ts
-      FAIL: Concurrent duplicate debit executed twice. Expected 1 charge.
-      -> Red state verified.
-      -> Implementing minimal fix (row lock + unique idempotency constraint)...
-      $ npm test -- test/wallet.test.ts
-      PASS: 2 concurrent calls -> 1 debit, 1 cached response (Green verified).
-
-[4/4] THE 3 AM AUDIT, SANITIZATION & VERIFICATION GATE
-      -> Refactored nested if/else pyramids into early return guard clauses.
-      -> Sanitization sweep: 0 console.log, 0 throwaway scripts, 0 dead imports.
-      -> Static Typecheck: OK (0 errors).
-      -> Linter: OK (0 warnings).
-      -> Full Regression Suite: 64/64 passed (100% green).
-      -> Commit: feat(wallet): implement idempotent debit with distributed lock
-```
-
----
-
-## The 16 Pillars of Q.E.D.
-
-The standard is codified in 16 formal specification documents under [`core/`](core/):
-
-| # | Pillar & Specification | Core Invariant | Risk Eliminated |
-| :-: | :--- | :--- | :--- |
-| **0** | **[Universal Constitution](core/CONSTITUTION.md)** | Quality > Speed by default; evidence before assertions; root cause only. | Speculative coding, cosmetic hacks, placebo fixes. |
-| **1** | **[Testing Philosophy](core/testing-philosophy.md)** | Zero placebo mocks; mandatory boundary matrix; reproduction RED $\rightarrow$ GREEN. | Testing mocks instead of real software; flaky tests. |
-| **2** | **[Adaptive Architecture](core/adaptive-architecture.md)** | Earned complexity; form follows data flow; pristine root; 10-second entrypoint. | Enterprise boilerplate on small tools; cluttered project roots. |
-| **3** | **[Dependency Philosophy](core/dependency-philosophy.md)** | Build vs. Buy matrix; 4-pillar package health audit; The Wrapper Invariant. | Supply chain trojans, bloatware, unmaintained micro-packages. |
-| **4** | **[Threat-Adaptive Security](core/security-philosophy.md)** | 4 Security Tiers; tenant-isolated IDOR checks; anti-security-theater UX (NIST 800). | IDOR leaks, mass assignment, user-hostile login barriers. |
-| **5** | **[Earned Regionality & I18n](core/regionality-and-i18n.md)** | Level 0 baseline (UTF-8, UTC, integer money); native `Intl`; sovereign data residency. | Timezone shift bugs, float money bugs, GDPR fines. |
-| **6** | **[Cache & Resource Hygiene](core/cache-memory-and-file-hygiene.md)** | Bounded LRU cache + TTL; tenant cache isolation; streams for >10MB; scoped temp cleanup. | Out-of-memory (OOM) crashes, 100% disk exhaustion, ghost data. |
-| **7** | **[Data Fetching Philosophy](core/data-fetching-philosophy.md)** | Mandatory `AbortSignal` timeout; anti-`as` boundary parsing; Keyset pagination; Singleflight. | Hanging socket leaks, contract drift crashes, waterfall lag, IDOR. |
-| **8** | **[Visual Anti-Slop Standard](core/visual-anti-slop-standard.md)** | The Archaeologist Invariant (preserve the Signature Spark); unboxed by default; anti-Bento; zero emojis. | Type 1 synthetic plastic carnival, Type 2 sterile hospital sheet brutalism. |
-| **9** | **[Workflow Ergonomics](core/workflow-ergonomics-and-affordances.md)** | State-in-URL; auto-save drafts; native links; never block paste; 1-click copy; Undo toasts. | Lost form inputs, modal blindness, broken back-buttons, copy-paste friction. |
-| **10** | **[Error Handling Philosophy](core/error-handling-philosophy.md)** | 4 Operational Tiers; Result<T,E>; error cause chaining; boundary masking with Correlation ID. | Silent catch rot, unmasked stack trace leaks, double logging. |
-| **11** | **[Observability, Telemetry & RCA](core/observability-and-rca.md)** | Structured JSON logging; traceId propagation; automated PII redaction; blameless 5 Whys RCA. | Unsearchable text logs, PII credential leaks, repeat production outages. |
-| **12** | **[Database Evolution & Migrations](core/database-evolution-and-migrations.md)** | Expand/Contract pattern; non-blocking DDL (`CREATE INDEX CONCURRENTLY`, `lock_timeout = '2s'`). | Locked production tables, failed deployments, corrupted data. |
-| **13** | **[Git & Pragmatic Versioning](core/git-and-versioning.md)** | Git change ledger $\neq$ Versioning trust contract; Bisect Invariant; changelog split. | Broken git bisect, unearned deprecation, leaked security flaws. |
-| **14** | **[Naming & Semantics](core/naming-philosophy.md)** | Scope-proportional length; positive predicates; contract verbs (`get` vs `fetch`). | Ambiguous names (`data`, `temp`, `res`), misleading predicates. |
-| **15** | **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** | Zero debug prints; throwaway script purge; clean git status before commit. | Production debug logs, leaked tokens, commit pollution. |
-
----
-
-## Quickstart
-
-### Instant CLI (Zero Install via NPX)
-Run the mechanical verification gate on any repository immediately:
 ```bash
 npx qed-standard check
 ```
-Or install globally across your machine:
+
+No global installation is required. The CLI has no runtime package dependencies. `npx` downloads the package on first use.
+
+Prefer a persistent command?
+
 ```bash
 npm install -g qed-standard
-qed doctor
+qed check
 ```
 
-### Automated Harness Installer
-Install Q.E.D. and configure your AI development harness (Cursor, Claude Code, Antigravity, Copilot, Roo, Windsurf, etc.):
+### 2. Give your agent the rules
 
-#### Windows (PowerShell)
+Clone this repository and run its installer **from your target project**. The following example installs Cursor rules:
+
+```bash
+git clone https://github.com/keelbismark/qed.git /path/to/qed
+cd /path/to/your-project
+bash /path/to/qed/install.sh cursor
+```
+
+On Windows, use PowerShell:
+
 ```powershell
-irm https://raw.githubusercontent.com/keelbismark/qed/main/install.ps1 | iex
+git clone https://github.com/keelbismark/qed.git C:\tools\qed
+cd C:\path\to\your-project
+& C:\tools\qed\install.ps1 -Harness cursor
 ```
 
-#### Linux / macOS (Bash)
-```bash
-curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | bash
-```
+Replace `cursor` with `claude`, `codex`, `copilot`, `roo`, or another [supported harness](docs/harnesses.md). Review existing configuration first: the installer can overwrite matching files. A local install affects the current project; `global` targets your user profile.
 
-### Targeted Platform Setup
-Install configurations for a specific AI harness only:
+### 3. Make verification routine
 
 ```bash
-./install.sh cursor      # Cursor AI (.cursorrules & modern .cursor/rules/*.mdc)
-./install.sh claude      # Claude Code (CLAUDE.md, slash commands, skills)
-./install.sh deepseek    # DeepSeek Harness (dsh) & Continue.dev
-./install.sh roo         # Roo Code custom modes (Architect, TDD, Reviewer)
-./install.sh global all  # Machine-wide installation across user profile
+qed check          # Inspect the current project
+qed hook           # Install pre-commit and pre-push verification hooks
+qed doctor         # Check repository, hooks, runtimes, and CI availability
 ```
 
-### Q.E.D. Lite (Token-Optimized Edition)
-For fast or token-constrained models (**Claude 3.5 Haiku, Gemini Flash, GPT-4o-mini, local LLMs via Ollama/Llama 3/Qwen**), install the ultra-dense Lite edition (<500 tokens, ~80% token reduction) without sacrificing any core engineering invariants:
+Review existing hooks before installing new ones. Q.E.D. complements your typechecker, application tests, security review, and CI; it does not replace them.
+
+**Smaller context budget?** Use the Lite edition:
 
 ```bash
-# Linux / macOS
-./install.sh --lite             # Install Lite for all harnesses
-./install.sh --lite claude      # Install Lite for Claude Code (CLAUDE.md)
-./install.sh --lite cursor      # Install Lite for Cursor (.cursorrules)
-
-# Windows (PowerShell)
-.\install.ps1 -Lite             # Install Lite for all harnesses
-.\install.ps1 -Lite -Harness claude
-.\install.ps1 cursor -Lite
+bash /path/to/qed/install.sh --lite cursor
 ```
 
-*Distinct Lite manifests are also directly available in the repository root and harness folders (`QED.lite.md`, `core/CONSTITUTION.lite.md`, `adapters/*/GEMINI.lite.md`, `CLAUDE.lite.md`, `.cursorrules.lite`).*
+Or start with the compact [Q.E.D. Lite prompt](QED.lite.md), without running an installer.
 
----
+## How it works
 
-## Mechanical Verification Gate (`qed check` & Pre-Commit Hook)
+![Four stages: scope the change, challenge the assumptions, reproduce and fix, verify the result.](assets/pipeline.svg)
 
-To eliminate reliance on an AI agent's "honor system", Q.E.D. includes a standalone mechanical linter and Git pre-commit gate that automatically blocks commits containing standard violations:
+1. **Scope.** Find existing implementations and map affected callers.
+2. **Challenge.** Cover empty, loading, error, and degraded behavior; consider hostile inputs and concurrency.
+3. **Reproduce.** Run a failing test, implement the smallest fix, and verify it passes.
+4. **Verify.** Run the relevant typechecker, linter, and regression suite. Report what actually ran and what remains unverified.
+
+This is a workflow the standard asks agents to follow, **not an autonomous pipeline executed by `qed check`**. See the [end-to-end walkthrough](examples/full-lifecycle-walkthrough.md) for a worked example.
+
+### Two modes, explicit trade-offs
+
+**Quality first** is the default: investigate impact, write reproduction tests, and verify changes. **Prototype mode** is opt-in for quick experiments: keep scope minimal and disclose shortcuts and technical debt. Neither mode makes unverified claims acceptable.
+
+## What the CLI checks
+
+The gate detects selected patterns in supported source files. Some rules use lexical or AST analysis; they are not a complete semantic or security audit.
+
+| Area | Examples |
+| :--- | :--- |
+| Repository hygiene | Temporary root files, leftover debug statements |
+| Error and type discipline | Empty catches, loose `as any` casts |
+| Resource boundaries | Requests without timeout/signal, exported unbounded maps |
+| Secrets and configuration | Hardcoded credential patterns, undocumented environment reads |
+| Interface semantics | Clickable divs, blocked paste, emoji-heavy UI chrome |
+| Database evolution | Non-concurrent `CREATE INDEX` patterns |
+
+These correspond to **12 rule IDs, QED001–QED012**. The broader standard includes practices that require tests and human judgment. A clean gate is evidence about its checks, not proof that the entire application is correct.
+
+## CLI reference
+
+After a global installation, use `qed`; from this cloned repository, use `node bin/qed-engine.js`.
+
+| Command | Purpose |
+| :--- | :--- |
+| `qed check [path]` | Scan the current directory or an explicit project path |
+| `qed check --strict` | Treat warnings as failures too |
+| `qed check --json` | Produce machine-readable results |
+| `qed check --compact` | Produce concise, agent-friendly output |
+| `qed test` | Run available `tests/verify-*.sh` and `tests/verify-*.ps1` suites |
+| `qed doctor` | Audit repository health, hooks, interpreters, analysis engine, and remote CI |
+| `qed hook` | Install mechanical Git verification hooks |
+| `qed tokens` | Inspect instruction token usage |
+
+For `check`, exit code `0` means no errors (and no warnings in strict mode); a failed gate exits nonzero. PowerShell suites need PowerShell; POSIX suites need Bash. `doctor` and CI inspection have additional local-tool requirements.
+
+For project-specific policy and configuration, see the [protocol guide](docs/protocols.md) and [configuration schema](schema/qedrc.schema.json).
+
+## One standard, multiple environments
+
+![Engineering standards guide agent adapters; the CLI checks selected rules.](assets/framework.svg)
+
+Cursor · Claude Code · Antigravity · Gemini CLI · Codex · Kimi Code · Pi · Hermes · Muse · Devin · Factory Droid · Grok · Qwen Code · OpenCode · DeepSeek / Continue · Cline · Roo Code · Windsurf · Aider · GitHub Copilot
+
+Adapters differ in format and native features. Use the [harness directory](docs/harnesses.md) to find exact files, install targets, and Lite variants.
+
+## Documentation
+
+| If you want to… | Start here |
+| :--- | :--- |
+| Understand the foundational rules | [Constitution](core/CONSTITUTION.md) |
+| Configure an editor or agent | [Harness integration guide](docs/harnesses.md) |
+| Follow a complete task | [Lifecycle walkthrough](examples/full-lifecycle-walkthrough.md) |
+| Write better tests | [Testing philosophy](core/testing-philosophy.md) |
+| Handle API data safely | [Data fetching](core/data-fetching-philosophy.md) |
+| Improve security and schema changes | [Security](core/security-philosophy.md) · [Database evolution](core/database-evolution-and-migrations.md) |
+| Build useful interfaces | [Visual standard](core/visual-anti-slop-standard.md) · [Workflow ergonomics](core/workflow-ergonomics-and-affordances.md) |
+| Understand evaluation results | [Methodology](docs/evals.md) · [Fixture scenarios](evals/scenarios.json) |
+| Provide context to an AI agent | [AI_README.md](AI_README.md) · [llms.txt](llms.txt) |
+
+### About the evaluation
+
+The included evaluation runs predefined “vanilla” and “Q.E.D.” code fixtures through the linter across six scenarios. It demonstrates rule detection on those fixtures; it is **not** a live model comparison or a general guarantee of defect reduction. Inspect the [runner](evals/run-benchmark.js) and [methodology](docs/evals.md) before interpreting the results.
+
+## Contribute
+
+Node.js 18+ and Bash are sufficient for the POSIX checks; install PowerShell to also run the Windows suites locally. From a clone:
 
 ```bash
-# Run mechanical compliance check across the repository
-./bin/qed check              # Linux / macOS
-.\bin\qed.ps1 check          # Windows (PowerShell)
-node bin/qed-engine.js check # Node.js (cross-platform, zero dependencies)
-
-# Run full health & invariant audit (git cleanliness, hooks, remote CI, AST)
-node bin/qed-engine.js doctor
-
-# Install automated Git pre-commit & pre-push hooks
-./bin/qed hook               # Linux / macOS
-.\bin\qed.ps1 hook           # Windows (PowerShell)
-
-# Run cross-platform multi-OS test matrix (PowerShell + POSIX Bash)
-npm test                     # or node bin/qed-engine.js test
-
-# Run empirical LLM slop eradication benchmark
-npm run evals                # or node evals/run-benchmark.js
+node bin/qed-engine.js check
+node bin/qed-engine.js test
 ```
 
-The mechanical gate automatically scans and enforces:
-1. **Pristine Root Invariant**: Zero temporary scratch files (`temp_*`, `scratch.*`, `*.tmp`, `*.log`, `test_dump*`).
-2. **Zero-Debug Print Invariant**: Zero leftover `console.log(`, `debugger;`, `print(`, or `fmt.Println(`.
-3. **Environment Synchronization**: Every environment variable referenced in code must be documented in `.env.example`.
-4. **Type Safety & AST Analysis**: Zero loose `as any` casts in TypeScript/JavaScript (lexically masked and TypeScript AST verified).
-5. **Network Deadlines**: Mandatory `AbortSignal.timeout` on all `fetch()` operations.
-6. **Bounded Caches**: Zero unbounded module-level `new Map()` exports.
-7. **Zero Table-Locking DDL**: Enforces `CREATE INDEX CONCURRENTLY` in SQL migrations.
+There is no application compilation step. Keep changes focused, include a reproduction for behavioral fixes, and explain which checks ran. Use [issues](https://github.com/keelbismark/qed/issues) for bugs or proposals and [pull requests](https://github.com/keelbismark/qed/pulls) for changes.
 
 ---
 
-## Empirical Benchmark & Proof Matrix
-
-We don't guess whether Q.E.D. makes AI code better — we measure it scientifically. The included automated benchmark suite (`evals/run-benchmark.js`) executes 6 standardized engineering challenges against unconstrained LLMs versus Q.E.D.:
-
-| Scenario ID | Engineering Domain | Vanilla Baseline | Under Q.E.D. Standard | Result |
-| :--- | :--- | :---: | :---: | :---: |
-| **SCN-01-CACHE** | Bounded Memory / LRU | 1 defect (`new Map()`) | **0 defects** | **PASSED** |
-| **SCN-02-FETCH** | Network Resilience / Deadlines | 1 defect (naked `fetch`) | **0 defects** | **PASSED** |
-| **SCN-03-ERROR** | Error Chaining & Fallbacks | 1 defect (swallowed `catch`) | **0 defects** | **PASSED** |
-| **SCN-04-TYPES** | Runtime Type Invariants | 1 defect (`as any` cast) | **0 defects** | **PASSED** |
-| **SCN-05-DDL** | Database Zero-Downtime | 1 defect (table-lock DDL) | **0 defects** | **PASSED** |
-| **SCN-06-UI** | Human Affordances / Anti-Slop | 1 defect (emoji button salad) | **0 defects** | **PASSED** |
-
-- **Slop Eradication Rate**: **100.0%** of mechanical flaws eliminated.
-- **Vanilla Gate Pass Rate**: **0.0%** (all unconstrained code failed mechanical verification).
-- **Q.E.D. Gate Pass Rate**: **100.0%** (high-assurance compliance).
-
-[View Full Empirical Methodology & Telemetry Data →](docs/evals.md)
-
----
-
-## 20 Supported Platforms
-
-Q.E.D. provides native drop-in adapters and configuration manifests tailored to each tool's architecture:
-
-| Environment | Primary Manifest | Key Capabilities |
-| :--- | :--- | :--- |
-| **Cursor AI** | `.cursorrules`, `.cursor/rules/*.mdc` | Modern MDC rules with YAML frontmatter for TDD and Blast Radius |
-| **Claude Code** | `CLAUDE.md`, `.claude/commands/` | Slash commands (`/boost`, `/qed-verify`, `/qed-review`), skills |
-| **Google Antigravity** | `GEMINI.md`, `.antigravity-plugin/` | Multi-agent orchestration, Evidence Before Assertions |
-| **DeepSeek (dsh & Continue)**| `DEEPSEEK.md`, `.dsh/`, `.continue/` | R1 Chain-of-Thought directives, safety presets, slash commands |
-| **Roo Code & Cline** | `.roomodes`, `.clinerules` | 3 custom roles: `Architect`, `TDD Engineer`, and `Reviewer` |
-| **Windsurf Cascade** | `.windsurfrules`, workflows | Interactive workflows (`qed-boost`, `qed-tdd-cycle`) |
-| **Aider** | `.aider.conventions.md` | Auto-test on commit (`auto-test: true`), Conventional Commits |
-| **GitHub Copilot** | `copilot-instructions.md`, prompts | Instructions and prompt templates (`qed-boost`, `qed-spec`) |
-| **OpenCode** | `opencode.json`, `plugins/qed.js` | In-process V1/V2 lifecycle plugin, sandbox constraints |
-| **Codex, Grok, Kimi, Pi, Devin...** | Native manifests & configs | Full parity across 20 environments |
-
-[View Full Harness Details & Manual Configurations →](docs/harnesses.md)
-
----
-
-## Dual Execution Modes
-
-Q.E.D. adapts to your velocity requirements:
-
-* **Mode A (Production Mode — Default: `Quality > Speed`)**  
-  Full engineering rigor. Red-Green-Refactor TDD cycles, blast radius calculation, adversarial testing, and verification gate before declaring work complete.
-* **Mode B (Speed Mode — On-Demand: `Speed > Quality`)**  
-  Triggered when you explicitly ask for speed (*"quick"*, *"prototype"*, *"draft"*, *"быстро"*, *"набросок"*). Delivers a working proof-of-concept immediately, accompanied by an explicit report detailing shortcuts taken and required hardening steps.
-
----
-
-## Comparison Matrix
-
-| Capability | Q.E.D. | GitHub Spec-Kit | obra/superpowers | BMad Method | Default AI |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Evidence Before Assertions** | **Enforced** | Partial | Enforced | Partial | None |
-| **Blast Radius Analysis** | **Yes** | No | No | No | No |
-| **Anti-Duplication Radar** | **Mandatory** | No | No | No | No |
-| **Threat-Adaptive Security (4 Tiers)**| **Enforced** | No | No | No | None |
-| **Earned Regionality & I18n** | **Enforced** | No | No | No | None |
-| **Bounded Caches & Resource Hygiene**| **Enforced** | No | No | No | None |
-| **4 Mandatory States** | **Enforced** | Partial | No | Partial | None |
-| **3 AM Readability Test** | **Enforced** | No | Partial | No | None |
-| **Chaos Monkey Edge Cases** | **Standard** | No | Partial | No | None |
-| **Supported Platforms** | **20** | 1 | 20 | 2 | None |
-| **Context Overhead** | **Minimal** | Minimal | Minimal | Heavy | Uncontrolled |
-
----
-
-## Specification & Standards Library
-
-* **[Universal Constitution](core/CONSTITUTION.md)** — Foundational articles governing agent behavior.
-* **[Testing Philosophy](core/testing-philosophy.md)** — Zero placebo mocks, boundary matrix, mutation testing.
-* **[Adaptive Architecture](core/adaptive-architecture.md)** — Anti-template dogmatism, earned complexity.
-* **[Dependency Philosophy](core/dependency-philosophy.md)** — Build vs. Buy, 4-pillar audit, Wrapper Invariant.
-* **[Threat-Adaptive Security](core/security-philosophy.md)** — 4 Security Tiers, NIST 800-63B, Tenant Isolation.
-* **[Earned Regionality & I18n](core/regionality-and-i18n.md)** — Level 0-3 ladder, UTC wire, minor integer money.
-* **[Cache, Memory & Resource Hygiene](core/cache-memory-and-file-hygiene.md)** — Bounded LRU, leak-free streams, temp cleanup.
-* **[Data Fetching Philosophy](core/data-fetching-philosophy.md)** — Transport deadlines, boundary schema validation, Keyset pagination.
-* **[Visual Anti-Slop & Human Interface](core/visual-anti-slop-standard.md)** — Unboxed by default, form follows data, zero UI emojis, anti-cyber slop.
-* **[Workflow Ergonomics & Human Affordances](core/workflow-ergonomics-and-affordances.md)** — State-in-URL, draft auto-save, focus return, Undo toasts.
-* **[Error Handling Philosophy](core/error-handling-philosophy.md)** — 4 operational tiers, Result<T,E>, cause chaining, boundary masking.
-* **[Observability & Incident RCA](core/observability-and-rca.md)** — Structured JSON logging, trace context, PII scrubbing, 5 Whys.
-* **[Database Evolution & Migrations](core/database-evolution-and-migrations.md)** — Expand/Contract, non-blocking DDL, batched backfills.
-* **[Git & Pragmatic Versioning](core/git-and-versioning.md)** — Change ledger vs. trust contract, Bisect Invariant.
-* **[Naming & Semantics](core/naming-philosophy.md)** — Scope-proportional names, positive predicates, contract verbs.
-* **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** — Zero-debug print invariant, dead code elimination.
-* **[Comment Philosophy & Anti-Noise](core/comment-philosophy.md)** — Ban on syntax echo noise, Why-over-What rules.
-* **[Documentation & Visual Standards](core/documentation-and-visuals.md)** — Human vs. AI separation, responsive SVG graphics.
-* **[AI Agent Guide (llms.txt)](llms.txt)** — High-density machine entrypoint for LLMs.
-* **[Harness Guide](docs/harnesses.md)** — Setup reference for all 20 platforms.
-* **[Templates](templates/)** — Templates for Specs, Architecture Decision Records (ADRs), and Plans.
-* **[End-to-End Walkthrough](examples/full-lifecycle-walkthrough.md)** — Real-world example building a feature under Q.E.D.
-
----
-
-## License
-
-MIT License. Copyright (c) 2026 KeelBismarck.
+**Q.E.D.** — *Quod erat demonstrandum*, “which was to be demonstrated.”  
+[MIT](LICENSE) · Maintained by [KeelBismarck](https://github.com/keelbismark)

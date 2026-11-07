@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 144" width="100%" height="auto" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <title id="title">От задачи к доказательствам</title>
+  <desc id="desc">Границы, проверка допущений, воспроизведение и подтверждение. Это процесс работы агента, не автоматический конвейер CLI.</desc>
+  <defs><linearGradient id="canvas" x2="1" y2="1"><stop stop-color="#0b0f17" /><stop offset="1" stop-color="#111827" /></linearGradient></defs>
+  <rect x="2" y="2" width="956" height="140" rx="14" fill="url(#canvas)" stroke="#334155" />
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <path d="M47 37H913" stroke="#334155" />
+    <g fill="#111827" stroke="#3b82f6"><circle cx="40" cy="37" r="15" /><circle cx="278" cy="37" r="15" /><circle cx="516" cy="37" r="15" /><circle cx="754" cy="37" r="15" stroke="#10b981" /></g>
+    <g font-size="11" font-weight="600" fill="#f8fafc" text-anchor="middle"><text x="40" y="41">01</text><text x="278" y="41">02</text><text x="516" y="41">03</text><text x="754" y="41">04</text></g>
+    <g font-size="19" font-weight="600" fill="#f8fafc"><text x="25" y="83">Границы</text><text x="263" y="83">Допущения</text><text x="501" y="83">Воспроизвести</text><text x="739" y="83">Подтвердить</text></g>
+    <g font-size="13" fill="#94a3b8"><text x="25" y="110">Поиск. Анализ влияния.</text><text x="263" y="110">Состояния. Ввод. Гонки.</text><text x="501" y="110">Падающий тест → правка.</text><text x="739" y="110">Проверки. Факты.</text></g>
+    <path d="M909 30h13v13h-13z" fill="#10b981" />
+  </g>
+</svg>

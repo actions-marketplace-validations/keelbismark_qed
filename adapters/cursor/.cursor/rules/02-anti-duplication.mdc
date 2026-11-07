@@ -1,0 +1,19 @@
+---
+description: Q.E.D. Anti-Duplication Radar - Search codebase before creating new helpers, types, or components
+globs: *
+alwaysApply: true
+---
+
+# Q.E.D. Anti-Duplication Radar ("Search Before You Create")
+
+Prevent repository rot, fragmented helper utilities, and duplicate type definitions.
+
+## Mandatory Search Rules
+1. **Never create a new utility, helper, hook, model, or type without searching first.**
+   - Run grep / symbol search for keywords related to the task (e.g., `formatDate`, `useFetch`, `clamp`, `slugify`).
+   - Check standard utility directories (`utils/`, `helpers/`, `common/`, `shared/`, `lib/`).
+2. **Reuse or Extend**:
+   - If an existing function provides 80% of what is needed, extend it or make it configurable with an optional argument.
+   - Do NOT create `utils2.ts`, `customFormatDate.ts`, or parallel domain models.
+3. **Canonical Location**:
+   - If a function is truly novel and general-purpose, place it in the established common utility module with accompanying unit tests.

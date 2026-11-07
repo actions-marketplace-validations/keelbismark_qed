@@ -1,0 +1,28 @@
+---
+description: Q.E.D. Verification Gate - Final check before claiming task completion
+globs: *
+alwaysApply: true
+---
+
+# Q.E.D. Verification Gate & Completion Protocol
+
+Never claim work is complete, fixed, or passing without executing the verification suite and inspecting real command output.
+
+## 1. Automated Verification Checks
+Before signaling completion, run in terminal:
+- **Type Checker**: e.g., `tsc --noEmit`, `mypy .`, `dart analyze`, `cargo check`
+- **Linter**: e.g., `eslint .`, `ruff check .`, `cargo clippy`
+- **Test Suite**: e.g., `npm test`, `pytest`, `cargo test`, `go test ./...`
+
+## 2. Evidence Before Assertions
+- In your completion report, include the actual test summary (passed/failed counts, exit code).
+- Never report completion on hypothetical or assumed success.
+
+## 3. Atomic Conventional Commits
+Commit changes in small, logical units using standard prefixes:
+- `feat:` new feature
+- `fix:` bug fix
+- `test:` adding or updating tests
+- `refactor:` code restructuring without behavioral change
+- `docs:` documentation updates
+- `chore:` dependency and build maintenance

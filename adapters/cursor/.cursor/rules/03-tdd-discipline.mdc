@@ -1,0 +1,26 @@
+---
+description: Q.E.D. Strict Test-Driven Development (Red-Green-Refactor) and Chaos Monkey test suite
+globs: **/*test*,**/*spec*,src/**/*,lib/**/*,app/**/*
+alwaysApply: false
+---
+
+# Q.E.D. Ironclad TDD & Chaos Monkey Protocol
+
+## 1. Red-Green-Refactor Discipline
+- **For Bug Fixes**:
+  1. Write a minimal reproduction test covering the reported defect.
+  2. Run the test and confirm that it fails for the expected reason (**Red**).
+  3. Implement the minimal clean fix directly addressing the root cause (**Green**).
+  4. Run the entire test suite to guarantee zero regressions.
+- **For New Features**:
+  1. Write unit or integration tests reflecting the binary Acceptance Criteria (**Red**).
+  2. Implement the feature until tests pass (**Green**).
+  3. Refactor code for readability and performance while keeping tests green.
+- **Strict Prohibition**: Never weaken, disable, or delete existing tests to force a build to pass.
+
+## 2. The Chaos Monkey Adversarial Test
+Always challenge new endpoints, data mutations, and user flows with:
+- **Concurrency & Debouncing**: Simulate rapid duplicate calls/clicks within 500ms.
+- **Payload Limits**: Test empty input, boundary numbers, 5MB payloads, and deeply nested objects.
+- **Hostile Strings**: Complex Unicode (e.g. `👨‍👩‍👧‍👦`), RTL strings (Arabic/Hebrew), SQL/HTML injections (`<script>`, `' OR '1'='1`).
+- **Interrupted State**: Simulate aborted requests, network dropouts, and cancelled async tasks.

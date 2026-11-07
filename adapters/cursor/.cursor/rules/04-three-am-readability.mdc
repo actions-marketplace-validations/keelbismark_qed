@@ -1,0 +1,25 @@
+---
+description: Q.E.D. The 3 AM Test - Code readability, flat structures, guard clauses, and AI anti-slop
+globs: *
+alwaysApply: false
+---
+
+# Q.E.D. The 3 AM Readability Test & Anti-Slop Directive
+
+## 1. The 3 AM Standard
+Write code that an exhausted on-call engineer can instantly understand and debug at 3:00 AM without cognitive strain:
+- **Guard Clauses & Early Returns**: Replace nested `if/else` ladders with early returns.
+- **Descriptive Intermediate Variables**: Avoid 5+ level chained functional operations (`.map().filter().reduce()`). Break into named variables explaining intent.
+- **Cognitive Clarity**: No clever bitwise hacks, multi-level ternaries, or unreadable regexes without explanatory comments and concrete examples.
+
+## 2. Eradicate AI Generative Slop
+- Eliminate fake wrappers, boilerplate abstractions, or 5-layer deep factories when a 5-line plain function works.
+- Keep dependencies lean; do not pull in heavy external packages for trivial operations.
+- In UI: eliminate cliché terminal aesthetics, monotonous 3x3 Bento grids, and decorative borders that provide zero user utility.
+
+## 3. The 4 Mandatory States
+Every UI view and API route must implement:
+1. **Empty State**: Friendly UI when 0 records exist, offering a clear CTA.
+2. **Loading State**: Skeleton or indicator preventing layout shifts.
+3. **Error State**: Informative, actionable message with a retry mechanism.
+4. **Degraded State**: Safe fallback under network dropouts or timeouts.

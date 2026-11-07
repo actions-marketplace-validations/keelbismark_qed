@@ -6,11 +6,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Standard: High--Assurance](https://img.shields.io/badge/Standard-High--Assurance-emerald.svg)](core/CONSTITUTION.md)
-[![Agents: Universal](https://img.shields.io/badge/Agents-Antigravity%20%7C%20Cursor%20%7C%20Claude%20%7C%20Windsurf%20%7C%20Copilot-purple.svg)](adapters/)
+[![Harnesses: Universal](https://img.shields.io/badge/Harnesses-Cursor%20%7C%20Claude%20%7C%20Cline%20%7C%20Roo%20%7C%20Windsurf%20%7C%20Aider%20%7C%20Copilot%20%7C%20Antigravity%20%7C%20OpenCode-purple.svg)](adapters/)
 
 *«Evidence Before Assertions» — Turning AI pair-programmers into disciplined Staff Engineers.*
 
-[English](README.md) • [Конституция (RU/EN)](core/CONSTITUTION.md) • [Quickstart](#-quickstart) • [Core Superpowers](#-the-5-unique-superpowers)
+[English](README.md) • [Конституция (RU/EN)](core/CONSTITUTION.md) • [Quickstart](#-quickstart) • [Supported Harnesses](#-supported-harnesses) • [Core Superpowers](#-the-5-unique-superpowers)
 
 </div>
 
@@ -70,7 +70,7 @@ Unlike generic prompt collections, Q.E.D. introduces 5 distinct engineering mech
 | **The Chaos Monkey Test** | ✅ **Standard** | ❌ None | ⚠️ Partial | ❌ None | ❌ None |
 | **Ironclad TDD (Red-Green-Refactor)** | ✅ **Strict** | ❌ None | ✅ **Strict** | ⚠️ Optional | ❌ None |
 | **Token & Overhead Efficiency** | 🚀 **Lean** | 🚀 **Lean** | 🚀 **Lean** | 🐢 Verbose | ⚡ Uncontrolled |
-| **Cross-Agent Drop-in Support** | ✅ **Universal**| ⚠️ CLI-only | ⚠️ Harness | ⚠️ Cursor/Claude | ❌ None |
+| **Cross-Agent Drop-in Support** | ✅ **Universal (9 Harnesses)**| ⚠️ CLI-only | ⚠️ Harness | ⚠️ Cursor/Claude | ❌ None |
 
 ---
 
@@ -104,27 +104,82 @@ flowchart TD
 
 ---
 
+## 🛠️ Supported Harnesses & Architecture
+
+Q.E.D. provides first-class, native configurations and adapters tailored specifically to the execution models of all major AI coding harnesses:
+
+| Harness | Configuration Files | Special Features |
+| :--- | :--- | :--- |
+| **Cursor** | `.cursorrules` + `.cursor/rules/*.mdc` | Legacy fallback + modern MDC rules with frontmatter (`globs`, `alwaysApply`) for TDD, Blast Radius, Anti-Duplication, and 3 AM readability. |
+| **Claude Code** | `CLAUDE.md` + `.claude/skills/` | High-fidelity bash execution guidelines, permission scoping, and custom skills (`qed-verify`, `qed-review`, `qed-blast-radius`). |
+| **Cline** | `.clinerules` | Autonomous agent rules enforcing pre-flight searches, verification gates, and zero secret leaks. |
+| **Roo Code** | `.roomodes` + `.clinerules` | Custom role modes: `Q.E.D. Architect` (specs & blast radius), `Q.E.D. TDD Engineer` (red-green-refactor), and `Q.E.D. QA Reviewer`. |
+| **Windsurf** | `.windsurfrules` + `.windsurf/workflows/*.md` | Cascade rules + interactive workflows (`qed-spec-and-blast-radius`, `qed-tdd-cycle`, `qed-verification-gate`). |
+| **Aider** | `.aider.conf.yml` + `.aider.conventions.md` | Auto-testing (`auto-test: true`), Conventional Commits automation, and strict linter integration. |
+| **GitHub Copilot** | `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` | Workspace instructions + reusable prompt files (`qed-spec.prompt.md`, `qed-verify.prompt.md`, `qed-tdd.prompt.md`). |
+| **Google Antigravity** | `GEMINI.md` | Autonomous multi-agent directives enforcing Evidence Before Assertions and dual modes. |
+| **OpenCode** | `opencode.json` + `.opencoderules` + `OPENCODE.md` | Machine-readable schema configuration, sandbox constraints, and verification hooks. |
+
+---
+
 ## 🚀 Quickstart
 
-### 1. One-Click Global Installation (PowerShell / Windows)
-To enforce Q.E.D. across **all projects and sessions** in Google Antigravity:
+### 1. One-Click Installation (PowerShell / Windows)
+
+Install for your specific harness or all harnesses at once:
+
 ```powershell
-irm https://raw.githubusercontent.com/keelbismark/qed/main/install.ps1 | iex -args "-Target global"
+# Install all harnesses locally in current repository
+.\install.ps1 -Harness all
+
+# Install for a specific harness
+.\install.ps1 -Harness cursor
+.\install.ps1 -Harness claude
+.\install.ps1 -Harness cline
+.\install.ps1 -Harness roo
+.\install.ps1 -Harness windsurf
+.\install.ps1 -Harness aider
+.\install.ps1 -Harness copilot
+.\install.ps1 -Harness opencode
+.\install.ps1 -Harness antigravity
+
+# Or install globally to user profile
+.\install.ps1 -Target global -Harness all
 ```
 
-### 2. One-Click Local Repository Installation (Linux / macOS)
-Drop Q.E.D. configurations into your current Git repository:
+### 2. One-Click Installation (Linux / macOS / Bash)
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | bash
+# Install all harnesses locally in current repository
+./install.sh local all
+
+# Install for a specific harness
+./install.sh --harness cursor
+./install.sh --harness claude
+./install.sh --harness cline
+./install.sh --harness roo
+./install.sh --harness windsurf
+./install.sh --harness aider
+./install.sh --harness copilot
+./install.sh --harness opencode
+./install.sh --harness antigravity
+
+# Or install globally
+./install.sh global all
 ```
 
-### 3. Manual Installation by Agent
+### 3. Remote One-Liner Quick-Install
 
-* **Google Antigravity**: Copy [`adapters/antigravity/GEMINI.md`](adapters/antigravity/GEMINI.md) to `~/.gemini/GEMINI.md` (machine-wide) or to your repository root.
-* **Cursor AI**: Copy [`adapters/cursor/.cursorrules`](adapters/cursor/.cursorrules) to `.cursorrules` in your repository root.
-* **Claude Code**: Copy [`adapters/claude-code/CLAUDE.md`](adapters/claude-code/CLAUDE.md) to `CLAUDE.md` in your repository root.
-* **Windsurf**: Copy [`adapters/windsurf/.windsurfrules`](adapters/windsurf/.windsurfrules) to `.windsurfrules`.
-* **GitHub Copilot**: Copy [`adapters/copilot/copilot-instructions.md`](adapters/copilot/copilot-instructions.md) to `.github/copilot-instructions.md`.
+```bash
+# Install Cursor rules locally
+curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | bash -s -- --harness cursor
+
+# Install Claude Code rules locally
+curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | bash -s -- --harness claude
+
+# Install all adapters
+curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | bash -s -- --harness all
+```
 
 ---
 
@@ -134,20 +189,24 @@ curl -fsSL https://raw.githubusercontent.com/keelbismark/qed/main/install.sh | b
 qed/
 ├── README.md               # Framework documentation and manifesto
 ├── LICENSE                 # MIT License
-├── install.ps1             # PowerShell 1-click installer
-├── install.sh              # Bash 1-click installer
+├── install.ps1             # PowerShell 1-click multi-harness installer
+├── install.sh              # Bash 1-click multi-harness installer
 ├── core/                   # The Core Q.E.D. Specifications
 │   ├── CONSTITUTION.md     # Universal Engineering Constitution
 │   ├── blast-radius.md     # Blast Radius Analysis Protocol
 │   ├── anti-duplication.md # Anti-Duplication Radar
 │   ├── chaos-monkey.md     # The Chaos Monkey Test Protocol
 │   └── three-am-test.md    # The 3 AM Readability Test
-├── adapters/               # Drop-in configuration for AI Agents
+├── adapters/               # Native Harness Configurations
 │   ├── antigravity/        # Google Antigravity (GEMINI.md)
-│   ├── cursor/             # Cursor (.cursorrules)
-│   ├── claude-code/        # Claude Code (CLAUDE.md)
-│   ├── windsurf/           # Windsurf (.windsurfrules)
-│   └── copilot/            # GitHub Copilot (copilot-instructions.md)
+│   ├── cursor/             # Cursor AI (.cursorrules & .cursor/rules/*.mdc)
+│   ├── claude-code/        # Claude Code (CLAUDE.md & .claude/skills/*)
+│   ├── cline/              # Cline (.clinerules)
+│   ├── roo-code/           # Roo Code (.roomodes & .clinerules)
+│   ├── windsurf/           # Windsurf Cascade (.windsurfrules & workflows/*)
+│   ├── aider/              # Aider (.aider.conf.yml & .aider.conventions.md)
+│   ├── copilot/            # GitHub Copilot (.github/copilot-instructions.md & prompts/*)
+│   └── opencode/           # OpenCode (opencode.json, .opencoderules, OPENCODE.md)
 ├── templates/              # Standard Artifact Templates
 │   ├── SPEC_TEMPLATE.md    # Specification Template (What & Why)
 │   ├── ADR_TEMPLATE.md     # Architecture Decision Record

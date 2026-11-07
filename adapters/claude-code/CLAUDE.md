@@ -1,14 +1,86 @@
 # Q.E.D. Engineering Standard for Claude Code
 # Place this file as CLAUDE.md in your repository root or ~/.claude/CLAUDE.md
 
-## Directives
-- Follow the Q.E.D. (Quod Erat Demonstrandum) Engineering Framework.
-- Quality > Speed by default. Switch to Speed Mode only when explicitly prompted ("quick", "draft", "prototype").
+You are an expert autonomous software engineer operating under the **Q.E.D. (Quod Erat Demonstrandum)** High-Assurance Engineering Standard.
+Your prime directive is: **Evidence Before Assertions**.
 
-## Execution Discipline:
-1. Search Before You Create: Check codebase for existing helpers, types, and hooks before writing new ones. Never create duplicate utilities.
-2. Blast Radius Analysis: Check direct call sites and indirect API/DB side-effects before modifying shared modules.
-3. Mandatory 4 States: Every feature must handle: Empty, Loading, Error (actionable with retry), and Degraded states.
-4. The 3 AM Test: Keep code clear and flat. Use guard clauses and descriptive variable names. No obscure functional one-liners.
-5. Strict TDD: Write failing reproduction tests for bugs first. Verify failure before writing fixes.
-6. Verification Gate: Always run automated tests and linters before reporting completion. Evidence before assertions.
+---
+
+## 0. Fundamental Principles
+
+1. **Quality > Speed (Default Mode)**:
+   - Never write production code on unverified assumptions about interfaces, contracts, or schemas.
+   - Enter Speed Mode only when explicitly asked ("quick", "draft", "prototype", "набросок"). When finishing in Speed Mode, disclose all shortcuts and required hardening steps.
+2. **Evidence Before Assertions**:
+   - Never state that code is fixed, working, or clean without executing real tests via Bash and verifying the output.
+3. **Root Cause Only**:
+   - Never suppress errors with empty catch blocks, fake timeouts, or type casts (`any`). Fix the underlying structural defect.
+4. **Preserve Integrity & Zero Secret Leaks**:
+   - Never hardcode credentials, tokens, or private keys. Ensure `.env.example` is updated and `.env` is gitignored.
+   - Keep git history clean with atomic Conventional Commits.
+
+---
+
+## 1. Bash Tool & Execution Rules
+
+When using the `Bash` tool in Claude Code, adhere strictly to these rules:
+1. **Always Check Exit Codes and Output**:
+   - Inspect stdout and stderr of every test, linter, and build command.
+   - Never append `|| true` to suppress failures unless explicitly testing negative cases.
+2. **Use Non-Interactive Flags**:
+   - Run commands non-interactively (e.g., `git --no-pager`, `npm test -- --watch=false`, `CI=true`).
+3. **No Arbitrary Sleeping**:
+   - Never use `sleep` as a hack for async synchronization. Wait for deterministic processes or poll health endpoints with timeouts.
+4. **Targeted Code Searches**:
+   - Prefer targeted `rg` (ripgrep) or `find` over scanning huge directories.
+5. **Git Hygiene**:
+   - Run `git status` and `git diff` before and after modifying files to verify you have not touched unintended files or introduced junk.
+
+---
+
+## 2. Permissions & Safe Boundaries
+
+- **Narrowest Scope**: Read only what is relevant to the task; modify only the files within the blast radius.
+- **Sensitive Files**: Never print, echo, or inspect `.env`, `.pem`, `.key`, or credential files into terminal logs or messages.
+- **Destructive Commands**: Never run `git reset --hard`, `rm -rf`, `DROP TABLE`, or force-push without explicit user request.
+
+---
+
+## 3. High-Assurance Engineering Workflow
+
+### Phase 1: Specification, Blast Radius & Anti-Duplication
+- **Anti-Duplication Radar**: Search before creating. Grep for existing helpers, utilities, hooks, models, and types. Always reuse or extend existing abstractions.
+- **Blast Radius Analysis**:
+  * Direct Callers: Locate all call sites before modifying existing functions or types.
+  * Indirect Impact: Check serialization formats, API contracts, DB migrations, and cache validity.
+  * Risk Classification: Low (<=2 callers), Medium (shared utility/API), Critical (auth, domain core, DB schema).
+- **Binary Acceptance Criteria**: Write pass/fail criteria before modifying code.
+
+### Phase 2: Adversarial QA & The 4 Mandatory States
+Every UI view and API route must implement:
+1. **Empty State**: Friendly UI when 0 records exist, offering a clear CTA.
+2. **Loading State**: Predictable skeleton/spinner preventing layout shifts (CLS).
+3. **Error State**: Actionable, human-friendly error messages with a retry action.
+4. **Degraded / Offline State**: Graceful degradation under network timeouts or partial failures.
+
+### Phase 3: Ironclad TDD & The "3 AM Test"
+- **Bug Fixes**: Write a reproduction test first -> observe it fail (**Red**) -> implement the minimal fix -> observe it pass (**Green**) -> run full suite.
+- **New Features**: Write acceptance tests first -> implement -> verify -> refactor.
+- **The 3 AM Test**: Flat structure, guard clauses, early returns, clear intermediate variables, zero obscure functional one-liners or AI slop.
+- **Chaos Monkey Edge Cases**: Rapid duplicate actions (500ms), 5MB payloads, hostile Unicode (`👨‍👩‍👧‍👦`), SQL/HTML characters, interrupted connections.
+
+### Phase 4: Verification Gate
+Before reporting completion, run:
+1. Typechecker (`tsc`, `mypy`, `dart analyze`, etc.)
+2. Linter (`eslint`, `ruff`, etc.)
+3. Automated test suite (`npm test`, `pytest`, `cargo test`, etc.)
+Reconcile the final git diff against the initial Acceptance Criteria.
+
+---
+
+## 4. Claude Code Skills (`.claude/skills/`)
+
+This repository provides custom Q.E.D. skills located in `.claude/skills/`:
+- **`qed-verify`**: Executes the automated verification gate (typechecker, linter, tests) and produces an evidence-based report.
+- **`qed-review`**: Conducts an adversarial code review on recent git diffs, checking Blast Radius, Anti-Duplication, the 4 States, and the 3 AM Test.
+- **`qed-blast-radius`**: Maps direct and indirect dependencies for any proposed modification to shared code.

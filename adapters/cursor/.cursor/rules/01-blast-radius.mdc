@@ -1,0 +1,27 @@
+---
+description: Q.E.D. Blast Radius Analysis protocol for modifying shared code, models, schemas, and APIs
+globs: *
+alwaysApply: true
+---
+
+# Q.E.D. Blast Radius Analysis Protocol
+
+Before modifying any existing shared function, data contract, database model, or API endpoint, you MUST calculate and document the Blast Radius.
+
+## 1. Direct Dependents (Direct Callers)
+- Search the codebase (grep / AST / references) to locate all call sites and imported references.
+- If > 5 files depend on the function, favor introducing a backward-compatible wrapper or overload rather than a breaking change.
+
+## 2. Indirect Impact (Transitive & State Effects)
+- **Serialization & Contracts**: Does this edit alter JSON serialization or API response shapes?
+- **Database Migrations**: Does this require DB schema changes? Will existing persisted records break?
+- **State & Background Queues**: Are cached objects (Redis) or queued job payloads (BullMQ, Celery, Kafka) affected?
+
+## 3. Risk Tiers
+- **Low**: Self-contained internal function with <= 2 callers; unit tests exist.
+- **Medium**: Shared utility, API schema change, or model modification with multiple callers. Write regression tests for callers first.
+- **Critical**: Core domain model, auth logic, database migration, or public API contract. Create formal ADR, isolate branch, run full regression suite.
+
+## 4. Pre-Flight Verification
+- Verify that existing tests are green BEFORE making edits.
+- Keep diffs focused and backward-compatible whenever possible.

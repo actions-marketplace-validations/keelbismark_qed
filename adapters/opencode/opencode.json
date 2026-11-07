@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Q.E.D. High-Assurance Engineering Standard",
+  "version": "1.0.0",
+  "standard": "Quod Erat Demonstrandum",
+  "motto": "Evidence Before Assertions",
+  "modes": {
+    "default": "production",
+    "production": {
+      "qualityOverSpeed": true,
+      "enforceTdd": true,
+      "enforceBlastRadius": true,
+      "enforceVerificationGate": true,
+      "mandatoryStates": ["empty", "loading", "error", "degraded"],
+      "readabilityStandard": "three-am-test",
+      "antiSlop": true
+    },
+    "speed": {
+      "qualityOverSpeed": false,
+      "prototypeMode": true,
+      "requireDebtDisclosure": true,
+      "triggerPhrases": ["quick", "draft", "prototype", "speed mode", "набросок"]
+    }
+  },
+  "security": {
+    "zeroSecretLeaks": true,
+    "syncEnvExample": true,
+    "enforceGitIgnore": [".env", "*.pem", "*.key"]
+  },
+  "workflow": {
+    "phase1": {
+      "name": "Specification, Blast Radius & Anti-Duplication",
+      "searchBeforeCreate": true,
+      "requireBlastRadiusCalculation": true
+    },
+    "phase2": {
+      "name": "Adversarial QA & 4 States",
+      "requiredStates": ["empty", "loading", "error", "degraded"],
+      "chaosMonkeyEdgeCases": ["concurrency_500ms", "payload_overload", "hostile_unicode", "request_abort"]
+    },
+    "phase3": {
+      "name": "Ironclad TDD & The 3 AM Test",
+      "redGreenRefactor": true,
+      "prohibitTestSuppression": true,
+      "guardClausesPreferred": true
+    },
+    "phase4": {
+      "name": "Verification Gate & Atomic Commit",
+      "requireAutomatedTestRun": true,
+      "requireEvidenceOutput": true,
+      "commitStandard": "conventional_commits"
+    }
+  },
+  "verification": {
+    "preCompletionChecks": [
+      "typecheck",
+      "linter",
+      "test_suite",
+      "diff_reconciliation"
+    ]
+  }
+}

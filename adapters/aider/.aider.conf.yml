@@ -1,0 +1,30 @@
+# Q.E.D. High-Assurance Configuration for Aider
+# Place this file as .aider.conf.yml in your repository root
+
+# Automatically load the Q.E.D. engineering conventions into context
+read: .aider.conventions.md
+
+# Enforce automatic execution of verification tests after code edits
+auto-test: true
+
+# Enable automatic git commits adhering to Conventional Commits
+auto-commits: true
+
+# Clean git commit metadata (do not inject promotional commit author tags)
+attribute-author: false
+attribute-committer: false
+
+# Example test commands (uncomment and adjust for your tech stack):
+# test-cmd: npm test
+# test-cmd: pytest
+# test-cmd: cargo test
+# test-cmd: go test ./...
+
+# Example lint commands:
+# lint-cmd: npm run lint
+# lint-cmd: ruff check .
+# lint-cmd: cargo clippy
+
+# Formatting and diff options
+stream: true
+pretty: true

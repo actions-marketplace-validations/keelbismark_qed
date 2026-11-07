@@ -1,0 +1,50 @@
+name: Q.E.D. High-Assurance CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify on ${{ matrix.os }} (Node ${{ matrix.node-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [20, 22]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Run Q.E.D. Mechanical Verification Gate
+        run: node bin/qed-engine.js check
+
+      # Linux / Ubuntu Verification Steps
+      - name: Run POSIX Linter Test Suite (Ubuntu)
+        if: runner.os == 'Linux'
+        run: bash tests/verify-linter.sh
+
+      - name: Run POSIX Adapters Verification Suite (Ubuntu)
+        if: runner.os == 'Linux'
+        run: bash tests/verify-adapters.sh
+
+      # Windows Verification Steps
+      - name: Run Windows Linter Test Suite (PowerShell)
+        if: runner.os == 'Windows'
+        run: powershell -ExecutionPolicy Bypass -File tests/verify-linter.ps1
+
+      - name: Run Windows Adapters Verification Suite (PowerShell)
+        if: runner.os == 'Windows'
+        run: powershell -ExecutionPolicy Bypass -File tests/verify-adapters.ps1

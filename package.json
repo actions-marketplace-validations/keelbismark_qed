@@ -1,0 +1,52 @@
+{
+  "name": "qed-standard",
+  "version": "1.0.0",
+  "description": "Q.E.D. (Quod Erat Demonstrandum) High-Assurance Engineering Standard & Mechanical Verification Engine",
+  "main": "bin/qed-engine.js",
+  "bin": {
+    "qed": "bin/qed-engine.js"
+  },
+  "files": [
+    "bin",
+    "core",
+    "adapters",
+    "docs",
+    "schema",
+    "install.sh",
+    "install.ps1",
+    "LICENSE",
+    "README.md",
+    "llms.txt",
+    "QED.lite.md"
+  ],
+  "scripts": {
+    "lint": "node bin/qed-engine.js check",
+    "check": "node bin/qed-engine.js check",
+    "test": "powershell -ExecutionPolicy Bypass -File tests/verify-linter.ps1",
+    "test:adapters": "powershell -ExecutionPolicy Bypass -File tests/verify-adapters.ps1"
+  },
+  "keywords": [
+    "qed",
+    "linter",
+    "engineering-standards",
+    "verification",
+    "code-quality",
+    "zero-dependency",
+    "tdd",
+    "ci-cd",
+    "ai-agents"
+  ],
+  "author": "KeelBismarck",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keelbismark/qed.git"
+  },
+  "bugs": {
+    "url": "https://github.com/keelbismark/qed/issues"
+  },
+  "homepage": "https://github.com/keelbismark/qed#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

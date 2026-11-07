@@ -31,10 +31,8 @@ const DEFAULT_EXCLUDES = new Set([
   ".next",
   ".cache",
   "coverage",
-  "tests",
-  "scripts",
   "bin",
-  "adapters", // Platform templates may contain illustrative placeholders
+  "adapters", // Platform templates contain illustrative placeholders
 ]);
 
 const CODE_EXTENSIONS = new Set([
@@ -63,18 +61,266 @@ const colors = {
   bold: (s) => (useColor ? `\x1b[1m${s}\x1b[0m` : s),
 };
 
+const KNOWN_RULES = new Set([
+  "*",
+  "ALL",
+  "QED001", "PRISTINE_ROOT",
+  "QED002", "ZERO_DEBUG",
+  "QED003", "EMPTY_CATCH",
+  "QED004", "UNSAFE_CAST",
+  "QED005", "MISSING_TIMEOUT",
+  "QED006", "UNBOUNDED_CACHE",
+  "QED007", "SECRET_LEAK",
+  "QED008", "ENV_SYNC",
+  "QED009", "DIV_ONCLICK",
+  "QED010", "BLOCKED_PASTE",
+  "QED011", "UI_EMOJI_SLOP",
+  "QED012", "DDL_UNSAFE",
+]);
+
+function parseDirectiveRules(rawText) {
+  if (!rawText || !rawText.trim()) return ["*"];
+  // Stop at common comment separators like '-', ':', '(', or '--'
+  const clean = rawText.split(/[-:(]/)[0].trim();
+  if (!clean) return ["*"];
+  const tokens = clean.split(/[,\s]+/).map((t) => t.toUpperCase().trim()).filter(Boolean);
+  const matchedRules = tokens.filter((t) => KNOWN_RULES.has(t) || /^QED\d{3}$/.test(t));
+  return matchedRules.length > 0 ? matchedRules : ["*"];
+}
+
+function matchesGlob(relPath, pattern) {
+  const normPath = relPath.replace(/\\/g, "/");
+  const normPattern = pattern.replace(/\\/g, "/").replace(/^\.\//, "");
+  if (normPattern.includes("*") || normPattern.includes("?")) {
+    const escaped = normPattern
+      .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+      .replace(/\*\*/g, ".*")
+      .replace(/(?<!\.)\*/g, "[^/]*")
+      .replace(/\?/g, ".");
+    const rx = new RegExp(`(^|/)${escaped}($|/)`);
+    return rx.test(normPath);
+  }
+  return (
+    normPath === normPattern ||
+    normPath.startsWith(normPattern + "/") ||
+    normPath.includes("/" + normPattern + "/")
+  );
+}
+
+function isTestOrFixturePath(filePath) {
+  const norm = filePath.replace(/\\/g, "/");
+  return (
+    /(?:^|\/)(?:tests?|__tests__|fixtures?|samples?|scripts?)\//i.test(norm) ||
+    /\.(?:test|spec)\.[a-z0-9]+$/i.test(norm)
+  );
+}
+
+function ruleMatchesSet(ruleSet, targetRule) {
+  if (!ruleSet || ruleSet.size === 0) return false;
+  if (ruleSet.has("*") || ruleSet.has("ALL")) return true;
+  const parts = targetRule.toUpperCase().split("/");
+  const numId = parts[0];
+  const nameId = parts[1] || "";
+  for (const item of ruleSet) {
+    const norm = item.toUpperCase().trim();
+    if (norm === numId || (nameId && norm === nameId) || norm === targetRule.toUpperCase()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * FileSuppressionMap parses and manages in-code suppressions:
+ * - Line suppressions: // qed-ignore [rules]
+ * - Next-line suppressions: // qed-ignore-next-line [rules]
+ * - Block suppressions: /* qed-disable [rules] * / ... /* qed-enable * /
+ * - File suppression: // qed-disable-file
+ */
+class FileSuppressionMap {
+  constructor(content) {
+    this.isFileDisabled = false;
+    this.lineSuppressions = new Map(); // lineNum -> Set of rules
+    this.blockDisables = new Map(); // lineNum -> Set of currently disabled rules
+    this.parse(content);
+  }
+
+  parse(content) {
+    if (/(?:\/\/|#|\/\*|<!--)\s*qed-disable-file/i.test(content)) {
+      this.isFileDisabled = true;
+      return;
+    }
+
+    const lines = content.split(/\r?\n/);
+    const activeBlock = new Set();
+    let pendingNextLineRules = null;
+
+    for (let i = 0; i < lines.length; i++) {
+      const lineNum = i + 1;
+      const line = lines[i];
+
+      // 1. Block Disable
+      const disableMatch = line.match(/(?:\/\/|#|\/\*|<!--)\s*qed-disable(?:\s+(.*?))?(?:\*\/|-->)?$/i);
+      if (disableMatch && !line.includes("qed-disable-file")) {
+        const rules = parseDirectiveRules(disableMatch[1]);
+        for (const r of rules) activeBlock.add(r);
+      }
+
+      // 2. Block Enable
+      const enableMatch = line.match(/(?:\/\/|#|\/\*|<!--)\s*qed-enable(?:\s+(.*?))?(?:\*\/|-->)?$/i);
+      if (enableMatch) {
+        const rules = parseDirectiveRules(enableMatch[1]);
+        if (rules.includes("*")) {
+          activeBlock.clear();
+        } else {
+          for (const r of rules) activeBlock.delete(r);
+        }
+      }
+
+      if (activeBlock.size > 0) {
+        this.blockDisables.set(lineNum, new Set(activeBlock));
+      }
+
+      // 3. Consume pending next-line ignore
+      if (pendingNextLineRules) {
+        const existing = this.lineSuppressions.get(lineNum) || new Set();
+        for (const r of pendingNextLineRules) existing.add(r);
+        this.lineSuppressions.set(lineNum, existing);
+        pendingNextLineRules = null;
+      }
+
+      // 4. Next-line ignore declaration
+      const nextLineMatch = line.match(/(?:\/\/|#|\/\*|<!--)\s*qed-ignore-next-line(?:\s+(.*?))?(?:\*\/|-->)?$/i);
+      if (nextLineMatch) {
+        const rules = parseDirectiveRules(nextLineMatch[1]);
+        pendingNextLineRules = new Set(rules);
+      }
+
+      // 5. Current-line ignore declaration
+      const inlineMatch = line.match(/(?:\/\/|#|\/\*|<!--)\s*qed-ignore(?:\s+(.*?))?(?:\*\/|-->)?$/i);
+      if (inlineMatch && !line.includes("qed-ignore-next-line")) {
+        const rules = parseDirectiveRules(inlineMatch[1]);
+        const existing = this.lineSuppressions.get(lineNum) || new Set();
+        for (const r of rules) existing.add(r);
+        this.lineSuppressions.set(lineNum, existing);
+      }
+    }
+  }
+
+  isIgnored(ruleId, lineNum) {
+    if (this.isFileDisabled) return true;
+    if (lineNum !== null && lineNum !== undefined) {
+      const lineRules = this.lineSuppressions.get(lineNum);
+      if (lineRules && ruleMatchesSet(lineRules, ruleId)) {
+        return true;
+      }
+      const blockRules = this.blockDisables.get(lineNum);
+      if (blockRules && ruleMatchesSet(blockRules, ruleId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
 class QedLinter {
   constructor(targetDir = process.cwd(), options = {}) {
     this.targetDir = path.resolve(targetDir);
     this.strict = Boolean(options.strict);
     this.jsonOutput = Boolean(options.json);
+    this.config = this.loadConfig(options.config);
     this.violations = [];
   }
 
+  loadConfig(explicitConfigPath) {
+    const configCandidates = explicitConfigPath
+      ? [path.resolve(explicitConfigPath)]
+      : [
+          path.join(this.targetDir, ".qedrc.json"),
+          path.join(this.targetDir, ".qedrc"),
+          path.join(this.targetDir, "package.json"),
+        ];
+
+    for (const confPath of configCandidates) {
+      if (fs.existsSync(confPath)) {
+        try {
+          const raw = fs.readFileSync(confPath, "utf8");
+          const parsed = JSON.parse(raw);
+          if (confPath.endsWith("package.json")) {
+            if (parsed.qed && typeof parsed.qed === "object") {
+              return this.normalizeConfig(parsed.qed, confPath);
+            }
+          } else {
+            return this.normalizeConfig(parsed, confPath);
+          }
+        } catch {
+          // Fall through on JSON parse error
+        }
+      }
+    }
+    return { ignorePatterns: [], rules: {} };
+  }
+
+  normalizeConfig(rawConfig, sourcePath) {
+    const config = {
+      source: sourcePath,
+      ignorePatterns: Array.isArray(rawConfig.ignorePatterns) ? rawConfig.ignorePatterns : [],
+      rules: {},
+    };
+    if (rawConfig.rules && typeof rawConfig.rules === "object") {
+      for (const [key, val] of Object.entries(rawConfig.rules)) {
+        const severity = String(val).toLowerCase();
+        if (["off", "warn", "error"].includes(severity)) {
+          config.rules[key.toUpperCase()] = severity;
+        }
+      }
+    }
+    return config;
+  }
+
+  getRuleSeverity(ruleId) {
+    const parts = ruleId.toUpperCase().split("/");
+    const numId = parts[0];
+    const nameId = parts[1] || "";
+
+    if (this.config.rules[numId]) return this.config.rules[numId];
+    if (nameId && this.config.rules[nameId]) return this.config.rules[nameId];
+    if (this.config.rules[ruleId.toUpperCase()]) return this.config.rules[ruleId.toUpperCase()];
+
+    return "error";
+  }
+
+  isRelaxedInContext(ruleId, filePath) {
+    if (this.strict) return false;
+    if (!filePath) return false;
+    if (isTestOrFixturePath(filePath)) {
+      // Relax rules in tests and local scripts so developers are not suffocated
+      const relaxedRules = new Set([
+        "QED002",
+        "ZERO_DEBUG",
+        "QED004",
+        "UNSAFE_CAST",
+        "QED005",
+        "MISSING_TIMEOUT",
+        "QED009",
+        "DIV_ONCLICK",
+      ]);
+      const parts = ruleId.toUpperCase().split("/");
+      if (relaxedRules.has(parts[0]) || (parts[1] && relaxedRules.has(parts[1]))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   addViolation(ruleId, message, filePath, lineNum = null, snippet = null, fix = null) {
+    const severity = this.getRuleSeverity(ruleId);
+    if (severity === "off") return;
+
     const relPath = filePath ? path.relative(this.targetDir, filePath) : null;
     this.violations.push({
       ruleId,
+      severity,
       message,
       file: relPath,
       line: lineNum,
@@ -85,6 +331,8 @@ class QedLinter {
 
   // 1. Pristine Root Invariant
   checkPristineRoot() {
+    if (this.getRuleSeverity("QED001") === "off") return;
+
     const suspiciousPatterns = [
       /^temp_/i,
       /^scratch/i,
@@ -117,7 +365,7 @@ class QedLinter {
     }
   }
 
-  // Collect source files respecting exclusions and .gitignore
+  // Collect source files respecting exclusions, config ignorePatterns, and .gitignore
   collectSourceFiles(dir = this.targetDir) {
     let results = [];
     let entries;
@@ -134,6 +382,13 @@ class QedLinter {
       if (DEFAULT_EXCLUDES.has(entry.name)) continue;
 
       const fullPath = path.join(dir, entry.name);
+      const relPath = path.relative(this.targetDir, fullPath);
+
+      // Check config ignore patterns
+      if (this.config.ignorePatterns.some((pattern) => matchesGlob(relPath, pattern))) {
+        continue;
+      }
+
       if (entry.isDirectory()) {
         results = results.concat(this.collectSourceFiles(fullPath));
       } else if (entry.isFile()) {
@@ -155,140 +410,177 @@ class QedLinter {
       return;
     }
 
+    const suppressions = new FileSuppressionMap(content);
+    if (suppressions.isFileDisabled) return;
+
     const lines = content.split(/\r?\n/);
     const ext = path.extname(filePath).toLowerCase();
     const isUI = UI_EXTENSIONS.has(ext);
 
-    // Multi-line regex checks
-    this.checkMultiLinePatterns(filePath, content);
+    // Multi-line pattern checks
+    this.checkMultiLinePatterns(filePath, content, suppressions);
 
     // Line-by-line checks
     for (let i = 0; i < lines.length; i++) {
       const lineNum = i + 1;
       const line = lines[i];
 
-      // Ignore comments and explicit suppressions
-      if (/^\s*(\/\/|#|\/\*|\*)/.test(line)) continue;
-      if (line.includes("qed-ignore")) continue;
+      // Skip lines that are purely comment lines
+      if (/^\s*(\/\/|#|\/\*|\*|<!--|--)/.test(line)) continue;
 
       // QED002: Zero-Debug Print Invariant
-      if (/console\.(log|debug|dir|trace)\s*\(/.test(line) && !line.includes("logger.")) {
-        this.addViolation(
-          "QED002/ZERO_DEBUG",
-          "Leftover console debug print statement found in production source.",
-          filePath,
-          lineNum,
-          line,
-          "Use a structured logger (logger.info/debug) or remove before commit."
-        );
-      }
-      if (/\bdebugger\s*;/.test(line)) {
-        this.addViolation(
-          "QED002/ZERO_DEBUG",
-          "Leftover debugger breakpoint found.",
-          filePath,
-          lineNum,
-          line,
-          "Remove debugger statement."
-        );
-      }
-      if (ext === ".py" && /\bprint\s*\(/.test(line) && !line.includes("logger.")) {
-        this.addViolation(
-          "QED002/ZERO_DEBUG",
-          "Leftover print() call found in Python source.",
-          filePath,
-          lineNum,
-          line,
-          "Use logging module instead of raw print()."
-        );
+      if (!suppressions.isIgnored("QED002", lineNum) && !this.isRelaxedInContext("QED002", filePath)) {
+        // Allows console.warn, console.error, console.info; flags only debug/log
+        if (/console\.(log|debug|dir|trace)\s*\(/.test(line) && !line.includes("logger.")) {
+          this.addViolation(
+            "QED002/ZERO_DEBUG",
+            "Leftover console debug print statement found in production source.",
+            filePath,
+            lineNum,
+            line,
+            "Use a structured logger (logger.info/debug) or remove before commit."
+          );
+        }
+        if (/\bdebugger\s*;/.test(line)) {
+          this.addViolation(
+            "QED002/ZERO_DEBUG",
+            "Leftover debugger breakpoint found.",
+            filePath,
+            lineNum,
+            line,
+            "Remove debugger statement."
+          );
+        }
+        if (ext === ".py" && /\bprint\s*\(/.test(line) && !line.includes("logger.")) {
+          this.addViolation(
+            "QED002/ZERO_DEBUG",
+            "Leftover print() call found in Python source.",
+            filePath,
+            lineNum,
+            line,
+            "Use logging module instead of raw print()."
+          );
+        }
       }
 
       // QED004: Anti-`as any` Cast
-      if ((ext === ".ts" || ext === ".tsx") && /\bas\s+any\b/.test(line)) {
-        this.addViolation(
-          "QED004/UNSAFE_CAST",
-          "Loose 'as any' cast bypasses compile-time type safety.",
-          filePath,
-          lineNum,
-          line,
-          "Use typed interfaces, unknown with type-guards, or Zod schema validation."
-        );
+      if (!suppressions.isIgnored("QED004", lineNum) && !this.isRelaxedInContext("QED004", filePath)) {
+        if ((ext === ".ts" || ext === ".tsx") && /\bas\s+any\b/.test(line)) {
+          this.addViolation(
+            "QED004/UNSAFE_CAST",
+            "Loose 'as any' cast bypasses compile-time type safety.",
+            filePath,
+            lineNum,
+            line,
+            "Use typed interfaces, unknown with type-guards, or Zod schema validation."
+          );
+        }
+      }
+
+      // QED006: Unbounded Module-Level Cache
+      if (!suppressions.isIgnored("QED006", lineNum)) {
+        if (/(?:export\s+(?:const|let|var)\s+([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*=\s*new\s+Map\s*\(\s*\))/i.test(line)) {
+          this.addViolation(
+            "QED006/UNBOUNDED_CACHE",
+            "Exported module-level unbounded Map causes memory leaks in long-running processes.",
+            filePath,
+            lineNum,
+            line,
+            "Use a bounded cache with maxSize and TTL (e.g. LRU cache)."
+          );
+        }
       }
 
       // QED007: Secret Leak Radar
-      const secretMatch = line.match(/(?:sk-(?:proj-)?[a-zA-Z0-9-_]{20,}|ghp_[a-zA-Z0-9]{30,}|AIza[0-9A-Za-z-_]{35})/);
-      if (secretMatch) {
-        this.addViolation(
-          "QED007/SECRET_LEAK",
-          "High-entropy API secret or private access token hardcoded in source.",
-          filePath,
-          lineNum,
-          line.replace(secretMatch[0], "[REDACTED_SECRET]"),
-          "Store secrets in environment variables (.env) and add to .env.example."
-        );
+      if (!suppressions.isIgnored("QED007", lineNum)) {
+        const secretMatch = line.match(/(?:sk-(?:proj-)?[a-zA-Z0-9-_]{20,}|ghp_[a-zA-Z0-9]{30,}|AIza[0-9A-Za-z-_]{35})/);
+        if (secretMatch) {
+          this.addViolation(
+            "QED007/SECRET_LEAK",
+            "High-entropy API secret or private access token hardcoded in source.",
+            filePath,
+            lineNum,
+            line.replace(secretMatch[0], "[REDACTED_SECRET]"),
+            "Store secrets in environment variables (.env) and add to .env.example."
+          );
+        }
       }
 
       // UI-Specific Checks
       if (isUI) {
-        // QED009: Semantic Links vs <div onClick>
-        if (/<(div|span|section)\s+[^>]*onClick\s*=\s*\{.*navigate/i.test(line) ||
-            /<(div|span)\s+[^>]*onClick\s*=.*router\.(push|replace)/i.test(line)) {
-          this.addViolation(
-            "QED009/DIV_ONCLICK",
-            "Navigational click handler on non-link container element (<div onClick>).",
-            filePath,
-            lineNum,
-            line,
-            "Use semantic <a href=\"...\"> or <Link href=\"...\"> to support middle-click and bookmarks."
-          );
+        // QED009: Semantic Links vs <div onClick> (Checks navigational actions only)
+        if (!suppressions.isIgnored("QED009", lineNum) && !this.isRelaxedInContext("QED009", filePath)) {
+          if (
+            /<(div|span|section)\s+[^>]*onClick\s*=\s*\{?[^}]*(?:navigate|router\.(?:push|replace)|window\.location|history\.(?:push|replace))/i.test(
+              line
+            )
+          ) {
+            this.addViolation(
+              "QED009/DIV_ONCLICK",
+              "Navigational click handler on non-link container element (<div onClick>).",
+              filePath,
+              lineNum,
+              line,
+              "Use semantic <a href=\"...\"> or <Link href=\"...\"> to support middle-click and bookmarks."
+            );
+          }
         }
 
         // QED010: Blocked Paste (User-Hostile)
-        if (/onPaste\s*=\s*\{\s*(?:\([^)]*\)\s*=>\s*)?[a-zA-Z0-9_]*\.preventDefault\(\)/i.test(line) ||
-            /onpaste\s*=\s*["']return\s+false["']/i.test(line)) {
-          this.addViolation(
-            "QED010/BLOCKED_PASTE",
-            "Clipboard paste is blocked by onPaste.preventDefault().",
-            filePath,
-            lineNum,
-            line,
-            "Remove onPaste block to support password managers and 2FA tokens."
-          );
+        if (!suppressions.isIgnored("QED010", lineNum)) {
+          if (
+            /onPaste\s*=\s*\{\s*(?:\([^)]*\)\s*=>\s*)?[a-zA-Z0-9_]*\.preventDefault\(\)/i.test(line) ||
+            /onpaste\s*=\s*["']return\s+false["']/i.test(line)
+          ) {
+            this.addViolation(
+              "QED010/BLOCKED_PASTE",
+              "Clipboard paste is blocked by onPaste.preventDefault().",
+              filePath,
+              lineNum,
+              line,
+              "Remove onPaste block to support password managers and 2FA tokens."
+            );
+          }
         }
 
         // QED011: Emoji Salad in UI Chrome
-        const emojiMatch = line.match(/<button[^>]*>.*[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}].*<\/button>/u);
-        if (emojiMatch) {
-          this.addViolation(
-            "QED011/UI_EMOJI_SLOP",
-            "Gratuitous emoji used inside UI button chrome.",
-            filePath,
-            lineNum,
-            line,
-            "Replace emoji with calibrated SVG vector icons (Lucide, Heroicons) with aria-hidden."
+        if (!suppressions.isIgnored("QED011", lineNum)) {
+          const emojiMatch = line.match(
+            /<button[^>]*>.*[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}].*<\/button>/u
           );
+          if (emojiMatch) {
+            this.addViolation(
+              "QED011/UI_EMOJI_SLOP",
+              "Gratuitous emoji used inside UI button chrome.",
+              filePath,
+              lineNum,
+              line,
+              "Replace emoji with calibrated SVG vector icons (Lucide, Heroicons) with aria-hidden."
+            );
+          }
         }
       }
 
       // SQL / DDL Specific Checks
       if (ext === ".sql") {
-        if (/CREATE\s+INDEX\s+(?!CONCURRENTLY\b)[a-zA-Z0-9_]+\s+ON/i.test(line)) {
-          this.addViolation(
-            "QED012/DDL_UNSAFE",
-            "CREATE INDEX without CONCURRENTLY locks the table against writes.",
-            filePath,
-            lineNum,
-            line,
-            "Use CREATE INDEX CONCURRENTLY to build indexes without table-locking."
-          );
+        if (!suppressions.isIgnored("QED012", lineNum)) {
+          if (/CREATE\s+INDEX\s+(?!CONCURRENTLY\b)[a-zA-Z0-9_]+\s+ON/i.test(line)) {
+            this.addViolation(
+              "QED012/DDL_UNSAFE",
+              "CREATE INDEX without CONCURRENTLY locks the table against writes.",
+              filePath,
+              lineNum,
+              line,
+              "Use CREATE INDEX CONCURRENTLY to build indexes without table-locking."
+            );
+          }
         }
       }
     }
   }
 
-  // Multi-line regex checks
-  checkMultiLinePatterns(filePath, content) {
-    if (content.includes("qed-ignore")) return;
+  // Multi-line regex checks with suppression awareness
+  checkMultiLinePatterns(filePath, content, suppressions) {
     const ext = path.extname(filePath).toLowerCase();
 
     // QED003: Empty Catch Blocks
@@ -296,6 +588,9 @@ class QedLinter {
     let match;
     while ((match = emptyCatchRegex.exec(content)) !== null) {
       const lineNum = content.substring(0, match.index).split("\n").length;
+      if (suppressions.isIgnored("QED003", lineNum)) continue;
+      if (this.isRelaxedInContext("QED003", filePath)) continue;
+
       this.addViolation(
         "QED003/EMPTY_CATCH",
         "Empty catch block silently swallows exceptions, hiding defects.",
@@ -311,6 +606,9 @@ class QedLinter {
       const emptyExceptRegex = /except(?:\s+[a-zA-Z0-9_]+)?\s*:\s*\n\s*pass/g;
       while ((match = emptyExceptRegex.exec(content)) !== null) {
         const lineNum = content.substring(0, match.index).split("\n").length;
+        if (suppressions.isIgnored("QED003", lineNum)) continue;
+        if (this.isRelaxedInContext("QED003", filePath)) continue;
+
         this.addViolation(
           "QED003/EMPTY_CATCH",
           "Silent except: pass swallows errors without recovery.",
@@ -322,17 +620,20 @@ class QedLinter {
       }
     }
 
-    // QED005: Missing Fetch Deadline (Naked fetch)
+    // QED005: Missing Fetch Deadline (Naked single-argument fetch)
     if (ext === ".ts" || ext === ".js" || ext === ".tsx") {
-      const nakedFetchRegex = /\bfetch\s*\(\s*["'`][^"'`]+["'`]\s*\)/g;
+      const nakedFetchRegex = /(?:^|[^\w$.])fetch\s*\(\s*([^,\n\)]+)\s*\)/g;
       while ((match = nakedFetchRegex.exec(content)) !== null) {
         const lineNum = content.substring(0, match.index).split("\n").length;
+        if (suppressions.isIgnored("QED005", lineNum)) continue;
+        if (this.isRelaxedInContext("QED005", filePath)) continue;
+
         this.addViolation(
           "QED005/MISSING_TIMEOUT",
           "Naked fetch() without AbortSignal timeout causes hanging connections.",
           filePath,
           lineNum,
-          match[0],
+          match[0].trim(),
           "Pass AbortSignal.timeout(ms) in options: fetch(url, { signal: AbortSignal.timeout(5000) })."
         );
       }
@@ -341,6 +642,8 @@ class QedLinter {
 
   // 3. Check .env.example Synchronization
   checkEnvSync(files) {
+    if (this.getRuleSeverity("QED008") === "off") return;
+
     const envExamplePath = path.join(this.targetDir, ".env.example");
     if (!fs.existsSync(envExamplePath)) return;
 
@@ -402,9 +705,11 @@ class QedLinter {
 if (require.main === module) {
   const args = process.argv.slice(2);
   const command = args[0] || "check";
-  const targetDir = args[1] || process.cwd();
+  const targetDir = args.find((a) => !a.startsWith("-") && a !== command) || process.cwd();
   const strict = args.includes("--strict");
   const jsonMode = args.includes("--json");
+  const configIndex = args.indexOf("--config");
+  const explicitConfig = configIndex !== -1 && args[configIndex + 1] ? args[configIndex + 1] : null;
 
   if (command === "check") {
     if (!jsonMode) {
@@ -415,34 +720,98 @@ if (require.main === module) {
       console.log(colors.gray(`Target: ${path.resolve(targetDir)}\n`));
     }
 
-    const linter = new QedLinter(targetDir, { strict, json: jsonMode });
+    const linter = new QedLinter(targetDir, { strict, json: jsonMode, config: explicitConfig });
     const violations = linter.run();
 
+    const errors = violations.filter((v) => v.severity === "error");
+    const warnings = violations.filter((v) => v.severity === "warn");
+    const isPassing = strict ? violations.length === 0 : errors.length === 0;
+
     if (jsonMode) {
-      console.log(JSON.stringify({ violations, total: violations.length, passed: violations.length === 0 }, null, 2));
-      process.exit(violations.length === 0 ? 0 : 1);
+      console.log(
+        JSON.stringify(
+          {
+            violations,
+            errors,
+            warnings,
+            total: violations.length,
+            errorCount: errors.length,
+            warningCount: warnings.length,
+            passed: isPassing,
+          },
+          null,
+          2
+        )
+      );
+      process.exit(isPassing ? 0 : 1);
     }
 
     if (violations.length === 0) {
       console.log(colors.green("✓ Q.E.D. Verification Gate: 100% CLEAN. Zero violations found."));
       console.log(colors.gray("  All 16 pillars and mechanical invariants satisfied."));
       process.exit(0);
-    } else {
-      console.log(colors.red(`✗ Q.E.D. Verification Gate: FAILED (${violations.length} violation(s) detected):\n`));
-      for (const v of violations) {
+    }
+
+    if (errors.length === 0 && warnings.length > 0) {
+      console.log(colors.yellow(`✓ Q.E.D. Verification Gate: PASSED with ${warnings.length} warning(s):\n`));
+      for (const v of warnings) {
         const loc = v.file ? `${v.file}${v.line ? `:${v.line}` : ""}` : "Repository Root";
-        console.log(`  ${colors.red("[!]")} ${colors.bold(v.ruleId)} in ${colors.yellow(loc)}`);
-        console.log(`      ${v.message}`);
-        if (v.snippet) {
-          console.log(colors.gray(`      > ${v.snippet}`));
-        }
-        if (v.fix) {
-          console.log(colors.cyan(`      Suggested Fix: ${v.fix}`));
-        }
+        console.log(`  ${colors.yellow("[WARN]")} ${colors.bold(v.ruleId)} in ${colors.yellow(loc)}`);
+        console.log(`         ${v.message}`);
+        if (v.snippet) console.log(colors.gray(`         > ${v.snippet}`));
+        if (v.fix) console.log(colors.cyan(`         Suggested Fix: ${v.fix}`));
         console.log("");
       }
-      process.exit(1);
+      process.exit(0);
     }
+
+    console.log(
+      colors.red(
+        `✗ Q.E.D. Verification Gate: FAILED (${errors.length} error(s), ${warnings.length} warning(s) detected):\n`
+      )
+    );
+    for (const v of violations) {
+      const isErr = v.severity === "error";
+      const badge = isErr ? colors.red("[!]") : colors.yellow("[WARN]");
+      const loc = v.file ? `${v.file}${v.line ? `:${v.line}` : ""}` : "Repository Root";
+      console.log(`  ${badge} ${colors.bold(v.ruleId)} in ${colors.yellow(loc)}`);
+      console.log(`      ${v.message}`);
+      if (v.snippet) {
+        console.log(colors.gray(`      > ${v.snippet}`));
+      }
+      if (v.fix) {
+        console.log(colors.cyan(`      Suggested Fix: ${v.fix}`));
+      }
+      console.log("");
+    }
+    process.exit(1);
+  } else if (command === "init") {
+    const configPath = path.join(path.resolve(targetDir), ".qedrc.json");
+    if (fs.existsSync(configPath)) {
+      console.log(colors.yellow(`Config file already exists at: ${configPath}`));
+      process.exit(0);
+    }
+    const starterConfig = {
+      $schema: "https://raw.githubusercontent.com/keelbismark/qed/main/schema/qedrc.schema.json",
+      ignorePatterns: ["dist/**", "build/**", "coverage/**", "vendor/**"],
+      rules: {
+        QED001: "error",
+        QED002: "error",
+        QED003: "error",
+        QED004: "error",
+        QED005: "error",
+        QED006: "error",
+        QED007: "error",
+        QED008: "error",
+        QED009: "error",
+        QED010: "error",
+        QED011: "error",
+        QED012: "error",
+      },
+    };
+    fs.writeFileSync(configPath, JSON.stringify(starterConfig, null, 2) + "\n", "utf8");
+    console.log(colors.green(`[+] Initialized Q.E.D. configuration at: ${configPath}`));
+    process.exit(0);
   } else if (command === "hook") {
     const gitDir = path.join(path.resolve(targetDir), ".git");
     const hooksDir = path.join(gitDir, "hooks");
@@ -486,7 +855,7 @@ exit 0
     process.exit(0);
   } else {
     console.log(colors.red(`Unknown command: ${command}`));
-    console.log("Usage: node bin/qed-engine.js [check | hook] [target_dir] [--json] [--strict]");
+    console.log("Usage: node bin/qed-engine.js [check | init | hook] [target_dir] [--json] [--strict] [--config <path>]");
     process.exit(1);
   }
 }

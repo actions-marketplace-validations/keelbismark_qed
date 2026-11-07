@@ -91,6 +91,33 @@ assert_rule "Rule QED012: Unsafe CREATE INDEX" "migrations/001.sql" "CREATE INDE
 # 12. Suppression
 assert_rule "Suppression via // qed-ignore" "src/app.ts" "const x = y as any; // qed-ignore" "" "true"
 
+# 13. Next-line Suppression
+assert_rule "Suppression via // qed-ignore-next-line" "src/client.ts" $'\/\/ qed-ignore-next-line\nconst raw = legacyCall() as any;' "" "true"
+
+# 14. Rule-specific Next-line Suppression
+assert_rule "Rule-specific // qed-ignore-next-line QED004" "src/types.ts" $'\/\/ qed-ignore-next-line QED004\nconst data = item as any;' "" "true"
+
+# 15. Block Suppression
+assert_rule "Block suppression (/* qed-disable */)" "src/vendor.ts" $'/* qed-disable */\nconst a = 1 as any;\nconst b = 2 as any;\n/* qed-enable */' "" "true"
+
+# 16. Config File Rule Override (.qedrc.json)
+assert_rule "Configuration .qedrc.json rule off" ".qedrc.json" '{ "rules": { "QED004": "off" } }' "" "true"
+
+# 17. Heuristic: console.warn & console.error allowed
+assert_rule "Heuristic: console.warn & console.error allowed" "src/logging.ts" "export function logIssue() { console.warn('Warning'); console.error('Error'); }" "" "true"
+
+# 18. Heuristic: fetch with options allowed
+assert_rule "Heuristic: fetch with options allowed" "src/api.ts" "export async function query(url: string, opts: RequestInit) { return await fetch(url, opts); }" "" "true"
+
+# 19. Heuristic: Non-navigational onClick on div allowed
+assert_rule "Heuristic: Non-navigational onClick on div allowed" "src/Accordion.tsx" "export function Accordion({ onToggle }: any) { return <div onClick={onToggle}>Title</div>; } // qed-ignore QED004" "" "true"
+
+# 20. Heuristic: Test files relax non-fatal rules
+assert_rule "Heuristic: Test files relax non-fatal rules" "src/math.test.ts" "console.log('test run'); const mock = {} as any;" "" "true"
+
+# 21. Rule QED006: Unbounded Cache
+assert_rule "Rule QED006: Unbounded Module-Level Cache" "src/cache.ts" "export const userCache = new Map();" "QED006" "false"
+
 echo "----------------------------------------------------------"
 echo "Linter Test Results: $PASSED Passed, $FAILED Failed"
 

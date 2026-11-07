@@ -143,6 +143,58 @@ try {
         "src/legacy.ts" = "const val = legacyApi() as any; // qed-ignore - legacy vendor wrapper"
     } -ExpectedRule "" -ShouldPass $true
 
+    # 14. Next-line Suppression Test (qed-ignore-next-line)
+    Assert-LinterRule -TestName "Suppression via // qed-ignore-next-line" -Files @{
+        "src/client.ts" = "// qed-ignore-next-line`nconst raw = legacyCall() as any;"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 15. Rule-specific Next-line Suppression
+    Assert-LinterRule -TestName "Rule-specific // qed-ignore-next-line QED004" -Files @{
+        "src/types.ts" = "// qed-ignore-next-line QED004`nconst data = item as any;"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 16. Block Suppression (/* qed-disable */ ... /* qed-enable */)
+    Assert-LinterRule -TestName "Block suppression (/* qed-disable */)" -Files @{
+        "src/vendor.ts" = "/* qed-disable */`nconst a = 1 as any;`nconst b = 2 as any;`n/* qed-enable */"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 17. Config File Rule Override (.qedrc.json rule: off)
+    Assert-LinterRule -TestName "Configuration .qedrc.json rule off" -Files @{
+        ".qedrc.json" = '{ "rules": { "QED004": "off" } }'
+        "src/cast.ts" = "const val = x as any;"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 18. Config File ignorePatterns (.qedrc.json)
+    Assert-LinterRule -TestName "Configuration .qedrc.json ignorePatterns" -Files @{
+        ".qedrc.json" = '{ "ignorePatterns": ["legacy/**"] }'
+        "legacy/old.ts" = "const val = x as any;"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 19. Smart Heuristic: console.warn and console.error are allowed
+    Assert-LinterRule -TestName "Heuristic: console.warn & console.error allowed" -Files @{
+        "src/logging.ts" = "export function logIssue() { console.warn('Warning'); console.error('Error'); }"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 20. Smart Heuristic: fetch with options or AbortSignal allowed
+    Assert-LinterRule -TestName "Heuristic: fetch with options allowed" -Files @{
+        "src/api.ts" = "export async function query(url: string, opts: RequestInit) { return await fetch(url, opts); }"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 21. Smart Heuristic: Non-navigational onClick on div allowed
+    Assert-LinterRule -TestName "Heuristic: Non-navigational onClick on div allowed" -Files @{
+        "src/Accordion.tsx" = "export function Accordion({ onToggle }: any) { return <div onClick={onToggle}>Title</div>; } // qed-ignore QED004"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 22. Smart Heuristic: Test files allow as any and console.log
+    Assert-LinterRule -TestName "Heuristic: Test files relax non-fatal rules" -Files @{
+        "src/math.test.ts" = "console.log('test run'); const mock = {} as any;"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 23. Rule QED006: Unbounded Cache
+    Assert-LinterRule -TestName "Rule QED006: Unbounded Module-Level Cache" -Files @{
+        "src/cache.ts" = "export const userCache = new Map();"
+    } -ExpectedRule "QED006" -ShouldPass $false
+
 } finally {
     Remove-Item -Path $fixtureDir -Recurse -Force -ErrorAction SilentlyContinue
 }

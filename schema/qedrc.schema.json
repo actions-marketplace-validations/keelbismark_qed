@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QEDConfig",
+  "description": "Configuration schema for Q.E.D. Mechanical Verification Engine",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema URI"
+    },
+    "ignorePatterns": {
+      "type": "array",
+      "description": "Array of glob patterns or directory paths to exclude from linter scanning",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rules": {
+      "type": "object",
+      "description": "Map of rule identifiers to their enforcement severity ('error', 'warn', 'off')",
+      "additionalProperties": {
+        "type": "string",
+        "enum": ["error", "warn", "off"]
+      },
+      "properties": {
+        "QED001": { "type": "string", "enum": ["error", "warn", "off"], "description": "PRISTINE_ROOT: Zero temp dumps, logs, or scratch files in root" },
+        "QED002": { "type": "string", "enum": ["error", "warn", "off"], "description": "ZERO_DEBUG: Zero console.log, debugger, print(), fmt.Println" },
+        "QED003": { "type": "string", "enum": ["error", "warn", "off"], "description": "EMPTY_CATCH: Zero empty catch blocks or swallowed exceptions" },
+        "QED004": { "type": "string", "enum": ["error", "warn", "off"], "description": "UNSAFE_CAST: Zero loose 'as any' casts" },
+        "QED005": { "type": "string", "enum": ["error", "warn", "off"], "description": "MISSING_TIMEOUT: Mandatory timeout/signal on fetch()" },
+        "QED006": { "type": "string", "enum": ["error", "warn", "off"], "description": "UNBOUNDED_CACHE: Ban on exported module-level unbounded Map/dict" },
+        "QED007": { "type": "string", "enum": ["error", "warn", "off"], "description": "SECRET_LEAK: Zero hardcoded tokens, API keys, or private keys" },
+        "QED008": { "type": "string", "enum": ["error", "warn", "off"], "description": "ENV_SYNC: Synchronized .env.example with referenced vars" },
+        "QED009": { "type": "string", "enum": ["error", "warn", "off"], "description": "DIV_ONCLICK: Semantic <a> links instead of <div onClick>" },
+        "QED010": { "type": "string", "enum": ["error", "warn", "off"], "description": "BLOCKED_PASTE: Ban on user-hostile onPaste.preventDefault()" },
+        "QED011": { "type": "string", "enum": ["error", "warn", "off"], "description": "UI_EMOJI_SLOP: Ban on emoji salad in UI buttons and headers" },
+        "QED012": { "type": "string", "enum": ["error", "warn", "off"], "description": "DDL_UNSAFE: Non-blocking DDL (CREATE INDEX CONCURRENTLY)" }
+      }
+    }
+  }
+}

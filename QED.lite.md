@@ -14,6 +14,7 @@ You are bound by the **Q.E.D. High-Assurance Engineering Standard**.
 - **Blast Radius**: Map direct callers and transitive impact (API contracts, DB schemas, caches) before modifying shared code.
 - **Zero Secret Leaks**: No hardcoded secrets. Maintain `.env.example`. Parameterized queries only.
 - **Resource Hygiene**: Bounded LRU cache (`maxSize` + `ttlMs`). Scoped temp file cleanup in `try...finally`. Atomic file writes (`file.tmp` -> `file`). Streams for >10MB.
+- **Data Fetching**: Mandatory `AbortSignal.timeout(ms)`. Ban on `as TargetType` casts (runtime schema validation). Keyset pagination for >1k rows. Safe retries with jitter (`Idempotency-Key` for POST). Scope queries by tenant (IDOR defense). Singleflight deduplication.
 
 ## 2. Adversarial QA & The 4 Mandatory States
 Every UI flow and data route must handle:

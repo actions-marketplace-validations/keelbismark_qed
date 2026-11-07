@@ -20,6 +20,7 @@ This specification defines the non-negotiable engineering invariants for AI codi
 - **Blast Radius Analysis**: Before modifying shared code or schemas, map direct callers and transitive impact (API contracts, database migrations, background jobs, cached state).
 - **Threat-Adaptive Security**: Zero hardcoded secrets/tokens in code or git. Keep `.env.example` synchronized. Use parameterized queries only. Adhere to least privilege.
 - **Resource & Cache Hygiene**: All caches must be bounded LRUs (`maxSize` + `ttlMs`) with tenant-isolated keys. Temp files must be cleaned in `try...finally`. Use atomic file writes (`file.tmp` -> `file`). Stream payloads > 10MB.
+- **Data Fetching Invariants**: Mandatory `AbortSignal.timeout(ms)` on all network calls. Ban on `as TargetType` casts (validate at boundary). Ban on client waterfalls and unbounded queries (Keyset pagination for >1k rows). Retry only idempotent requests with jitter (`Idempotency-Key` for POST). Scope all queries by tenant (IDOR defense).
 
 ---
 

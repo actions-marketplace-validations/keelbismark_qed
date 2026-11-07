@@ -5,7 +5,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"></a>
   <a href="docs/harnesses.md"><img src="https://img.shields.io/badge/harnesses-20%20platforms-8b5cf6.svg?style=flat-square" alt="Harnesses: 20 Platforms"></a>
-  <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-10%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 10 Core Specs"></a>
+  <a href="core/CONSTITUTION.md"><img src="https://img.shields.io/badge/standards-11%20core%20specs-10b981.svg?style=flat-square" alt="Standards: 11 Core Specs"></a>
   <a href="core/CONSTITUTION.lite.md"><img src="https://img.shields.io/badge/edition-Q.E.D.%20Lite%20(<500%20tokens)-ec4899.svg?style=flat-square" alt="Edition: Q.E.D. Lite"></a>
   <a href="tests/verify-adapters.ps1"><img src="https://img.shields.io/badge/tests-36%2F36%20passing-38bdf8.svg?style=flat-square" alt="Verification: 100% Passing"></a>
   <a href="llms.txt"><img src="https://img.shields.io/badge/agent-llms.txt-f59e0b.svg?style=flat-square" alt="LLM Entrypoint: llms.txt"></a>
@@ -15,7 +15,7 @@
   <a href="#quickstart">Quickstart</a> •
   <a href="#the-problem-codebase-erosion">The Problem</a> •
   <a href="#framework-architecture">Architecture</a> •
-  <a href="#the-10-pillars-of-qed">The 10 Pillars</a> •
+  <a href="#the-11-pillars-of-qed">The 11 Pillars</a> •
   <a href="#how-it-works">Lifecycle</a> •
   <a href="#20-supported-platforms">20 Platforms</a> •
   <a href="llms.txt">llms.txt</a>
@@ -130,9 +130,9 @@ $ qed "Add idempotent debit to wallet API"
 
 ---
 
-## The 10 Pillars of Q.E.D.
+## The 11 Pillars of Q.E.D.
 
-The standard is codified in 10 formal specification documents under [`core/`](core/):
+The standard is codified in 11 formal specification documents under [`core/`](core/):
 
 | # | Pillar & Specification | Core Invariant | Risk Eliminated |
 | :-: | :--- | :--- | :--- |
@@ -143,9 +143,10 @@ The standard is codified in 10 formal specification documents under [`core/`](co
 | **4** | **[Threat-Adaptive Security](core/security-philosophy.md)** | 4 Security Tiers; tenant-isolated IDOR checks; anti-security-theater UX (NIST 800). | IDOR leaks, mass assignment, user-hostile login barriers. |
 | **5** | **[Earned Regionality & I18n](core/regionality-and-i18n.md)** | Level 0 baseline (UTF-8, UTC, integer money); native `Intl`; sovereign data residency. | Timezone shift bugs, float money bugs, GDPR fines. |
 | **6** | **[Cache & Resource Hygiene](core/cache-memory-and-file-hygiene.md)** | Bounded LRU cache + TTL; tenant cache isolation; streams for >10MB; scoped temp cleanup. | Out-of-memory (OOM) crashes, 100% disk exhaustion, ghost data. |
-| **7** | **[Git & Pragmatic Versioning](core/git-and-versioning.md)** | Git change ledger $\neq$ Versioning trust contract; Bisect Invariant; changelog split. | Broken git bisect, unearned deprecation, leaked security flaws. |
-| **8** | **[Naming & Semantics](core/naming-philosophy.md)** | Scope-proportional length; positive predicates; contract verbs (`get` vs `fetch`). | Ambiguous names (`data`, `temp`, `res`), misleading predicates. |
-| **9** | **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** | Zero debug prints; throwaway script purge; clean git status before commit. | Production debug logs, leaked tokens, commit pollution. |
+| **7** | **[Data Fetching Philosophy](core/data-fetching-philosophy.md)** | Mandatory `AbortSignal` timeout; anti-`as` boundary parsing; Keyset pagination; Singleflight. | Hanging socket leaks, contract drift crashes, waterfall lag, IDOR. |
+| **8** | **[Git & Pragmatic Versioning](core/git-and-versioning.md)** | Git change ledger $\neq$ Versioning trust contract; Bisect Invariant; changelog split. | Broken git bisect, unearned deprecation, leaked security flaws. |
+| **9** | **[Naming & Semantics](core/naming-philosophy.md)** | Scope-proportional length; positive predicates; contract verbs (`get` vs `fetch`). | Ambiguous names (`data`, `temp`, `res`), misleading predicates. |
+| **10** | **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** | Zero debug prints; throwaway script purge; clean git status before commit. | Production debug logs, leaked tokens, commit pollution. |
 
 ---
 
@@ -252,6 +253,7 @@ Q.E.D. adapts to your velocity requirements:
 * **[Threat-Adaptive Security](core/security-philosophy.md)** — 4 Security Tiers, NIST 800-63B, Tenant Isolation.
 * **[Earned Regionality & I18n](core/regionality-and-i18n.md)** — Level 0-3 ladder, UTC wire, minor integer money.
 * **[Cache, Memory & Resource Hygiene](core/cache-memory-and-file-hygiene.md)** — Bounded LRU, leak-free streams, temp cleanup.
+* **[Data Fetching Philosophy](core/data-fetching-philosophy.md)** — Transport deadlines, boundary schema validation, Keyset pagination.
 * **[Git & Pragmatic Versioning](core/git-and-versioning.md)** — Change ledger vs. trust contract, Bisect Invariant.
 * **[Naming & Semantics](core/naming-philosophy.md)** — Scope-proportional names, positive predicates, contract verbs.
 * **[Hygiene & Pre-Commit Sweep](core/hygiene-and-cleanup.md)** — Zero-debug print invariant, dead code elimination.

@@ -85,6 +85,13 @@ Before writing any non-trivial code:
     - **Bounded Cache Invariant**: Every in-memory cache MUST enforce strict max capacity (`maxSize` LRU) and deterministic TTL (`ttlMs`). Raw unbounded maps/dicts as cache are strictly banned.
     - **Invalidation & Tenant Isolation**: Cache keys must be tenant-scoped (`tenant:${orgId}:${id}`); keys must be purged/updated immediately upon DB mutation (zero phantom data); protect hot keys with Singleflight.
     - **Resource Lifecycle Hygiene**: Guaranteed cleanup of temporary files (`try...finally` / `withTempFile`); atomic file writes (`file.tmp` -> `file`); stream processing with backpressure for payloads > 10MB (zero buffering gigabytes into RAM).
+11. **Data Fetching, Transport Resilience & Boundary Integrity**:
+    - **Mandatory Timeout Deadline**: Zero naked `fetch()` calls without an explicit `AbortSignal.timeout(ms)` or context deadline (no hanging worker threads).
+    - **The Retry Triad & Idempotency**: Exponential backoff with full randomized jitter; retries restricted to transient errors (429 with `Retry-After`, 502/503/504, network breaks). Strict ban on auto-retrying `POST` mutations without an `Idempotency-Key`.
+    - **Strict Boundary Parsing (The Anti-`as` Invariant)**: Inbound network payloads are untrusted `unknown`. Parsing must occur through runtime schemas (Zod, ArkType, typed DTOs). Never use `as TargetType` casts. Follow Tolerant Reader for backwards compatibility.
+    - **Topology & Pagination**: Ban on client/server $N+1$ waterfalls; Keyset/Cursor pagination for datasets $>1,000$ rows ($O(1)$ index seek); mandatory server-side limit clamping (`Math.min(limit, 100)`).
+    - **Race Elimination & 4 Fetch States**: Abort stale in-flight requests on input changes (`AbortController`); deduplicate concurrent identical requests via Singleflight; explicitly handle Idle, Loading (no CLS), Empty (with CTA), and Error (with Retry).
+    - **Tenant Scoping & DTO Projections**: Always enforce `tenant_id` filters in query predicates (IDOR defense); project strictly necessary fields via read DTOs (ban on leaking internal password hashes or audit columns via `SELECT *`).
 
 ---
 

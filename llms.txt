@@ -13,6 +13,7 @@
 
 ## Documentation Links
 - [Universal Constitution](core/CONSTITUTION.md): The full foundational engineering standard.
+- [Data Fetching Standard](core/data-fetching-philosophy.md): Transport deadlines, schema boundary parsing, and Keyset pagination.
 - [Universal Constitution (Lite)](core/CONSTITUTION.lite.md): Token-optimized (<500 tokens) standard for fast models.
 - [Q.E.D. Lite Prompt](QED.lite.md): Compact drop-in agent prompt.
 - [AI Directives](AI_README.md): High-density instructions for LLM agents.

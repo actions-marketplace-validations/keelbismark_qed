@@ -23,7 +23,7 @@ Code generated without discipline is technical debt on compound interest. We cal
 ## Before & After
 
 ```typescript
-// ❌ WITHOUT Q.E.D. (Standard AI Output)
+// [WITHOUT Q.E.D.] Standard AI Output
 // Silent error swallowing, loose typing, happy-path assumption, zero tests run
 async function checkout(cart: any) {
   try {
@@ -38,7 +38,7 @@ async function checkout(cart: any) {
 ```
 
 ```typescript
-// ✅ WITH Q.E.D. (High-Assurance Output)
+// [WITH Q.E.D.] High-Assurance Output
 // Guard clauses, typed contracts, 4 states handled, reproduction test verified RED first
 async function checkout(cart: Cart): Promise<CheckoutResult> {
   if (!cart.items || cart.items.length === 0) {
@@ -92,35 +92,13 @@ Automated test suites must include adversarial edge cases: 10 rapid duplicate cl
 
 ## How It Works
 
-Q.E.D. enforces a deterministic state machine across every task:
+Q.E.D. enforces a deterministic 4-phase verification loop on every task:
 
-```mermaid
-flowchart TD
-    subgraph Spec["1. Scope & Impact"]
-        A["Task Input"] --> B["Anti-Duplication Search\n(Find existing helpers)"]
-        B --> C["Blast Radius Assessment\n(Identify callers & risks)"]
-        C --> D["Binary Acceptance Criteria\n(Pass / Fail contracts)"]
-    end
-
-    subgraph QA["2. Adversarial Modeling"]
-        D --> E["4 Mandatory States\n(Empty, Loading, Error, Degraded)"]
-        E --> F["Chaos Monkey Cases\n(Concurrency, payloads, Unicode)"]
-    end
-
-    subgraph TDD["3. Ironclad TDD"]
-        F --> G["Write Failing Test (RED)\nVerify failure reason"]
-        G --> H["Implement Minimal Fix (GREEN)"]
-        H --> I["The 3 AM Test Refactor\n(Flatten logic, name variables)"]
-    end
-
-    subgraph Gate["4. Verification Gate"]
-        I --> J["Linter & Static Analysis"]
-        J --> K["Full Regression Suite"]
-        K --> L["Atomic Conventional Commit"]
-    end
+```text
+Task ──> [ 1. Scope & Blast Radius ] ──> [ 2. Adversarial QA ] ──> [ 3. Ironclad TDD ] ──> [ 4. Verification Gate ] ──> Clean Commit
 ```
 
-### Real-World Execution Log
+### Execution Example
 
 ```text
 $ qed "Add idempotent debit to wallet API"

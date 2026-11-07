@@ -1489,10 +1489,14 @@ function runDoctor(targetDir) {
   // 7. Remote GitHub Actions CI Status
   const ghProbe = spawnSync("gh", ["--version"], { encoding: "utf8" });
   if (ghProbe.status === 0) {
-    const ciRes = spawnSync("gh", ["run", "list", "--limit", "1", "--json", "conclusion,status,databaseId,headBranch"], {
-      cwd: targetDir,
-      encoding: "utf8",
-    });
+    const ciRes = spawnSync(
+      "gh",
+      ["run", "list", "--workflow", "ci.yml", "--limit", "1", "--json", "conclusion,status,databaseId,headBranch"],
+      {
+        cwd: targetDir,
+        encoding: "utf8",
+      }
+    );
     if (ciRes.status === 0 && ciRes.stdout) {
       try {
         const runs = JSON.parse(ciRes.stdout);

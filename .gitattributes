@@ -1,2 +1,4 @@
 # Ensure shell scripts always retain Unix LF line endings across all platforms
 *.sh text eol=lf
+bin/qed text eol=lf
+bin/qed-engine.js text eol=lf

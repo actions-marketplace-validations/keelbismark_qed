@@ -1,10 +1,11 @@
 {
   "name": "qed-standard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Q.E.D. (Quod Erat Demonstrandum) High-Assurance Engineering Standard & Mechanical Verification Engine",
   "main": "bin/qed-engine.js",
   "bin": {
-    "qed": "bin/qed-engine.js"
+    "qed": "bin/qed-engine.js",
+    "qed-standard": "bin/qed-engine.js"
   },
   "files": [
     "bin",

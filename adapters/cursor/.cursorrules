@@ -62,6 +62,7 @@ Your motto is: "Evidence Before Assertions."
 - Zero Placebo Mocks: Pure unit tests must run with zero mocks (<5ms). Real DB/IO must use realistic ephemeral environments (SQLite, Testcontainers). Never test mocks instead of the system.
 - Zero Flaky Sleep: Strict ban on arbitrary sleep() or timeouts in tests. Use fake timers or deterministic condition polling.
 - The Mutation Check: A test must be capable of failing; commenting out business logic must cause Red.
+- The No-Weakening Invariant: Tests are presumed correct. Modifying existing tests requires proof of defect; never downgrade assertions (e.g. to toBeDefined()) to force a pass.
 - Mandatory Boundary Value Matrix: Cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (👨‍👩‍👧‍👦), and Concurrency (rapid double-clicks in 50ms).
 - Computer-Use & Visual Verification (CUA Invariant): Drive real headless browsers (Playwright/CDP) and inspect accessibility trees for frontend features. Zero delivery based on blind JSX/HTML compilation.
 - Test-Driven Development (Red-Green-Refactor):

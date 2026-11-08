@@ -83,6 +83,11 @@ This standard defines the philosophy, structural boundaries, and strict invarian
   it("when cart is empty, checkout returns EmptyCartError without charging card", async () => { ... });
   ```
 
+### Sin 8: Silent Test Weakening & Poisoning ("Cheating the Oracle")
+* **The Anti-Pattern**: When an autonomous agent encounters a failing test, it takes the path of least resistance: changing expected values to match buggy output, deleting assertions, or weakening exact checks (`expect(user.role).toBe('admin')` $\rightarrow$ `expect(user).toBeDefined()`).
+* **The Reality**: The production code remains broken, and the automated safety net is permanently degraded.
+* **The Q.E.D. Rule**: **The No-Weakening Invariant**. Tests are presumed correct. An agent may ONLY modify an existing test if it provides verifiable evidence of a test defect (contract evolution, implementation-coupling, or physical flakiness), and the replacement assertion must remain as strict as the original. (See Section 6).
+
 ---
 
 ## 2. The Q.E.D. Testing Pyramid
@@ -162,3 +167,23 @@ Before submitting code with tests, the agent must verify:
 - [ ] Have the boundary conditions (0, 1, Max, Null, Hostile) been tested?
 - [ ] For bug fixes: Was the test run and verified RED before the fix was made?
 - [ ] Does the test fail if the business logic is commented out (Mutation Check)?
+
+---
+
+## 6. The Test Mutation Protocol (Modifying Existing Tests)
+
+Autonomous agents must not treat tests as untouchable black boxes when tests are genuinely defective, nor may they cheat by weakening them. Follow the 4 rules of the **Test Mutation Protocol**:
+
+1. **Presumption of Code Defect**:
+   Production code is assumed broken until proven otherwise. Failing tests are treated as valid alarms by default.
+2. **The 3 Permissible Test Defect Scenarios**:
+   - *Scenario A: Contract Evolution*: A business requirement explicitly changed (e.g. migration to a new schema). The test is asserting deprecated behavior.
+   - *Scenario B: White-Box / Implementation Coupling*: A valid refactoring changed internal structure without altering public behavior, but the old test was tightly coupled to private methods or obsolete mocks.
+   - *Scenario C: Physical Test Bug*: The test contained an unhandled race condition, hardcoded expired timestamp, or timezone assumption.
+3. **The No-Weakening Invariant**:
+   When updating an existing test, assertions must NEVER be downgraded:
+   - ❌ FORBIDDEN: Changing `expect(res.status).toBe(200)` to `expect(res).toBeDefined()`.
+   - ❌ FORBIDDEN: Deleting failing assertions without replacement.
+   - ✅ PERMITTED: Updating `expect(user.name).toBe('Alice')` to `expect(user.fullName).toBe('Alice Smith')` when reflecting a documented contract change.
+4. **The Post-Mutation Verification**:
+   If an existing test was modified, the agent MUST run the Mutation Check: temporarily break the business logic in production code and verify that the updated test turns **RED**. If it stays GREEN, the test mutation is defective and must be rejected.

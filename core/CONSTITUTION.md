@@ -189,6 +189,7 @@ Execute changes using disciplined software craftsmanship:
    - **Zero Flaky Sleep**: Arbitrary `sleep()` or `setTimeout()` in tests is strictly forbidden. Use fake timers for time logic, or deterministic polling with an explicit condition and hard deadline.
    - **The Mutation Check**: A test must be capable of failing. If core business logic is commented out, at least one test must turn Red.
    - **Exact Assertions**: Ban on tautological assertions (`expect(x).toBeDefined()`). Assert exact return shapes, status codes, and side-effect state invariants.
+   - **The No-Weakening Invariant (Test Mutations)**: Code is presumed defective until proven otherwise. Modifying an existing test is permitted ONLY upon concrete proof of a test defect (contract evolution, implementation-coupling, or physical flakiness). Agents are strictly forbidden from weakening assertions (e.g. replacing exact equality with `toBeDefined()`) to make a failing suite pass. *(See `core/testing-philosophy.md`)*.
 
 2. **The Mandatory Boundary Value Matrix**:
    Automated test suites must explicitly cover the boundary matrix:

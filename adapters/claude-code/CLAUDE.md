@@ -74,6 +74,7 @@ Every UI view and API route must implement:
 - **Zero Placebo Mocks**: Pure unit tests must run with zero mocks (<5ms). Real DB/IO must use realistic ephemeral environments (SQLite, Testcontainers). Never test mocks instead of the system.
 - **Zero Flaky Sleep**: Strict ban on `sleep()` or arbitrary timeouts in tests. Use fake timers or condition polling with deadlines.
 - **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
+- **The No-Weakening Invariant**: Tests are presumed correct. Modifying existing tests requires proof of defect; strictly forbidden from downgrading assertions (e.g. to `toBeDefined()`) to force a pass.
 - **Boundary Value Matrix**: Every test suite must cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (rapid double-clicks in 50ms).
 - **Computer-Use & Visual Verification (CUA)**: Drive real headless browsers (Playwright/CDP) and inspect accessibility trees for frontend features. Zero delivery based on blind JSX/HTML compilation.
 - **Bug Fixes**: Write a reproduction test first -> observe it fail (**Red**) -> implement the minimal fix -> observe it pass (**Green**) -> run full suite.

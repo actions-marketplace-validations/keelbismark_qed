@@ -47,6 +47,7 @@ Every UI flow and data endpoint must explicitly handle all 4 states:
   - Zero placebo mocks: Unit tests must test real logic (<5ms); I/O tests use ephemeral instances.
   - Zero flaky sleep: Ban on arbitrary `sleep()`; use fake timers or condition polling with deadlines.
   - Mutation check: Tests must be capable of failing if business logic is removed.
+  - No-weakening invariant: Tests are presumed correct. Modifying tests requires documented proof of test defect (contract drift or flakiness); strictly forbidden from downgrading assertions (e.g. to `toBeDefined()`) to force a pass.
   - Cover the boundary matrix: 0 (empty), 1, N, Max, null/undefined, hostile Unicode (`👨‍👩‍👧‍👦`), rapid double-clicks (50ms).
 - **Computer-Use & Visual Verification (CUA)**: Drive real headless browser instances (Playwright/CDP) for UI workflows. Ground testing in accessibility tree snapshots and multi-breakpoint screenshots (375px/768px/1440px). Never rely on blind JSX/HTML compilation.
 - **The 3 AM Test (Readability)**:

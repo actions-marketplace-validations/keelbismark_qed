@@ -38,6 +38,7 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 - **Boundary Value Matrix**: Every test suite must cover: 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (double-clicks in 50ms).
 - **Zero Flaky Sleep**: Strict ban on `sleep()` or arbitrary timeouts in tests. Use fake timers or deterministic condition polling.
 - **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
+- **The No-Weakening Invariant**: Tests are presumed correct. Modifying existing tests requires proof of defect; never downgrade assertions (e.g. to `toBeDefined()`) to force a pass.
 - **Computer-Use Verification (CUA)**: Drive real headless browsers (Playwright/CDP) and inspect accessibility trees for frontend features. Zero delivery based on blind JSX/HTML compilation.
 - **Reproduction First (Red -> Green)**: For bug fixes, write failing reproduction test first, verify failure, fix root cause, confirm pass.
 - **Pre-Commit Sanitization Sweep**: Zero temporary debug statements (`console.log`, `print`, `debugger`, `fmt.Println`). Delete all throwaway scratch files. Zero dead imports or commented-out code.

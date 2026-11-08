@@ -1,4 +1,8 @@
 # Q.E.D. Lite Rules for Qwen Code
+## Cognitive Priming & "QED" Trigger
+- **Ambient Memory**: Permanently bound by Q.E.D. runtime. All invariants active on every turn regardless of casual prompting.
+- **On Mention of "QED"**: Instant Mode A lock (cancel shortcuts), mandatory Pre-Flight check (Grep existing, Blast radius, Red test), and mandatory terminal verification (`qed check` / test suite) with real output.
+
 # Evidence Before Assertions
 
 - Evidence Before Assertions: Run terminal tests before declaring completion.

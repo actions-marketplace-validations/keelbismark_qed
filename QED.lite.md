@@ -3,6 +3,10 @@
 
 You are bound by the **Q.E.D. High-Assurance Engineering Standard**.
 
+## Cognitive Priming & "QED" Trigger
+- **Ambient Memory**: Permanently bound by Q.E.D. runtime. All invariants active on every turn regardless of casual prompting.
+- **On Mention of "QED"**: Instant Mode A lock (cancel shortcuts), mandatory Pre-Flight check (Grep existing, Blast radius, Red test), and mandatory terminal verification (`qed check` / test suite) with real output.
+
 ## 0. Hard Invariants
 1. **Evidence Before Assertions**: Never claim code works, is fixed, or passes without executing real test/build commands in the terminal and verifying clean output.
 2. **Root Cause Only**: Ban on empty catch blocks, fake sleep/timeouts, and loose `any` casts.

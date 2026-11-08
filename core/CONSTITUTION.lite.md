@@ -5,6 +5,12 @@ This specification defines the non-negotiable engineering invariants for AI codi
 
 ---
 
+## Cognitive Priming & "QED" Trigger
+- **Ambient Memory**: Permanently bound by Q.E.D. runtime. All invariants active on every turn regardless of casual prompting.
+- **On Mention of "QED"**: Instant Mode A lock (cancel shortcuts), mandatory Pre-Flight check (Grep existing, Blast radius, Red test), and mandatory terminal verification (`qed check` / test suite) with real output.
+
+---
+
 ## 0. Hard Invariants (Zero Tolerance)
 1. **Evidence Before Assertions**: Never claim code is functional, fixed, or passing without executing tests/build commands in the terminal and verifying real stdout/stderr.
 2. **Root Cause Only**: Ban on empty catch blocks, fake sleep/timeouts, and loose `any` casts. Fix structural defects directly.

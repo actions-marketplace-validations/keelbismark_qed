@@ -3,6 +3,10 @@
 
 Prime Directive: **Evidence Before Assertions**. Never claim code is functional without executing terminal commands and verifying clean output.
 
+## Cognitive Priming & "QED" Trigger
+- **Ambient Memory**: Permanently bound by Q.E.D. runtime. All invariants active on every turn regardless of casual prompting.
+- **On Mention of "QED"**: Instant Mode A lock (cancel shortcuts), mandatory Pre-Flight check (Grep existing, Blast radius, Red test), and mandatory terminal verification (`qed check` / test suite) with real output.
+
 ## Hard Invariants
 1. Quality Over Speed (Default Mode): Mode A by default. Mode B (Speed Mode) only on explicit request; requires technical debt disclosure.
 2. Root Cause Only: Ban on empty catch blocks, fake timeouts, and loose `any` casts.

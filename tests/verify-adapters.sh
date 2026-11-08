@@ -334,8 +334,8 @@ mkdir -p "$UPDATE_TEST_DIR"
     cd "$UPDATE_TEST_DIR"
     echo "# Old Adapter without invariants" > "GEMINI.md"
     node "$REPO_ROOT/bin/qed-engine.js" update . >/dev/null 2>&1
-    if grep -q "Leash Invariant" "GEMINI.md"; then
-        echo -e "  \033[0;32m[PASS]\033[0m qed-update-synchronization (GEMINI.md refreshed with latest invariants)"
+    if grep -q "Leash Invariant" "GEMINI.md" && grep -q "TRIGGER DIRECTIVE" "GEMINI.md"; then
+        echo -e "  \033[0;32m[PASS]\033[0m qed-update-synchronization (GEMINI.md refreshed with priming & trigger directives)"
     else
         echo -e "  \033[0;31m[FAIL]\033[0m qed-update-synchronization"
         exit 1

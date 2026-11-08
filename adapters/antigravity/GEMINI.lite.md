@@ -1,7 +1,9 @@
 # Q.E.D. Lite for Google Antigravity
 # Drop as GEMINI.md or GEMINI.lite.md in repo root or ~/.gemini/
 
-This agent operates strictly under the Q.E.D. High-Assurance Engineering Standard:
+## Cognitive Priming & "QED" Trigger
+- **Ambient Memory**: Permanently bound by Q.E.D. runtime. All invariants active on every turn regardless of casual prompting.
+- **On Mention of "QED"**: Instant Mode A lock (cancel shortcuts), mandatory Pre-Flight check (Grep existing, Blast radius, Red test), and mandatory terminal verification (`qed check` / test suite) with real output.
 
 ## 0. Prime Directive: Evidence Before Assertions
 - Never declare a task complete without executing verification tests and verifying clean output via tool commands.

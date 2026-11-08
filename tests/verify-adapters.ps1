@@ -444,8 +444,8 @@ $enginePath = Join-Path $repoRoot "bin\qed-engine.js"
 
 & node $enginePath update $updateTestDir | Out-Null
 $updatedContent = Get-Content -Path (Join-Path $updateTestDir "GEMINI.md") -Raw
-if ($updatedContent -match "Leash Invariant") {
-    Write-Host "  [PASS] qed-update-synchronization (GEMINI.md refreshed with latest invariants)" -ForegroundColor Green
+if ($updatedContent -match "Leash Invariant" -and $updatedContent -match "TRIGGER DIRECTIVE") {
+    Write-Host "  [PASS] qed-update-synchronization (GEMINI.md refreshed with priming & trigger directives)" -ForegroundColor Green
     $results += [PSCustomObject]@{ Test = "qed-update"; Status = "PASS" }
 } else {
     Write-Host "  [FAIL] qed-update-synchronization (GEMINI.md did not receive latest invariants)" -ForegroundColor Red

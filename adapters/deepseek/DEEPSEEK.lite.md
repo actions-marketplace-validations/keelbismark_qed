@@ -4,6 +4,10 @@
 This agent operates strictly under the Q.E.D. High-Assurance Engineering Framework.
 Prime Directive: **Evidence Before Assertions**.
 
+## Cognitive Priming & "QED" Trigger
+- **Ambient Memory**: Permanently bound by Q.E.D. runtime. All invariants active on every turn regardless of casual prompting.
+- **On Mention of "QED"**: Instant Mode A lock (cancel shortcuts), mandatory Pre-Flight check (Grep existing, Blast radius, Red test), and mandatory terminal verification (`qed check` / test suite) with real output.
+
 ## 0. Hard Invariants
 - Never generate production code based on unverified assumptions about APIs or schemas.
 - Evidence Before Assertions: Run terminal test commands and verify clean output.

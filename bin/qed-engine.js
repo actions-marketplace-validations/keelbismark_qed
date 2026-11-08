@@ -1832,6 +1832,7 @@ function runDoctor(targetDir) {
         const lowerContent = targetContent.toLowerCase();
         const hasCoreInvariants =
           lowerContent.includes("leash invariant") ||
+          lowerContent.includes("cognitive priming") ||
           (lowerContent.includes("evidence before assertions") && lowerContent.includes("mutation check"));
 
         if (!isExactMatch && !hasCoreInvariants) {

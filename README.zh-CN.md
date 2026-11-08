@@ -91,7 +91,8 @@ cd C:\path\to\your-project
 ```bash
 qed check          # 检查当前项目
 qed hook           # 安装 pre-commit 和 pre-push 验证钩子
-qed doctor         # 检查仓库、钩子、运行环境及 CI 可用性
+qed doctor         # 检查仓库、钩子、适配器漂移及 CI 可用性
+qed update         # 将已安装的适配器与钩子同步至最新规范
 ```
 
 安装前请检查已有钩子。Q.E.D. 是类型检查、应用测试、安全审查和 CI 的补充，而不是替代品。
@@ -145,8 +146,10 @@ bash /path/to/qed/install.sh --lite cursor
 | `qed check --json` | 输出机器可读结果 |
 | `qed check --compact` | 输出适合智能体阅读的简洁结果 |
 | `qed test` | 运行可用的 `tests/verify-*.sh` 和 `tests/verify-*.ps1` 测试集 |
-| `qed doctor` | 审查仓库、钩子、解释器、分析引擎和远程 CI |
+| `qed doctor` | 审查仓库、钩子、适配器漂移、分析引擎和远程 CI |
 | `qed hook` | 安装自动化 Git 验证钩子 |
+| `qed update [path]` | 同步已安装的 AI 智能体适配器与 Git 钩子 |
+| `qed update --global` | 同步全局用户适配器（`~/.gemini/`、`~/.claude/` 等） |
 | `qed tokens` | 查看指令的 token 用量 |
 
 对 `check` 而言，退出码 `0` 表示没有错误；严格模式下还要求没有警告。检查失败时返回非零退出码。PowerShell 测试需要 PowerShell，POSIX 测试需要 Bash。`doctor` 和 CI 检查还依赖额外的本地工具。

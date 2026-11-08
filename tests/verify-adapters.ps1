@@ -435,6 +435,23 @@ $results += Run-Harness-Test "lite-all" "local" "all" @(
     "QED.lite.md"
 ) -Lite
 
+# --- SECTION 5: qed update & Synchronization Tests ---
+Write-Host "`n--- Section 5: qed update & Synchronization Tests ---" -ForegroundColor Yellow
+$updateTestDir = Join-Path $testRunDir "update-test"
+New-Item -ItemType Directory -Path $updateTestDir -Force | Out-Null
+Set-Content -Path (Join-Path $updateTestDir "GEMINI.md") -Value "# Old Adapter without invariants"
+$enginePath = Join-Path $repoRoot "bin\qed-engine.js"
+
+& node $enginePath update $updateTestDir | Out-Null
+$updatedContent = Get-Content -Path (Join-Path $updateTestDir "GEMINI.md") -Raw
+if ($updatedContent -match "Leash Invariant") {
+    Write-Host "  [PASS] qed-update-synchronization (GEMINI.md refreshed with latest invariants)" -ForegroundColor Green
+    $results += [PSCustomObject]@{ Test = "qed-update"; Status = "PASS" }
+} else {
+    Write-Host "  [FAIL] qed-update-synchronization (GEMINI.md did not receive latest invariants)" -ForegroundColor Red
+    $results += [PSCustomObject]@{ Test = "qed-update"; Status = "FAIL" }
+}
+
 # Cleanup
 Remove-Item -Path $testRunDir -Recurse -Force -ErrorAction SilentlyContinue
 

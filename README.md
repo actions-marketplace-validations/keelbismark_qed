@@ -91,7 +91,8 @@ Replace `cursor` with `claude`, `codex`, `copilot`, `roo`, or another [supported
 ```bash
 qed check          # Inspect the current project
 qed hook           # Install pre-commit and pre-push verification hooks
-qed doctor         # Check repository, hooks, runtimes, and CI availability
+qed doctor         # Check repository, hooks, adapter drift, and CI availability
+qed update         # Synchronize installed adapters and hooks with latest standard
 ```
 
 Review existing hooks before installing new ones. Q.E.D. complements your typechecker, application tests, security review, and CI; it does not replace them.
@@ -145,8 +146,10 @@ After a global installation, use `qed`; from this cloned repository, use `node b
 | `qed check --json` | Produce machine-readable results |
 | `qed check --compact` | Produce concise, agent-friendly output |
 | `qed test` | Run available `tests/verify-*.sh` and `tests/verify-*.ps1` suites |
-| `qed doctor` | Audit repository health, hooks, interpreters, analysis engine, and remote CI |
+| `qed doctor` | Audit repository health, hooks, adapter drift, analysis engine, and remote CI |
 | `qed hook` | Install mechanical Git verification hooks |
+| `qed update [path]` | Synchronize installed AI agent adapters and Git hooks |
+| `qed update --global` | Synchronize global user adapters (`~/.gemini/`, `~/.claude/`, etc.) |
 | `qed tokens` | Inspect instruction token usage |
 
 For `check`, exit code `0` means no errors (and no warnings in strict mode); a failed gate exits nonzero. PowerShell suites need PowerShell; POSIX suites need Bash. `doctor` and CI inspection have additional local-tool requirements.

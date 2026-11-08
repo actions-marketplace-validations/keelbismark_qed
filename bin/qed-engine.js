@@ -1404,6 +1404,250 @@ function watchCI(targetDir, extraArgs = []) {
   }
 }
 
+function getInstalledAdapters(targetDir) {
+  const adapters = [];
+  const checks = [
+    { name: "GEMINI.md", relPath: "GEMINI.md", src: "adapters/antigravity/GEMINI.md", liteSrc: "adapters/antigravity/GEMINI.lite.md" },
+    { name: ".cursorrules", relPath: ".cursorrules", src: "adapters/cursor/.cursorrules", liteSrc: "adapters/cursor/.cursorrules.lite" },
+    { name: "CLAUDE.md", relPath: "CLAUDE.md", src: "adapters/claude-code/CLAUDE.md", liteSrc: "adapters/claude-code/CLAUDE.lite.md" },
+    { name: ".clinerules", relPath: ".clinerules", src: "adapters/cline/.clinerules", liteSrc: "adapters/cline/.clinerules.lite" },
+    { name: ".windsurfrules", relPath: ".windsurfrules", src: "adapters/windsurf/.windsurfrules", liteSrc: "adapters/windsurf/.windsurfrules.lite" },
+    { name: ".aider.conventions.md", relPath: ".aider.conventions.md", src: "adapters/aider/.aider.conventions.md", liteSrc: "adapters/aider/.aider.conventions.lite.md" },
+    { name: "copilot-instructions.md", relPath: ".github/copilot-instructions.md", src: "adapters/copilot/.github/copilot-instructions.md", liteSrc: "adapters/copilot/.github/copilot-instructions.lite.md" },
+    { name: "AGENTS.md", relPath: "AGENTS.md", src: "adapters/codex/AGENTS.md", liteSrc: "adapters/codex/AGENTS.lite.md" },
+    { name: "CODEX.md", relPath: "CODEX.md", src: "adapters/codex/CODEX.md", liteSrc: "adapters/codex/CODEX.lite.md" },
+  ];
+
+  for (const c of checks) {
+    const fullTarget = path.join(targetDir, c.relPath);
+    if (fs.existsSync(fullTarget)) {
+      adapters.push({ ...c, fullTarget });
+    }
+  }
+  return adapters;
+}
+
+function installGitHooks(hooksDir) {
+  if (!fs.existsSync(hooksDir)) {
+    fs.mkdirSync(hooksDir, { recursive: true });
+  }
+
+  const hookScript = `#!/usr/bin/env sh
+# Q.E.D. Automated Mechanical Gate Pre-Commit Hook
+
+echo "Running Q.E.D. Pre-Commit Gate..."
+
+if command -v node >/dev/null 2>&1 && [ -f "./bin/qed-engine.js" ]; then
+    node "./bin/qed-engine.js" check
+    EXIT_CODE=$?
+elif [ -f "./bin/qed" ]; then
+    ./bin/qed check
+    EXIT_CODE=$?
+elif [ -f "./bin/qed.ps1" ]; then
+    pwsh -ExecutionPolicy Bypass -File "./bin/qed.ps1" check || powershell -ExecutionPolicy Bypass -File "./bin/qed.ps1" check
+    EXIT_CODE=$?
+else
+    echo "Warning: Q.E.D. runner not found. Skipping gate."
+    exit 0
+fi
+
+if [ "$EXIT_CODE" -ne 0 ]; then
+    echo "Commit BLOCKED by Q.E.D. Mechanical Verification Gate."
+    exit 1
+fi
+exit 0
+`;
+
+  const hookPath = path.join(hooksDir, "pre-commit");
+  fs.writeFileSync(hookPath, hookScript, { mode: 0o755 });
+
+  const prePushScript = `#!/usr/bin/env sh
+# Q.E.D. Automated Mechanical Gate Pre-Push Hook
+
+echo "Running Q.E.D. Pre-Push Multi-Platform Test Gate..."
+
+if command -v node >/dev/null 2>&1 && [ -f "./bin/qed-engine.js" ]; then
+    node "./bin/qed-engine.js" test
+    EXIT_CODE=$?
+elif [ -f "./tests/verify-linter.ps1" ] && command -v powershell >/dev/null 2>&1; then
+    powershell -ExecutionPolicy Bypass -File "./tests/verify-linter.ps1"
+    EXIT_CODE=$?
+else
+    EXIT_CODE=0
+fi
+
+if [ "$EXIT_CODE" -ne 0 ]; then
+    echo "Push BLOCKED by Q.E.D. Multi-Platform Test Gate."
+    exit 1
+fi
+exit 0
+`;
+  const prePushPath = path.join(hooksDir, "pre-push");
+  fs.writeFileSync(prePushPath, prePushScript, { mode: 0o755 });
+}
+
+function isNewerVersion(remote, current) {
+  const rParts = remote.split(".").map((n) => parseInt(n, 10) || 0);
+  const cParts = current.split(".").map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < 3; i++) {
+    if ((rParts[i] || 0) > (cParts[i] || 0)) return true;
+    if ((rParts[i] || 0) < (cParts[i] || 0)) return false;
+  }
+  return false;
+}
+
+function checkNpmUpdate(currentVer) {
+  const { spawnSync } = require("node:child_process");
+  try {
+    const res = spawnSync("npm", ["view", "qed-standard", "version"], {
+      shell: true,
+      encoding: "utf8",
+      timeout: 2500,
+    });
+    if (res.status === 0 && res.stdout) {
+      const latestVer = res.stdout.trim();
+      if (latestVer && !latestVer.includes("\n") && !latestVer.includes(" ") && isNewerVersion(latestVer, currentVer)) {
+        console.log(colors.cyan(`\nℹ Newer package available on npm: v${latestVer} (installed: v${currentVer})`));
+        console.log(colors.gray(`  Run 'npm install -g qed-standard' to update your global CLI.`));
+      }
+    }
+  } catch {}
+}
+
+function runUpdate(targetDir, options = {}) {
+  const os = require("node:os");
+  const isGlobal = options.global === true;
+  const qedRoot = path.resolve(__dirname, "..");
+  const adaptersDir = path.join(qedRoot, "adapters");
+  const pkgJsonPath = path.join(qedRoot, "package.json");
+  let currentVer = "1.0.4";
+  try {
+    currentVer = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8")).version || currentVer;
+  } catch {}
+
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.cyan(" Q.E.D. Adapter & Rule Synchronizer"));
+  console.log(colors.gray(" Evidence Before Assertions"));
+  console.log(colors.cyan("=========================================================="));
+
+  if (isGlobal) {
+    const homeDir = os.homedir();
+    console.log(colors.gray(`Target: Global User Environments (${homeDir})\n`));
+
+    const globalTargets = [
+      {
+        name: "Google Antigravity",
+        dest: path.join(homeDir, ".gemini", "GEMINI.md"),
+        src: path.join(adaptersDir, "antigravity", "GEMINI.md"),
+        ensureDir: path.join(homeDir, ".gemini"),
+      },
+      {
+        name: "Claude Code",
+        dest: path.join(homeDir, ".claude", "CLAUDE.md"),
+        src: path.join(adaptersDir, "claude-code", "CLAUDE.md"),
+        ensureDir: path.join(homeDir, ".claude"),
+      },
+      {
+        name: "Cursor",
+        dest: path.join(homeDir, ".cursorrules"),
+        src: path.join(adaptersDir, "cursor", ".cursorrules"),
+      },
+    ];
+
+    let updatedCount = 0;
+    for (const gt of globalTargets) {
+      if (gt.ensureDir && !fs.existsSync(gt.ensureDir)) {
+        try {
+          fs.mkdirSync(gt.ensureDir, { recursive: true });
+        } catch {}
+      }
+      if (fs.existsSync(gt.src)) {
+        try {
+          fs.copyFileSync(gt.src, gt.dest);
+          console.log(`  ${colors.green("[+]")} Synchronized ${colors.bold(gt.name)}: ${colors.gray(gt.dest)}`);
+          updatedCount++;
+        } catch (err) {
+          console.log(`  ${colors.yellow("!")} Failed to update ${gt.name}: ${err.message}`);
+        }
+      }
+    }
+
+    console.log(colors.green(`\n✓ Global synchronization complete: ${updatedCount} environment(s) updated to v${currentVer}.`));
+    checkNpmUpdate(currentVer);
+    return;
+  }
+
+  const resolvedTarget = path.resolve(targetDir);
+  console.log(colors.gray(`Target: ${resolvedTarget}\n`));
+
+  const installed = getInstalledAdapters(resolvedTarget);
+  if (installed.length === 0) {
+    console.log(colors.yellow("! No existing Q.E.D. adapters detected in this directory."));
+    console.log(colors.gray("  To initialize Q.E.D. in this project, run 'qed init' or the installation script."));
+    console.log(colors.gray("  To update global user configurations, run 'qed update --global'."));
+    return;
+  }
+
+  let updatedCount = 0;
+  for (const item of installed) {
+    let sourceRel = item.src;
+    try {
+      const existingContent = fs.readFileSync(item.fullTarget, "utf8");
+      if (existingContent.includes("Q.E.D. Lite") || existingContent.includes("Token-Optimized")) {
+        sourceRel = item.liteSrc;
+      }
+    } catch {}
+
+    const fullSrc = path.join(qedRoot, sourceRel);
+    if (fs.existsSync(fullSrc)) {
+      try {
+        fs.copyFileSync(fullSrc, item.fullTarget);
+        console.log(`  ${colors.green("[+]")} Synchronized ${colors.bold(item.name)}: ${colors.gray(item.relPath)}`);
+        updatedCount++;
+      } catch (err) {
+        console.log(`  ${colors.red("✗")} Failed to copy ${item.name}: ${err.message}`);
+      }
+    }
+  }
+
+  // Refresh Cursor modern MDC rules if present
+  const cursorRulesDir = path.join(resolvedTarget, ".cursor", "rules");
+  const srcCursorRulesDir = path.join(adaptersDir, "cursor", ".cursor", "rules");
+  if (fs.existsSync(cursorRulesDir) && fs.existsSync(srcCursorRulesDir)) {
+    try {
+      const mdcFiles = fs.readdirSync(srcCursorRulesDir).filter((f) => f.endsWith(".mdc"));
+      for (const mdc of mdcFiles) {
+        fs.copyFileSync(path.join(srcCursorRulesDir, mdc), path.join(cursorRulesDir, mdc));
+      }
+      console.log(`  ${colors.green("[+]")} Refreshed ${mdcFiles.length} Cursor MDC rule(s) in .cursor/rules/`);
+    } catch {}
+  }
+
+  // Refresh Claude commands and skills if present
+  const claudeCommandsDir = path.join(resolvedTarget, ".claude", "commands");
+  const srcClaudeCommandsDir = path.join(adaptersDir, "claude-code", ".claude", "commands");
+  if (fs.existsSync(claudeCommandsDir) && fs.existsSync(srcClaudeCommandsDir)) {
+    try {
+      const cmdFiles = fs.readdirSync(srcClaudeCommandsDir).filter((f) => f.endsWith(".md"));
+      for (const cmd of cmdFiles) {
+        fs.copyFileSync(path.join(srcClaudeCommandsDir, cmd), path.join(claudeCommandsDir, cmd));
+      }
+      console.log(`  ${colors.green("[+]")} Refreshed ${cmdFiles.length} Claude slash command(s) in .claude/commands/`);
+    } catch {}
+  }
+
+  // Refresh mechanical git hooks if git is present
+  const gitDir = path.join(resolvedTarget, ".git");
+  if (fs.existsSync(gitDir)) {
+    const hooksDir = path.join(gitDir, "hooks");
+    installGitHooks(hooksDir);
+    console.log(`  ${colors.green("[+]")} Refreshed mechanical git hooks (.git/hooks/pre-commit & pre-push)`);
+  }
+
+  console.log(colors.green(`\n✓ Synchronized ${updatedCount} adapter(s) to Q.E.D. v${currentVer}.`));
+  checkNpmUpdate(currentVer);
+}
+
 function runDoctor(targetDir) {
   const { spawnSync } = require("node:child_process");
   console.log(colors.cyan("=========================================================="));
@@ -1551,6 +1795,58 @@ function runDoctor(targetDir) {
     }
   }
 
+  // 10. Q.E.D. Adapters Drift Check
+  const adaptersDir = path.resolve(__dirname, "..", "adapters");
+  if (fs.existsSync(adaptersDir)) {
+    const pkgJsonPath = path.resolve(__dirname, "..", "package.json");
+    let currentVer = "1.0.4";
+    try {
+      currentVer = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8")).version || currentVer;
+    } catch {}
+
+    const installed = getInstalledAdapters(targetDir);
+    if (installed.length === 0) {
+      const isQedRepo = fs.existsSync(path.join(targetDir, "core", "CONSTITUTION.md"));
+      if (!isQedRepo) {
+        report("warn", "Q.E.D. Adapters Status", "No AI agent adapters installed in target repo (run 'qed update' or installer)");
+      }
+    } else {
+      const drifted = [];
+      for (const item of installed) {
+        let targetContent = "";
+        try {
+          targetContent = fs.readFileSync(item.fullTarget, "utf8");
+        } catch {}
+
+        const fullSrc = path.join(path.resolve(__dirname, ".."), item.src);
+        const fullLiteSrc = path.join(path.resolve(__dirname, ".."), item.liteSrc);
+        let srcContent = "";
+        let liteSrcContent = "";
+        try { srcContent = fs.readFileSync(fullSrc, "utf8"); } catch {}
+        try { liteSrcContent = fs.readFileSync(fullLiteSrc, "utf8"); } catch {}
+
+        const isExactMatch =
+          (srcContent && targetContent.trim() === srcContent.trim()) ||
+          (liteSrcContent && targetContent.trim() === liteSrcContent.trim());
+
+        const lowerContent = targetContent.toLowerCase();
+        const hasCoreInvariants =
+          lowerContent.includes("leash invariant") ||
+          (lowerContent.includes("evidence before assertions") && lowerContent.includes("mutation check"));
+
+        if (!isExactMatch && !hasCoreInvariants) {
+          drifted.push(item.relPath);
+        }
+      }
+
+      if (drifted.length === 0) {
+        report("pass", "Q.E.D. Adapters Integrity", `All ${installed.length} installed adapter(s) synchronized with v${currentVer}`);
+      } else {
+        report("warn", "Q.E.D. Adapters Drift", `${drifted.length} adapter file(s) are outdated (${drifted.join(", ")}). Run 'qed update'`);
+      }
+    }
+  }
+
   console.log("\n----------------------------------------------------------");
   if (failed === 0) {
     console.log(colors.green(`✓ Doctor: System Healthy (${passed} checks passed, ${warnings} warning(s)).`));
@@ -1694,65 +1990,12 @@ if (require.main === module) {
       console.error(colors.red("Error: No .git directory found. Cannot install pre-commit hook."));
       process.exit(1);
     }
-    if (!fs.existsSync(hooksDir)) {
-      fs.mkdirSync(hooksDir, { recursive: true });
-    }
-
-    const hookScript = `#!/usr/bin/env sh
-# Q.E.D. Automated Mechanical Gate Pre-Commit Hook
-
-echo "Running Q.E.D. Pre-Commit Gate..."
-
-if command -v node >/dev/null 2>&1 && [ -f "./bin/qed-engine.js" ]; then
-    node "./bin/qed-engine.js" check
-    EXIT_CODE=$?
-elif [ -f "./bin/qed" ]; then
-    ./bin/qed check
-    EXIT_CODE=$?
-elif [ -f "./bin/qed.ps1" ]; then
-    pwsh -ExecutionPolicy Bypass -File "./bin/qed.ps1" check || powershell -ExecutionPolicy Bypass -File "./bin/qed.ps1" check
-    EXIT_CODE=$?
-else
-    echo "Warning: Q.E.D. runner not found. Skipping gate."
-    exit 0
-fi
-
-if [ "$EXIT_CODE" -ne 0 ]; then
-    echo "Commit BLOCKED by Q.E.D. Mechanical Verification Gate."
-    exit 1
-fi
-exit 0
-`;
-
-    const hookPath = path.join(hooksDir, "pre-commit");
-    fs.writeFileSync(hookPath, hookScript, { mode: 0o755 });
-
-    // Pre-push hook enforces cross-platform test matrix before code leaves machine
-    const prePushScript = `#!/usr/bin/env sh
-# Q.E.D. Automated Mechanical Gate Pre-Push Hook
-
-echo "Running Q.E.D. Pre-Push Multi-Platform Test Gate..."
-
-if command -v node >/dev/null 2>&1 && [ -f "./bin/qed-engine.js" ]; then
-    node "./bin/qed-engine.js" test
-    EXIT_CODE=$?
-elif [ -f "./tests/verify-linter.ps1" ] && command -v powershell >/dev/null 2>&1; then
-    powershell -ExecutionPolicy Bypass -File "./tests/verify-linter.ps1"
-    EXIT_CODE=$?
-else
-    EXIT_CODE=0
-fi
-
-if [ "$EXIT_CODE" -ne 0 ]; then
-    echo "Push BLOCKED by Q.E.D. Multi-Platform Test Gate."
-    exit 1
-fi
-exit 0
-`;
-    const prePushPath = path.join(hooksDir, "pre-push");
-    fs.writeFileSync(prePushPath, prePushScript, { mode: 0o755 });
-
+    installGitHooks(hooksDir);
     console.log(colors.green(`[+] Installed Q.E.D. hooks: pre-commit & pre-push to ${hooksDir}`));
+    process.exit(0);
+  } else if (command === "update" || command === "upgrade" || command === "sync") {
+    const isGlobal = args.includes("--global") || args.includes("-g");
+    runUpdate(targetDir, { global: isGlobal });
     process.exit(0);
   } else if (command === "doctor") {
     runDoctor(targetDir);
@@ -1767,7 +2010,7 @@ exit 0
   } else {
     console.log(colors.red(`Unknown command: ${command}`));
     console.log(
-      "Usage: node bin/qed-engine.js [check | test | doctor | ci | exec | tokens | init | hook] [target_dir] [--compact] [--json] [--strict] [--config <path>]"
+      "Usage: node bin/qed-engine.js [check | test | doctor | update | ci | exec | tokens | init | hook] [target_dir] [--global] [--compact] [--json] [--strict] [--config <path>]"
     );
     process.exit(1);
   }

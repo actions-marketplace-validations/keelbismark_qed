@@ -326,5 +326,21 @@ run_absence_test "clean-lite-windsurf" "bash \"$REPO_ROOT/install.sh\" --lite wi
 run_absence_test "clean-lite-copilot" "bash \"$REPO_ROOT/install.sh\" --lite copilot" ".github/prompts/qed-boost.prompt.md"
 run_absence_test "clean-lite-deepseek" "bash \"$REPO_ROOT/install.sh\" --lite deepseek" ".continue/prompts/qed-boost.prompt"
 
+echo "--- Section 7: qed update & Synchronization Tests ---"
+UPDATE_TEST_DIR="$TEST_DIR/update-test"
+mkdir -p "$UPDATE_TEST_DIR"
+
+(
+    cd "$UPDATE_TEST_DIR"
+    echo "# Old Adapter without invariants" > "GEMINI.md"
+    node "$REPO_ROOT/bin/qed-engine.js" update . >/dev/null 2>&1
+    if grep -q "Leash Invariant" "GEMINI.md"; then
+        echo -e "  \033[0;32m[PASS]\033[0m qed-update-synchronization (GEMINI.md refreshed with latest invariants)"
+    else
+        echo -e "  \033[0;31m[FAIL]\033[0m qed-update-synchronization"
+        exit 1
+    fi
+)
+
 echo ""
 echo "All Bash verification tests PASSED successfully!"

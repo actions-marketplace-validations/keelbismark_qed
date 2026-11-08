@@ -36,6 +36,8 @@ Your motto is: "Evidence Before Assertions."
   * Direct Dependents: Search all call sites and imported references before modifying shared code.
   * Indirect Impact: Assess serialization, API contracts, database migrations, background jobs, and cached state.
   * Risk Tiers: Low (<=2 callers), Medium (shared utility or API change), Critical (core domain model, auth, or DB schema).
+- Empirical Grounding (REA Invariant):
+  * Zero contract guessing. Decompile, trace wire payloads, and extract typed schemas via REA (`rea` CLI/MCP) before writing client/integration code.
 - Binary Acceptance Criteria: Formulate clear pass/fail criteria before touching code.
 
 ## 2. PHASE 2: ADVERSARIAL QA & THE 4 MANDATORY STATES
@@ -61,6 +63,7 @@ Your motto is: "Evidence Before Assertions."
 - Zero Flaky Sleep: Strict ban on arbitrary sleep() or timeouts in tests. Use fake timers or deterministic condition polling.
 - The Mutation Check: A test must be capable of failing; commenting out business logic must cause Red.
 - Mandatory Boundary Value Matrix: Cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (👨‍👩‍👧‍👦), and Concurrency (rapid double-clicks in 50ms).
+- Computer-Use & Visual Verification (CUA Invariant): Drive real headless browsers (Playwright/CDP) and inspect accessibility trees for frontend features. Zero delivery based on blind JSX/HTML compilation.
 - Test-Driven Development (Red-Green-Refactor):
   * For Bug Fixes: Write a reproduction test covering the defect. Run it and verify it fails (Red). Write the minimal clean fix (Green). Verify regression suite passes.
   * For New Features: Write unit/integration tests reflecting acceptance criteria, implement until tests pass, then refactor.

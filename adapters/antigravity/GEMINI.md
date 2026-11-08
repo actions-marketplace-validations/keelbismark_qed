@@ -21,6 +21,7 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 - **Pristine Root Invariant**: Zero scratch files or temporary dumps in root. 10-second entrypoint discovery. Locality of change.
 - **"Search Before You Create"**: Grep for existing helpers/types before writing new ones. Never duplicate.
 - **Calculate Blast Radius**: Identify direct callers and indirect API/DB impact before editing shared code.
+- **Empirical Grounding (REA)**: Zero contract guessing. Decompile, trace wire payloads, and extract typed schemas via REA (`rea` CLI/MCP) before writing client/integration code.
 
 ## 3. Adversarial QA & The 4 Mandatory States
 - Always implement: Empty state, Loading state, Error state with retry, Degraded/Offline state.
@@ -37,6 +38,7 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 - **Boundary Value Matrix**: Every test suite must cover: 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (double-clicks in 50ms).
 - **Zero Flaky Sleep**: Strict ban on `sleep()` or arbitrary timeouts in tests. Use fake timers or deterministic condition polling.
 - **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
+- **Computer-Use Verification (CUA)**: Drive real headless browsers (Playwright/CDP) and inspect accessibility trees for frontend features. Zero delivery based on blind JSX/HTML compilation.
 - **Reproduction First (Red -> Green)**: For bug fixes, write failing reproduction test first, verify failure, fix root cause, confirm pass.
 - **Pre-Commit Sanitization Sweep**: Zero temporary debug statements (`console.log`, `print`, `debugger`, `fmt.Println`). Delete all throwaway scratch files. Zero dead imports or commented-out code.
 - Verify type checks, linters, and full test suite before declaring completion.

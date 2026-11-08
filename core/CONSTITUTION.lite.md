@@ -19,6 +19,7 @@ This specification defines the non-negotiable engineering invariants for AI codi
 - **Search Before You Create (Anti-Duplication)**: Grep the repository before introducing any new helper, utility, hook, or type. Always reuse or extend existing abstractions. Never create duplicate helpers (`utils2.ts`, `customFormatDate`).
 - **Blast Radius Analysis**: Before modifying shared code or schemas, map direct callers and transitive impact (API contracts, database migrations, background jobs, cached state).
 - **Threat-Adaptive Security**: Zero hardcoded secrets/tokens in code or git. Keep `.env.example` synchronized. Use parameterized queries only. Adhere to least privilege.
+- **Reverse Engineering Invariant (REA)**: Zero contract hallucination. Decompile bundles, trace wire frames, and extract schemas via REA tools before integrating external APIs.
 - **Resource & Cache Hygiene**: All caches must be bounded LRUs (`maxSize` + `ttlMs`) with tenant-isolated keys. Temp files must be cleaned in `try...finally`. Use atomic file writes (`file.tmp` -> `file`). Stream payloads > 10MB.
 - **Data Fetching Invariants**: Mandatory `AbortSignal.timeout(ms)` on all network calls. Ban on `as TargetType` casts (validate at boundary). Ban on client waterfalls and unbounded queries (Keyset pagination for >1k rows). Retry only idempotent requests with jitter (`Idempotency-Key` for POST). Scope all queries by tenant (IDOR defense).
 
@@ -46,6 +47,7 @@ Every UI flow and data endpoint must explicitly handle all 4 states:
   - Zero flaky sleep: Ban on arbitrary `sleep()`; use fake timers or condition polling with deadlines.
   - Mutation check: Tests must be capable of failing if business logic is removed.
   - Cover the boundary matrix: 0 (empty), 1, N, Max, null/undefined, hostile Unicode (`👨‍👩‍👧‍👦`), rapid double-clicks (50ms).
+- **Computer-Use & Visual Verification (CUA)**: Drive real headless browser instances (Playwright/CDP) for UI workflows. Ground testing in accessibility tree snapshots and multi-breakpoint screenshots (375px/768px/1440px). Never rely on blind JSX/HTML compilation.
 - **The 3 AM Test (Readability)**:
   - Guard clauses and early returns; eliminate nested if/else pyramids.
   - Clear intermediate variables; avoid opaque 5-level chained functional one-liners.

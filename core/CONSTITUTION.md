@@ -122,6 +122,10 @@ Before writing any non-trivial code:
     - **The Expand/Contract Pattern**: Multi-phase releases for column modifications (Phase 1: Expand & dual-write $\rightarrow$ Phase 2: Batch backfill $\rightarrow$ Phase 3: Switch read $\rightarrow$ Phase 4: Contract & drop). Never drop and write in one release.
     - **Non-Blocking DDL Guardrails**: Mandatory `SET lock_timeout = '2s'`; mandatory `CREATE INDEX CONCURRENTLY`; add `NOT NULL` with constant defaults or via `CHECK ... NOT VALID`.
     - **Chunked Backfills**: Historical updates executed in indexed batches ($\le 1,000$ rows) with sleep pauses, never single-statement table locks.
+17. **Empirical Contract Extraction & Reverse Engineering (The REA Invariant)**:
+    - **No Contract Hallucination**: Speculative typing and guessing third-party APIs, legacy schemas, or proprietary protocols is strictly prohibited.
+    - **Wire & Binary Archaeology**: Ground integrations in captured wire payloads or decompiled binaries using the REA methodology (`rea` CLI/MCP). Extract runtime types and schemas (`contracts/`) before authoring client logic.
+    - **Golden Fixture Mandate**: Every external integration must include at least one sanitized real-world golden fixture. *(See `core/reverse-engineering-and-grounding.md`)*.
 
 ---
 
@@ -206,6 +210,11 @@ Execute changes using disciplined software craftsmanship:
 4. **Workspace & Git Hygiene**:
    - Isolate risky refactors in dedicated branches or subagents.
    - Never leave unstaged junk, debug logs, or temporary files in the repository.
+
+5. **Computer-Use & Visual Verification (The CUA Invariant)**:
+   - **The Blind UI Fallacy**: Never claim frontend features or UI fixes are complete based solely on compilation or headless DOM mocks.
+   - **Perceptual Grounding & Real Browser Driving**: For UI and user-facing workflows, drive real headless browser environments (Playwright, Puppeteer, CDP). Inspect the accessibility tree (`accessibility.snapshot()`) and capture multi-breakpoint screenshots (375px, 768px, 1440px) to verify zero layout shifts or visual overlap.
+   - **Adversarial Human Scenarios**: Stress-test rapid double-clicks (50ms debouncing), extreme Unicode (`👨‍👩‍👧‍👦`), and simulated offline/slow-3G network conditions before delivery. *(See `core/computer-use-and-visual-verification.md`)*.
 
 ---
 

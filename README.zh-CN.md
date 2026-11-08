@@ -174,6 +174,8 @@ Cursor · Claude Code · Antigravity · Gemini CLI · Codex · Kimi Code · Pi �
 | 安全处理 API 数据 | [数据获取规范](core/data-fetching-philosophy.md) |
 | 改善安全与数据库迁移 | [安全规范](core/security-philosophy.md) · [数据库演进](core/database-evolution-and-migrations.md) |
 | 构建实用界面 | [视觉规范](core/visual-anti-slop-standard.md) · [工作流体验](core/workflow-ergonomics-and-affordances.md) |
+| 逆向工程与契约提取 | [逆向工程与契约落地 (REA)](core/reverse-engineering-and-grounding.md) |
+| 真实浏览器界面视觉校验 | [Computer-Use 与视觉验证门禁 (CUA)](core/computer-use-and-visual-verification.md) |
 | 理解评估结果 | [评估方法](docs/evals.md) · [测试样例](evals/scenarios.json) |
 | 为 AI 提供上下文 | [AI_README.md](AI_README.md) · [llms.txt](llms.txt) |
 

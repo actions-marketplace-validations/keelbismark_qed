@@ -1518,6 +1518,39 @@ function runDoctor(targetDir) {
     report("warn", "GitHub CLI (gh)", "gh CLI not installed; remote CI status probe skipped");
   }
 
+  // 8. Reverse Engineering Engine (REA Invariant)
+  const reaProbe = spawnSync("rea", ["--version"], { shell: true, encoding: "utf8" });
+  if (reaProbe.status === 0 && reaProbe.stdout && reaProbe.stdout.trim()) {
+    report("pass", "Reverse Engineering Engine (REA)", `Active (rea-agents v${reaProbe.stdout.trim()})`);
+  } else {
+    report("warn", "Reverse Engineering Engine (REA)", "rea CLI not found ('npm i -g rea-agents' for empirical contract extraction)");
+  }
+
+  // 9. Computer-Use & UI Grounding (CUA Invariant)
+  const hasLocalPlaywright =
+    fs.existsSync(path.join(targetDir, "node_modules", "@playwright", "test")) ||
+    fs.existsSync(path.join(targetDir, "node_modules", "playwright")) ||
+    fs.existsSync(path.join(targetDir, "node_modules", "puppeteer"));
+
+  if (hasLocalPlaywright) {
+    report("pass", "Computer-Use & Visual Gate (CUA)", "Browser automation test engine detected in project dependencies");
+  } else {
+    const chromePaths = [
+      process.env.CHROME_PATH,
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+      "/usr/bin/google-chrome",
+      "/usr/bin/chromium",
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    ].filter(Boolean);
+    const hasChrome = chromePaths.some((p) => fs.existsSync(p));
+    if (hasChrome) {
+      report("pass", "Computer-Use & Visual Gate (CUA)", "Chromium browser engine available for headless UI verification");
+    } else {
+      report("warn", "Computer-Use & Visual Gate (CUA)", "No browser engine detected; UI tasks require Playwright/Puppeteer/Chrome for visual verification");
+    }
+  }
+
   console.log("\n----------------------------------------------------------");
   if (failed === 0) {
     console.log(colors.green(`✓ Doctor: System Healthy (${passed} checks passed, ${warnings} warning(s)).`));

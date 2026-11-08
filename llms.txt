@@ -19,6 +19,8 @@
 - [Error Handling Standard](core/error-handling-philosophy.md): 4 operational tiers, Result<T,E>, cause chaining, and boundary masking.
 - [Observability & RCA Standard](core/observability-and-rca.md): Structured JSON logging, traceId propagation, PII scrubbing, 5 Whys.
 - [Database Evolution Standard](core/database-evolution-and-migrations.md): Expand/Contract multi-phase migrations, non-blocking DDL.
+- [Reverse Engineering & Grounding (REA)](core/reverse-engineering-and-grounding.md): Wire/binary archaeology, empirical contract extraction, zero API guessing.
+- [Computer-Use & Visual Verification (CUA)](core/computer-use-and-visual-verification.md): Real browser driving, accessibility snapshots, multi-breakpoint visual diffs.
 - [Universal Constitution (Lite)](core/CONSTITUTION.lite.md): Token-optimized (<500 tokens) standard for fast models.
 - [Q.E.D. Lite Prompt](QED.lite.md): Compact drop-in agent prompt.
 - [AI Directives](AI_README.md): High-density instructions for LLM agents.

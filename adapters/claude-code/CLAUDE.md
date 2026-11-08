@@ -60,6 +60,7 @@ When using the `Bash` tool in Claude Code, adhere strictly to these rules:
   * Direct Callers: Locate all call sites before modifying existing functions or types.
   * Indirect Impact: Check serialization formats, API contracts, DB migrations, and cache validity.
   * Risk Classification: Low (<=2 callers), Medium (shared utility/API), Critical (auth, domain core, DB schema).
+- **Empirical Grounding (REA)**: Zero contract guessing. Decompile, trace wire payloads, and extract typed schemas via REA (`rea` CLI/MCP) before writing client/integration code.
 - **Binary Acceptance Criteria**: Write pass/fail criteria before modifying code.
 
 ### Phase 2: Adversarial QA & The 4 Mandatory States
@@ -74,6 +75,7 @@ Every UI view and API route must implement:
 - **Zero Flaky Sleep**: Strict ban on `sleep()` or arbitrary timeouts in tests. Use fake timers or condition polling with deadlines.
 - **The Mutation Check**: A test must be capable of failing; commenting out business logic must cause Red.
 - **Boundary Value Matrix**: Every test suite must cover 0 (empty), 1, N, N+1, Max, Null/Undefined, Hostile Unicode (`👨‍👩‍👧‍👦`), and Concurrency (rapid double-clicks in 50ms).
+- **Computer-Use & Visual Verification (CUA)**: Drive real headless browsers (Playwright/CDP) and inspect accessibility trees for frontend features. Zero delivery based on blind JSX/HTML compilation.
 - **Bug Fixes**: Write a reproduction test first -> observe it fail (**Red**) -> implement the minimal fix -> observe it pass (**Green**) -> run full suite.
 - **New Features**: Write acceptance tests first -> implement -> verify -> refactor.
 - **The 3 AM Test, Naming & Clean Comments**: Flat structure, guard clauses, early returns, clear intermediate variables. Semantic naming: units in numbers (`timeoutMs`), positive predicates (`isActive`), plural arrays, key-value maps (`usersById`), contract verbs (`get`, `create`, `delete`). Comment WHY, never WHAT. Ban on syntax echo noise (`// set count to 0`). Actionable TODOs with issue IDs (`// TODO(#123)`).

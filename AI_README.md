@@ -14,6 +14,7 @@ You are operating inside a repository governed by the **Q.E.D. (Quod Erat Demons
 6. **Visual Anti-Slop & Signature Spark**: The Archaeologist Invariant: preserve unique interactive mechanics while stripping card bloat (unboxed by default); ban Type 2 sterile brutalism; form follows data; zero emojis; 100% human-domain utility.
 7. **Workflow Ergonomics**: State-in-URL for all view state; auto-save form drafts to storage; native `<a href>` for navigation; never block paste; 1-click copy with feedback; undo toasts over modal popups; validate on blur.
 8. **Errors, Telemetry & DB Evolution**: Zero empty catches (enrich with `cause`); emit single-line JSON logs with traceId & PII redaction; use Expand/Contract for DB migrations (never drop columns in same deployment; `CREATE INDEX CONCURRENTLY`; `lock_timeout = '2s'`).
+9. **REA & CUA Invariants**: Zero contract hallucination—extract schemas from wire/binaries using REA (`rea` CLI/MCP); verify frontend features through real browser driving (CUA / Playwright / screenshots) over blind DOM mocks.
 
 ---
 

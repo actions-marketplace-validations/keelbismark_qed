@@ -174,6 +174,8 @@ Cursor · Claude Code · Antigravity · Gemini CLI · Codex · Kimi Code · Pi �
 | Безопасно работать с API | [Получение данных](core/data-fetching-philosophy.md) |
 | Улучшить безопасность и миграции | [Безопасность](core/security-philosophy.md) · [Эволюция БД](core/database-evolution-and-migrations.md) |
 | Проектировать полезный интерфейс | [Визуальный стандарт](core/visual-anti-slop-standard.md) · [Эргономика](core/workflow-ergonomics-and-affordances.md) |
+| Реверс-инжиниринг контрактов | [Реверс-инжиниринг и граундинг (REA)](core/reverse-engineering-and-grounding.md) |
+| Визуальная верификация интерфейсов | [Computer-Use и визуальный гейт (CUA)](core/computer-use-and-visual-verification.md) |
 | Понять результаты оценки | [Методология](docs/evals.md) · [Тестовые примеры](evals/scenarios.json) |
 | Передать контекст ИИ | [AI_README.md](AI_README.md) · [llms.txt](llms.txt) |
 

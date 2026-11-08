@@ -176,6 +176,7 @@ Cursor · Claude Code · Antigravity · Gemini CLI · Codex · Kimi Code · Pi �
 | 构建实用界面 | [视觉规范](core/visual-anti-slop-standard.md) · [工作流体验](core/workflow-ergonomics-and-affordances.md) |
 | 逆向工程与契约提取 | [逆向工程与契约落地 (REA)](core/reverse-engineering-and-grounding.md) |
 | 真实浏览器界面视觉校验 | [Computer-Use 与视觉验证门禁 (CUA)](core/computer-use-and-visual-verification.md) |
+| 约束子智能体并防止代码膨胀 | [子智能体治理与约束原则 (The Leash Invariant)](core/subagent-governance-and-delegation.md) |
 | 理解评估结果 | [评估方法](docs/evals.md) · [测试样例](evals/scenarios.json) |
 | 为 AI 提供上下文 | [AI_README.md](AI_README.md) · [llms.txt](llms.txt) |
 

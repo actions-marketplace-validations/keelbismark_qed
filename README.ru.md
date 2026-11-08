@@ -176,6 +176,7 @@ Cursor · Claude Code · Antigravity · Gemini CLI · Codex · Kimi Code · Pi �
 | Проектировать полезный интерфейс | [Визуальный стандарт](core/visual-anti-slop-standard.md) · [Эргономика](core/workflow-ergonomics-and-affordances.md) |
 | Реверс-инжиниринг контрактов | [Реверс-инжиниринг и граундинг (REA)](core/reverse-engineering-and-grounding.md) |
 | Визуальная верификация интерфейсов | [Computer-Use и визуальный гейт (CUA)](core/computer-use-and-visual-verification.md) |
+| Обуздать саб-агентов и предотвратить раздувание | [Управление саб-агентами (The Leash Invariant)](core/subagent-governance-and-delegation.md) |
 | Понять результаты оценки | [Методология](docs/evals.md) · [Тестовые примеры](evals/scenarios.json) |
 | Передать контекст ИИ | [AI_README.md](AI_README.md) · [llms.txt](llms.txt) |
 

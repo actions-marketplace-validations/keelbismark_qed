@@ -56,3 +56,9 @@ This agent operates strictly under the Q.E.D. Engineering Framework:
 - **Context-Driven Versioning**: SemVer (`X.Y.Z`) for libraries/SDKs, CalVer for tools/platforms, Continuous/SHA for SaaS, ZeroVer for prototypes.
 - **Pre-1.0 vs. Post-1.0**: Zero `@deprecated` bureaucracy in early dev (refactor boldly); strict deprecation before removal only when external users exist.
 - **Changelog Segregation**: Technical `CHANGELOG.md` for engineers vs. benefit-driven release notes for users. Scrub zero-day exploit details and internal churn.
+
+## 8. Subagent Governance & Delegation (The Leash Invariant)
+- **Laborers, Not Architects**: Subagents are restricted to bounded leaf-level tasks (reproduction tests, benchmarks, isolated leaf functions). Subagents are strictly forbidden from deciding architecture, restructuring topologies, inventing homegrown parsers, or adding external dependencies.
+- **Hard Churn Budget**: Enforce a strict limit ($\le 100$ lines of diff). If a subagent attempts a broader rewrite, reject and revert immediately.
+- **Vicarious Liability & Adversarial Audit**: The parent agent is 100% liable for all subagent output. Never relay blindly. Audit for AI-slop, overengineering, and test weakening before presenting to the human.
+- **Zero Performance Regression**: Any subagent diff that degrades verification speed (e.g. slowing `qed check` beyond 60ms) or bloats memory is rejected without discussion.

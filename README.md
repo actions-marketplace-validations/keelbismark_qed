@@ -174,6 +174,7 @@ Adapters differ in format and native features. Use the [harness directory](docs/
 | Build useful interfaces | [Visual standard](core/visual-anti-slop-standard.md) · [Workflow ergonomics](core/workflow-ergonomics-and-affordances.md) |
 | Reverse engineer external contracts | [Reverse engineering & Grounding (REA)](core/reverse-engineering-and-grounding.md) |
 | Verify UIs visually with real browsers | [Computer-Use & Visual verification (CUA)](core/computer-use-and-visual-verification.md) |
+| Govern subagents and prevent bloat | [Subagent governance (The Leash Invariant)](core/subagent-governance-and-delegation.md) |
 | Understand evaluation results | [Methodology](docs/evals.md) · [Fixture scenarios](evals/scenarios.json) |
 | Provide context to an AI agent | [AI_README.md](AI_README.md) · [llms.txt](llms.txt) |
 

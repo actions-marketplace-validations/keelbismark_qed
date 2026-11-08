@@ -11,6 +11,7 @@ This Constitution defines the mandatory engineering discipline, execution modes,
 2. **Root Cause Only**: Never suppress errors with empty `catch` blocks, arbitrary `setTimeout`, type casts (`any`), or superficial workarounds. Fix the structural defect.
 3. **No Speculative Coding**: Never jump directly into writing production code based on unverified assumptions about schemas, APIs, or interfaces.
 4. **Preserve Integrity**: Do not pollute git history, do not break existing abstractions, and never leave dead or commented-out code.
+5. **The Subagent Leash Invariant**: Subagents are bounded laboratory workers, never autonomous chief architects. The parent agent bears 100% vicarious liability. Ban on unconstrained diffs (>100 lines), architectural mutation, or performance regressions by subagents. *(See `core/subagent-governance-and-delegation.md`)*.
 
 ---
 
@@ -126,6 +127,9 @@ Before writing any non-trivial code:
     - **No Contract Hallucination**: Speculative typing and guessing third-party APIs, legacy schemas, or proprietary protocols is strictly prohibited.
     - **Wire & Binary Archaeology**: Ground integrations in captured wire payloads or decompiled binaries using the REA methodology (`rea` CLI/MCP). Extract runtime types and schemas (`contracts/`) before authoring client logic.
     - **Golden Fixture Mandate**: Every external integration must include at least one sanitized real-world golden fixture. *(See `core/reverse-engineering-and-grounding.md`)*.
+18. **Subagent Governance & Delegation Discipline (The Leash Invariant)**:
+    - **No Autonomous Architecture**: Delegating tasks to subagents (`DeepCoder`, background workers) requires explicit churn budgets ($\le 100$ lines) and strict file boundaries. Subagents must never unilaterally decide architecture, rewrite core topologies, or introduce bespoke compilers/parsers.
+    - **Adversarial Parent Audit**: The parent agent holds full liability and must perform an adversarial review of subagent output (auditing for bloat, AI-slop, and performance regressions) before presenting to the human engineer. *(See `core/subagent-governance-and-delegation.md`)*.
 
 ---
 

@@ -92,3 +92,9 @@ Your motto is: "Evidence Before Assertions."
 - No 3-screen vertical Mermaid noodles: inline workflow diagrams must be horizontal and under 150px height.
 - High-assurance SVGs: pure vector, responsive (viewBox, 100% width, height=auto), self-contained dark canvas card for theme immunity, system font typography.
 - Prefer real terminal command and test logs over abstract decorative graphics.
+
+## 7. SUBAGENT GOVERNANCE & DELEGATION (THE LEASH INVARIANT)
+- Bounded Workers, Not Architects: Subagents are restricted to mechanical leaf tasks (reproduction tests, benchmarks, single functions). Strictly forbidden from altering architecture, adding packages, or rewriting topologies.
+- Hard Churn Budget: Enforce strict diff budget (<=100 lines). Reject and revert unconstrained rewrites immediately.
+- Vicarious Liability & Adversarial Audit: Parent agent holds 100% liability. Never relay subagent output blindly. Audit for AI-slop, overengineering, and test weakening.
+- Zero Performance Regressions: Any subagent change that slows down checks or bloats memory is rejected.

@@ -114,3 +114,12 @@ This repository provides custom Q.E.D. skills and slash commands:
 - **No 3-Screen Vertical Noodles**: Inline workflow diagrams must be horizontal (`flowchart LR` or SVGs) and under 150px vertical height.
 - **High-Assurance SVGs**: Pure vector, responsive (`viewBox`, `100%` width, `height="auto"`), self-contained dark canvas card for theme immunity, system font typography.
 - **Evidence Over Abstract Art**: Prefer real terminal command and test logs over speculative diagrams.
+
+---
+
+## 6. Subagent Governance & Delegation (The Leash Invariant)
+
+- **Bounded Leaf Workers**: Subagents are restricted to mechanical leaf tasks (reproduction tests, benchmarks, single functions). Strictly forbidden from altering architecture, adding packages, or rewriting topologies.
+- **Hard Churn Budget**: Enforce diff budget ($\le 100$ lines). Reject and revert unconstrained rewrites immediately.
+- **Adversarial Review**: Parent agent holds 100% liability. Never relay subagent output blindly. Audit for AI-slop, overengineering, and test weakening.
+- **Zero Performance Regressions**: Any subagent change that slows down checks or bloats memory is rejected.

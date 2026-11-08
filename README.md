@@ -8,7 +8,7 @@
 
 [CI status](https://github.com/keelbismark/qed/actions/workflows/ci.yml) · [npm package](https://www.npmjs.com/package/qed-standard) · [MIT license](LICENSE)
 
-[Get started](#get-started) · [How it works](#how-it-works) · [CLI reference](#cli-reference) · [Documentation](#documentation)
+[Get started](#get-started) · [Guide](docs/GETTING_STARTED.md) · [How it works](#how-it-works) · [CLI reference](#cli-reference) · [Documentation](#documentation)
 
 ---
 
@@ -39,6 +39,8 @@ The CLI checks for a missing timeout/signal pattern. It does **not** prove that 
 | **Verification CLI** | Local checks for selected anti-patterns, plus test and hook commands. |
 
 ## Get started
+
+> Looking for a complete, step-by-step engineering walkthrough from installation to Mode A pair programming? Read the **[Getting Started Guide](docs/GETTING_STARTED.md)**.
 
 ### 1. Check your project
 
@@ -171,6 +173,7 @@ Adapters differ in format and native features. Use the [harness directory](docs/
 
 | If you want to… | Start here |
 | :--- | :--- |
+| Start from scratch (step-by-step walkthrough) | [Getting Started Guide](docs/GETTING_STARTED.md) |
 | Understand the foundational rules | [Constitution](core/CONSTITUTION.md) |
 | Configure an editor or agent | [Harness integration guide](docs/harnesses.md) |
 | Follow a complete task | [Lifecycle walkthrough](examples/full-lifecycle-walkthrough.md) |

@@ -194,6 +194,12 @@ node bin/qed-engine.js test
 
 Компиляция приложения не требуется. Делайте изменения узкими по смыслу, добавляйте воспроизведение поведенческих ошибок и указывайте выполненные проверки. Об ошибках и предложениях сообщайте в [issues](https://github.com/keelbismark/qed/issues), изменения отправляйте через [pull requests](https://github.com/keelbismark/qed/pulls).
 
+## Благодарности
+
+Q.E.D. опирается на наработки открытого сообщества:
+- [Awesome-REA](https://github.com/reacher-z/Awesome-REA) и [`rea-agents`](https://www.npmjs.com/package/rea-agents) — за методологию и инструменты реверс-инжиниринга контрактов.
+- [Awesome-CUA](https://github.com/reacher-z/Awesome-CUA) — за бенчмарки и каталогизацию Computer-Use агентов.
+
 ---
 
 **Q.E.D.** — *Quod erat demonstrandum*, «что и требовалось доказать».  

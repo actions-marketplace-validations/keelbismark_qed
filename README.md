@@ -192,6 +192,12 @@ node bin/qed-engine.js test
 
 There is no application compilation step. Keep changes focused, include a reproduction for behavioral fixes, and explain which checks ran. Use [issues](https://github.com/keelbismark/qed/issues) for bugs or proposals and [pull requests](https://github.com/keelbismark/qed/pulls) for changes.
 
+## Acknowledgments
+
+Q.E.D. builds on principles and tooling from the open-source community:
+- [Awesome-REA](https://github.com/reacher-z/Awesome-REA) & [`rea-agents`](https://www.npmjs.com/package/rea-agents) for reverse engineering and contract extraction.
+- [Awesome-CUA](https://github.com/reacher-z/Awesome-CUA) for computer-use agent benchmarks and interface grounding.
+
 ---
 
 **Q.E.D.** — *Quod erat demonstrandum*, “which was to be demonstrated.”  

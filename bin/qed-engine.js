@@ -111,7 +111,10 @@ function isTestOrFixturePath(filePath) {
   const norm = filePath.replace(/\\/g, "/");
   return (
     /(?:^|\/)(?:tests?|__tests__|fixtures?|samples?|scripts?|evals?|benchmarks?)\//i.test(norm) ||
-    /\.(?:test|spec)\.[a-z0-9]+$/i.test(norm)
+    /\.(?:test|spec)\.[a-z0-9]+$/i.test(norm) ||
+    /_test\.(?:go|py|rs)$/i.test(norm) ||
+    /^test_[a-z0-9_]+\.py$/i.test(path.basename(norm)) ||
+    /(?:^|\/)test(?:s)?\.py$/i.test(norm)
   );
 }
 
@@ -130,19 +133,70 @@ function ruleMatchesSet(ruleSet, targetRule) {
   return false;
 }
 
+function findMatchingClose(text, openIdx, openChar = "(", closeChar = ")") {
+  let depth = 0;
+  for (let i = openIdx; i < text.length; i++) {
+    const c = text[i];
+    if (c === openChar) depth++;
+    else if (c === closeChar) {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+function getLineNumFromIndex(content, index) {
+  let line = 1;
+  const target = Math.min(index, content.length);
+  for (let i = 0; i < target; i++) {
+    if (content[i] === "\n") line++;
+  }
+  return line;
+}
+
+function getFirstArgument(argsText) {
+  let parenDepth = 0;
+  let bracketDepth = 0;
+  let braceDepth = 0;
+  for (let i = 0; i < argsText.length; i++) {
+    const c = argsText[i];
+    if (c === "(") parenDepth++;
+    else if (c === ")") parenDepth--;
+    else if (c === "[") bracketDepth++;
+    else if (c === "]") bracketDepth--;
+    else if (c === "{") braceDepth++;
+    else if (c === "}") braceDepth--;
+    else if (c === "," && parenDepth === 0 && bracketDepth === 0 && braceDepth === 0) {
+      return argsText.substring(0, i).trim();
+    }
+  }
+  return argsText.trim();
+}
+
 /**
  * maskCodeStringsAndComments:
  * Lexical masking engine. Replaces string literals ("...", '...', `...`)
  * and non-directive comments with space characters while preserving exact newlines,
  * line numbers, and character offsets. Eliminates false positives when rule keywords
  * appear inside documentation strings, comments, or UI copy.
+ *
+ * Supports:
+ *  - JS/TS: single/double quotes, template literals, single/multi-line comments
+ *  - Python: docstrings (""" and '''), single/double quotes with prefixes, # comments
+ *  - Go: interpreted strings, raw backtick strings, rune literals, line and block comments
+ *  - Rust: raw strings (r#"..."#), char literals (without confusing lifetimes), nested block comments
+ *  - SQL: dash-dash and block comments
  */
 function maskCodeStringsAndComments(source, ext = ".ts") {
   let inSingleQuote = false;
   let inDoubleQuote = false;
   let inBacktick = false;
+  let inTripleSingleQuote = false;
+  let inTripleDoubleQuote = false;
   let inSingleLineComment = false;
   let inMultiLineComment = false;
+  let multiLineCommentDepth = 0;
   let isEscaped = false;
 
   const chars = source.split("");
@@ -151,7 +205,9 @@ function maskCodeStringsAndComments(source, ext = ".ts") {
   for (let i = 0; i < len; i++) {
     const c = chars[i];
     const next = i + 1 < len ? chars[i + 1] : "";
+    const next2 = i + 2 < len ? chars[i + 2] : "";
 
+    // 1. Single line comment
     if (inSingleLineComment) {
       if (c === "\n" || c === "\r") {
         inSingleLineComment = false;
@@ -161,18 +217,73 @@ function maskCodeStringsAndComments(source, ext = ".ts") {
       continue;
     }
 
+    // 2. Multi line comment (supports nested comments in Rust)
     if (inMultiLineComment) {
-      if (c === "*" && next === "/") {
+      if (ext === ".rs" && c === "/" && next === "*") {
         chars[i] = " ";
         chars[i + 1] = " ";
         i++;
-        inMultiLineComment = false;
+        multiLineCommentDepth++;
+      } else if (c === "*" && next === "/") {
+        chars[i] = " ";
+        chars[i + 1] = " ";
+        i++;
+        if (ext === ".rs") {
+          multiLineCommentDepth--;
+          if (multiLineCommentDepth <= 0) {
+            inMultiLineComment = false;
+            multiLineCommentDepth = 0;
+          }
+        } else {
+          inMultiLineComment = false;
+        }
       } else if (c !== "\n" && c !== "\r") {
         chars[i] = " ";
       }
       continue;
     }
 
+    // 3. Python triple double quote (""")
+    if (inTripleDoubleQuote) {
+      if (isEscaped) {
+        isEscaped = false;
+        if (c !== "\n" && c !== "\r") chars[i] = " ";
+      } else if (c === "\\") {
+        isEscaped = true;
+        chars[i] = " ";
+      } else if (c === '"' && next === '"' && next2 === '"') {
+        chars[i] = " ";
+        chars[i + 1] = " ";
+        chars[i + 2] = " ";
+        i += 2;
+        inTripleDoubleQuote = false;
+      } else if (c !== "\n" && c !== "\r") {
+        chars[i] = " ";
+      }
+      continue;
+    }
+
+    // 4. Python triple single quote (''')
+    if (inTripleSingleQuote) {
+      if (isEscaped) {
+        isEscaped = false;
+        if (c !== "\n" && c !== "\r") chars[i] = " ";
+      } else if (c === "\\") {
+        isEscaped = true;
+        chars[i] = " ";
+      } else if (c === "'" && next === "'" && next2 === "'") {
+        chars[i] = " ";
+        chars[i + 1] = " ";
+        chars[i + 2] = " ";
+        i += 2;
+        inTripleSingleQuote = false;
+      } else if (c !== "\n" && c !== "\r") {
+        chars[i] = " ";
+      }
+      continue;
+    }
+
+    // 5. Single quote string
     if (inSingleQuote) {
       if (isEscaped) {
         isEscaped = false;
@@ -189,6 +300,7 @@ function maskCodeStringsAndComments(source, ext = ".ts") {
       continue;
     }
 
+    // 6. Double quote string
     if (inDoubleQuote) {
       if (isEscaped) {
         isEscaped = false;
@@ -205,11 +317,12 @@ function maskCodeStringsAndComments(source, ext = ".ts") {
       continue;
     }
 
+    // 7. Backtick string (JS template literal, Go raw string)
     if (inBacktick) {
-      if (isEscaped) {
+      if (ext !== ".go" && isEscaped) {
         isEscaped = false;
         chars[i] = " ";
-      } else if (c === "\\") {
+      } else if (ext !== ".go" && c === "\\") {
         isEscaped = true;
         chars[i] = " ";
       } else if (c === "`") {
@@ -221,7 +334,7 @@ function maskCodeStringsAndComments(source, ext = ".ts") {
       continue;
     }
 
-    // Check for comment starts
+    // 8. Comment checks
     if (c === "/" && next === "/" && (ext === ".ts" || ext === ".js" || ext === ".tsx" || ext === ".jsx" || ext === ".go" || ext === ".rs")) {
       const remainder = source.substring(i);
       const firstLine = remainder.split(/\r?\n/)[0];
@@ -245,6 +358,7 @@ function maskCodeStringsAndComments(source, ext = ".ts") {
         continue;
       }
       inMultiLineComment = true;
+      multiLineCommentDepth = 1;
       chars[i] = " ";
       chars[i + 1] = " ";
       i++;
@@ -277,6 +391,85 @@ function maskCodeStringsAndComments(source, ext = ".ts") {
       continue;
     }
 
+    // 9. Python triple quote starts
+    if (ext === ".py") {
+      if (c === '"' && next === '"' && next2 === '"') {
+        inTripleDoubleQuote = true;
+        chars[i] = " ";
+        chars[i + 1] = " ";
+        chars[i + 2] = " ";
+        i += 2;
+        continue;
+      }
+      if (c === "'" && next === "'" && next2 === "'") {
+        inTripleSingleQuote = true;
+        chars[i] = " ";
+        chars[i + 1] = " ";
+        chars[i + 2] = " ";
+        i += 2;
+        continue;
+      }
+    }
+
+    // 10. Rust raw strings: r"...", r#"..."#, br#"..."#, cr#"..."#
+    if (ext === ".rs") {
+      let isRawStart = false;
+      let rawStartIdx = i;
+      const prevChar = i > 0 ? chars[i - 1] : "";
+      const isWordBoundary = i === 0 || /[^a-zA-Z0-9_]/.test(prevChar);
+
+      if (isWordBoundary) {
+        if (c === "r" && (next === '"' || next === "#")) {
+          isRawStart = true;
+          rawStartIdx = i;
+        } else if ((c === "b" || c === "c") && next === "r" && (next2 === '"' || next2 === "#")) {
+          isRawStart = true;
+          rawStartIdx = i + 1;
+        }
+      }
+
+      if (isRawStart) {
+        let hashCount = 0;
+        let j = rawStartIdx + 1;
+        while (j < len && chars[j] === "#") {
+          hashCount++;
+          j++;
+        }
+        if (j < len && chars[j] === '"') {
+          const closer = '"' + "#".repeat(hashCount);
+          const remainder = source.substring(j + 1);
+          const closeIdx = remainder.indexOf(closer);
+          if (closeIdx !== -1) {
+            const endIdx = j + 1 + closeIdx + closer.length;
+            for (let k = i; k < endIdx; k++) {
+              if (chars[k] !== "\n" && chars[k] !== "\r") {
+                chars[k] = " ";
+              }
+            }
+            i = endIdx - 1;
+            continue;
+          }
+        }
+      }
+    }
+
+    // 11. Rust char literals vs lifetimes
+    if (ext === ".rs" && c === "'") {
+      const charLitMatch = source.substring(i).match(/^'(?:[^'\\\n\r]|\\(?:[nrt0\\'"]|x[0-9a-fA-F]{2}|u\{[0-9a-fA-F]{1,6}\}))'/);
+      if (charLitMatch) {
+        const charLitLen = charLitMatch[0].length;
+        for (let k = 0; k < charLitLen; k++) {
+          chars[i + k] = " ";
+        }
+        i += charLitLen - 1;
+        continue;
+      } else {
+        // Lifetime annotation (e.g. 'a, 'static, '_)
+        continue;
+      }
+    }
+
+    // 12. Standard string openers
     if (c === "'") {
       inSingleQuote = true;
       chars[i] = " ";
@@ -663,6 +856,562 @@ class QedLinter {
     return handledRules;
   }
 
+  // Python AST & Structural Syntax Analyzer
+  scanSourceFileWithPythonAst(filePath, content, suppressions) {
+    const handledRules = new Set(["QED002", "QED003", "QED004", "QED005", "QED006"]);
+    try {
+      const masked = maskCodeStringsAndComments(content, ".py");
+      const rawLines = content.split(/\r?\n/);
+      const maskedLines = masked.split(/\r?\n/);
+
+      // --- QED002: ZERO_DEBUG ---
+      if (!this.isRelaxedInContext("QED002", filePath)) {
+        // print(...) call
+        const printRegex = /(?:^|[^a-zA-Z0-9_\.])print\s*\(/g;
+        let pm;
+        while ((pm = printRegex.exec(masked)) !== null) {
+          const lineNum = getLineNumFromIndex(masked, pm.index);
+          if (suppressions.isIgnored("QED002", lineNum)) continue;
+          const rawLine = rawLines[lineNum - 1] || pm[0];
+          this.addViolation(
+            "QED002/ZERO_DEBUG",
+            "[AST Verified] Leftover print() call found in Python source.",
+            filePath,
+            lineNum,
+            rawLine,
+            "Use logging module instead of raw print()."
+          );
+        }
+
+        // breakpoint() or pdb.set_trace()
+        const breakRegex = /(?:^|[^a-zA-Z0-9_\.])(?:breakpoint|pdb\.set_trace)\s*\(/g;
+        let bm;
+        while ((bm = breakRegex.exec(masked)) !== null) {
+          const lineNum = getLineNumFromIndex(masked, bm.index);
+          if (suppressions.isIgnored("QED002", lineNum)) continue;
+          const rawLine = rawLines[lineNum - 1] || bm[0];
+          this.addViolation(
+            "QED002/ZERO_DEBUG",
+            "[AST Verified] Leftover breakpoint or debug trace found in Python source.",
+            filePath,
+            lineNum,
+            rawLine,
+            "Remove breakpoint() / pdb.set_trace() statement before commit."
+          );
+        }
+      }
+
+      // --- QED003: EMPTY_CATCH ---
+      if (!this.isRelaxedInContext("QED003", filePath)) {
+        const exceptRegex = /(?:^|\n)([ \t]*)except\*?(?:[ \t]+[\s\S]*?)?:[ \t]*(.*)/g;
+        let match;
+        while ((match = exceptRegex.exec(masked)) !== null) {
+          const fullMatch = match[0];
+          const exceptIndent = match[1].length;
+          const colonIdx = match.index + fullMatch.indexOf(":");
+          const lineNum = getLineNumFromIndex(masked, colonIdx);
+          if (suppressions.isIgnored("QED003", lineNum)) continue;
+          const lineIdx = lineNum - 1;
+
+          // Check inline except
+          const maskedRestOfLine = maskedLines[lineIdx].substring(maskedLines[lineIdx].indexOf(":") + 1).trim();
+          if (maskedRestOfLine) {
+            if (maskedRestOfLine === "pass" || maskedRestOfLine === "..." || maskedRestOfLine === "pass;" || maskedRestOfLine === "...;") {
+              const snippet = rawLines[lineIdx];
+              this.addViolation(
+                "QED003/EMPTY_CATCH",
+                "[AST Verified] Silent except: pass swallows errors without recovery.",
+                filePath,
+                lineNum,
+                snippet,
+                "Implement recovery logic, log structured error, or re-raise."
+              );
+            }
+            continue;
+          }
+
+          // Multi-line except block
+          let j = lineIdx + 1;
+          let bodyIndent = -1;
+          const statements = [];
+
+          while (j < rawLines.length) {
+            const rawLine = rawLines[j];
+            const mLine = maskedLines[j];
+
+            // Comments and empty lines do not determine indentation
+            if (/^\s*(?:#|$)/.test(rawLine)) {
+              j++;
+              continue;
+            }
+
+            const indent = rawLine.search(/\S/);
+            if (indent <= exceptIndent) {
+              break; // Dedent indicates end of except block
+            }
+
+            if (bodyIndent === -1) {
+              bodyIndent = indent;
+            }
+
+            const trimmedMasked = mLine.trim();
+            if (trimmedMasked) {
+              statements.push({ lineNum: j + 1, text: trimmedMasked, raw: rawLine });
+            }
+            j++;
+          }
+
+          const isSwallowed =
+            statements.length === 0 ||
+            statements.every((s) => s.text === "pass" || s.text === "..." || s.text === "pass;" || s.text === "...;");
+
+          if (isSwallowed) {
+            const snippet = rawLines.slice(lineIdx, Math.min(rawLines.length, lineIdx + Math.max(2, statements.length + 1))).join("\n");
+            this.addViolation(
+              "QED003/EMPTY_CATCH",
+              "[AST Verified] Silent except block swallows errors without recovery.",
+              filePath,
+              lineNum,
+              snippet,
+              "Implement recovery logic, log structured error, or re-raise."
+            );
+          }
+        }
+      }
+
+      // --- QED004: UNSAFE_CAST ---
+      if (!this.isRelaxedInContext("QED004", filePath)) {
+        const castRegex = /(?:^|[^a-zA-Z0-9_\.])(?:(?:typing|typing_extensions)\.)?cast\s*\(/g;
+        let cm;
+        while ((cm = castRegex.exec(masked)) !== null) {
+          const openParenIdx = cm.index + cm[0].length - 1;
+          const closeParenIdx = findMatchingClose(masked, openParenIdx, "(", ")");
+          if (closeParenIdx !== -1) {
+            const inner = masked.substring(openParenIdx + 1, closeParenIdx);
+            const firstArg = getFirstArgument(inner);
+            if (/\b(?:(?:typing|typing_extensions)\.)?Any\b/.test(firstArg)) {
+              const lineNum = getLineNumFromIndex(masked, cm.index);
+              if (suppressions.isIgnored("QED004", lineNum)) continue;
+              this.addViolation(
+                "QED004/UNSAFE_CAST",
+                "[AST Verified] Loose 'cast(Any, ...)' cast bypasses static type safety.",
+                filePath,
+                lineNum,
+                rawLines[lineNum - 1] || cm[0],
+                "Use typed interfaces, TypedDict, or TypeVar instead of casting to Any."
+              );
+            }
+          }
+        }
+      }
+
+      // --- QED005: MISSING_TIMEOUT ---
+      if (!this.isRelaxedInContext("QED005", filePath)) {
+        const httpCallRegex = /(?:^|[^a-zA-Z0-9_\.])(?:requests\.(?:get|post|put|delete|patch|head|request)|httpx\.(?:get|post|put|delete|patch|head|request)|urllib\.request\.urlopen)\s*\(/g;
+        let match;
+        while ((match = httpCallRegex.exec(masked)) !== null) {
+          const openParenIdx = match.index + match[0].length - 1;
+          const closeParenIdx = findMatchingClose(masked, openParenIdx, "(", ")");
+          if (closeParenIdx !== -1) {
+            const argsText = masked.substring(openParenIdx + 1, closeParenIdx);
+            const lineNum = getLineNumFromIndex(masked, openParenIdx);
+            if (suppressions.isIgnored("QED005", lineNum)) continue;
+
+            const hasTimeout = /\btimeout\s*=/.test(argsText);
+            const isTimeoutDisabled = /\btimeout\s*=\s*None\b/.test(argsText);
+
+            if (!hasTimeout || isTimeoutDisabled) {
+              const snippet = rawLines[lineNum - 1] || match[0];
+              this.addViolation(
+                "QED005/MISSING_TIMEOUT",
+                isTimeoutDisabled
+                  ? "[AST Verified] HTTP request explicitly disables timeout (timeout=None), causing hanging connections."
+                  : "[AST Verified] HTTP request without timeout parameter causes hanging connections.",
+                filePath,
+                lineNum,
+                snippet,
+                "Pass explicit timeout parameter in seconds: requests.get(url, timeout=5.0)."
+              );
+            }
+          }
+        }
+      }
+
+      // --- QED006: UNBOUNDED_CACHE ---
+      for (let i = 0; i < maskedLines.length; i++) {
+        const lineNum = i + 1;
+        if (suppressions.isIgnored("QED006", lineNum)) continue;
+        const mLine = maskedLines[i];
+        const rawLine = rawLines[i];
+
+        if (/^\s*@(?:functools\.)?cache\b/.test(mLine)) {
+          this.addViolation(
+            "QED006/UNBOUNDED_CACHE",
+            "[AST Verified] Unbounded @cache decorator causes memory exhaustion.",
+            filePath,
+            lineNum,
+            rawLine,
+            "Use @lru_cache(maxsize=1024) with an explicit bound."
+          );
+        }
+        if (/^\s*@(?:functools\.)?lru_cache\s*\(\s*(?:maxsize\s*=\s*)?None\s*\)/.test(mLine)) {
+          this.addViolation(
+            "QED006/UNBOUNDED_CACHE",
+            "[AST Verified] Unbounded @lru_cache(maxsize=None) causes memory exhaustion.",
+            filePath,
+            lineNum,
+            rawLine,
+            "Set explicit maxsize (e.g. @lru_cache(maxsize=1024))."
+          );
+        }
+        if (/^([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*(?::\s*[^=]+)?=\s*(?:\{\}|dict\(\)|collections\.defaultdict\b)/i.test(mLine)) {
+          this.addViolation(
+            "QED006/UNBOUNDED_CACHE",
+            "[AST Verified] Module-level unbounded dict cache causes memory leaks in long-running processes.",
+            filePath,
+            lineNum,
+            rawLine,
+            "Use a bounded LRU cache with maxSize and TTL."
+          );
+        }
+      }
+    } catch {
+      handledRules.clear();
+    }
+    return handledRules;
+  }
+
+  // Go AST & Structural Syntax Analyzer
+  scanSourceFileWithGoAst(filePath, content, suppressions) {
+    const handledRules = new Set(["QED002", "QED003", "QED004", "QED005", "QED006"]);
+    try {
+      const masked = maskCodeStringsAndComments(content, ".go");
+      const rawLines = content.split(/\r?\n/);
+      const maskedLines = masked.split(/\r?\n/);
+
+      // --- QED002: ZERO_DEBUG ---
+      if (!this.isRelaxedInContext("QED002", filePath)) {
+        const debugRegex = /(?:^|[^a-zA-Z0-9_\.])(?:fmt\.(?:Print|Println|Printf)|println|print)\s*\(/g;
+        let match;
+        while ((match = debugRegex.exec(masked)) !== null) {
+          const lineNum = getLineNumFromIndex(masked, match.index);
+          if (suppressions.isIgnored("QED002", lineNum)) continue;
+          const line = rawLines[lineNum - 1] || match[0];
+
+          if (!line.includes("logger.") && !line.includes("slog.")) {
+            this.addViolation(
+              "QED002/ZERO_DEBUG",
+              "[AST Verified] Leftover fmt.Print* or println debug statement found in Go source.",
+              filePath,
+              lineNum,
+              line,
+              "Use structured logging (log/slog or zap) instead of fmt.Print*."
+            );
+          }
+        }
+      }
+
+      // --- QED003: EMPTY_CATCH (Swallowed Errors) ---
+      if (!this.isRelaxedInContext("QED003", filePath)) {
+        const ifRegex = /\bif\s+/g;
+        let match;
+        while ((match = ifRegex.exec(masked)) !== null) {
+          const openBraceIdx = masked.indexOf("{", match.index);
+          if (openBraceIdx === -1) continue;
+          const cond = masked.substring(match.index + match[0].length, openBraceIdx);
+          const isErrCheck =
+            /(?:[a-zA-Z0-9_]*(?:err|error)[a-zA-Z0-9_]*|\be)\s*!=\s*nil\b/i.test(cond) ||
+            /\bnil\s*!=\s*(?:[a-zA-Z0-9_]*(?:err|error)[a-zA-Z0-9_]*|\be)\b/i.test(cond);
+          if (!isErrCheck) continue;
+
+          const closeBraceIdx = findMatchingClose(masked, openBraceIdx, "{", "}");
+          if (closeBraceIdx !== -1) {
+            const body = masked.substring(openBraceIdx + 1, closeBraceIdx).replace(/;/g, "").trim();
+            const lineNum = getLineNumFromIndex(masked, match.index);
+            if (suppressions.isIgnored("QED003", lineNum)) continue;
+
+            if (body.length === 0) {
+              const snippet = rawLines[lineNum - 1] || match[0];
+              this.addViolation(
+                "QED003/EMPTY_CATCH",
+                "[AST Verified] Empty error handling block silently swallows error without recovery.",
+                filePath,
+                lineNum,
+                snippet,
+                "Handle error, return err, or log with context."
+              );
+            }
+          }
+        }
+      }
+
+      // --- QED004: UNSAFE_CAST ---
+      if (!this.isRelaxedInContext("QED004", filePath)) {
+        const unsafeRegex = /\bunsafe\.Pointer\s*\(/g;
+        let match;
+        while ((match = unsafeRegex.exec(masked)) !== null) {
+          const lineNum = getLineNumFromIndex(masked, match.index);
+          if (suppressions.isIgnored("QED004", lineNum)) continue;
+          this.addViolation(
+            "QED004/UNSAFE_CAST",
+            "[AST Verified] Unsafe pointer cast bypasses Go type and memory safety.",
+            filePath,
+            lineNum,
+            rawLines[lineNum - 1] || match[0],
+            "Use safe type assertions or standard types instead of unsafe.Pointer."
+          );
+        }
+      }
+
+      // --- QED005: MISSING_TIMEOUT ---
+      if (!this.isRelaxedInContext("QED005", filePath)) {
+        const httpRegex = /(?:^|[^a-zA-Z0-9_\.])(?:http\.(?:Get|Post|Head|PostForm)|http\.DefaultClient\.(?:Get|Post|Head|PostForm|Do))\s*\(/g;
+        let match;
+        while ((match = httpRegex.exec(masked)) !== null) {
+          const lineNum = getLineNumFromIndex(masked, match.index);
+          if (suppressions.isIgnored("QED005", lineNum)) continue;
+          this.addViolation(
+            "QED005/MISSING_TIMEOUT",
+            "[AST Verified] Default http.Get/Post without timeout causes hanging connections.",
+            filePath,
+            lineNum,
+            rawLines[lineNum - 1] || match[0],
+            "Use &http.Client{Timeout: 5 * time.Second} or http.NewRequestWithContext(ctx, ...)."
+          );
+        }
+      }
+
+      // --- QED006: UNBOUNDED_CACHE ---
+      // 1. Single var declaration: var cache = make(map...) or var cache = map[...]...
+      const singleVarRegex = /\bvar\s+([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*(?:=\s*|\s+)(?:make\s*\(\s*map\b|map\s*\[|sync\.Map\b|&\s*sync\.Map\b)/gi;
+      let cm;
+      while ((cm = singleVarRegex.exec(masked)) !== null) {
+        const lineNum = getLineNumFromIndex(masked, cm.index);
+        if (suppressions.isIgnored("QED006", lineNum)) continue;
+        this.addViolation(
+          "QED006/UNBOUNDED_CACHE",
+          "[AST Verified] Package-level unbounded map cache causes memory leaks.",
+          filePath,
+          lineNum,
+          rawLines[lineNum - 1] || cm[0],
+          "Use a bounded cache with maxSize and eviction (e.g. golang-lru)."
+        );
+      }
+
+      // 2. Multi-variable declaration block: var (...)
+      const varBlockRegex = /\bvar\s*\(/g;
+      while ((cm = varBlockRegex.exec(masked)) !== null) {
+        const openParen = cm.index + cm[0].length - 1;
+        const closeParen = findMatchingClose(masked, openParen, "(", ")");
+        if (closeParen !== -1) {
+          const block = masked.substring(openParen + 1, closeParen);
+          const innerRegex = /\b([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*(?:=\s*|\s+)(?:make\s*\(\s*map\b|map\s*\[|sync\.Map\b|&\s*sync\.Map\b)/gi;
+          let im;
+          while ((im = innerRegex.exec(block)) !== null) {
+            const lineNum = getLineNumFromIndex(masked, openParen + 1 + im.index);
+            if (suppressions.isIgnored("QED006", lineNum)) continue;
+            this.addViolation(
+              "QED006/UNBOUNDED_CACHE",
+              "[AST Verified] Package-level unbounded map cache causes memory leaks.",
+              filePath,
+              lineNum,
+              rawLines[lineNum - 1] || im[0],
+              "Use a bounded cache with maxSize and eviction (e.g. golang-lru)."
+            );
+          }
+        }
+      }
+    } catch {
+      handledRules.clear();
+    }
+    return handledRules;
+  }
+
+  // Rust AST & Structural Syntax Analyzer
+  scanSourceFileWithRustAst(filePath, content, suppressions) {
+    const handledRules = new Set(["QED002", "QED003", "QED004", "QED005", "QED006"]);
+    try {
+      const masked = maskCodeStringsAndComments(content, ".rs");
+      const rawLines = content.split(/\r?\n/);
+      const maskedLines = masked.split(/\r?\n/);
+
+      // --- QED002: ZERO_DEBUG ---
+      if (!this.isRelaxedInContext("QED002", filePath)) {
+        const debugRegex = /\b(?:println|print|eprintln|eprint|dbg)\s*!\s*[\(\{\[]/g;
+        let match;
+        while ((match = debugRegex.exec(masked)) !== null) {
+          const lineNum = getLineNumFromIndex(masked, match.index);
+          if (suppressions.isIgnored("QED002", lineNum)) continue;
+          const line = rawLines[lineNum - 1] || match[0];
+
+          if (!line.includes("logger.") && !line.includes("tracing::") && !line.includes("log::")) {
+            this.addViolation(
+              "QED002/ZERO_DEBUG",
+              "[AST Verified] Leftover debug macro found in Rust source.",
+              filePath,
+              lineNum,
+              line,
+              "Use tracing or log crate (tracing::info!, log::debug!) instead of println!/dbg!."
+            );
+          }
+        }
+      }
+
+      // --- QED003: EMPTY_CATCH (Swallowed Errors) ---
+      if (!this.isRelaxedInContext("QED003", filePath)) {
+        // Pattern 1: if let (Result::)?Err(...) = ... { }
+        const ifLetRegex = /\bif\s+let\s+(?:Result::)?Err\s*\(/g;
+        let match;
+        while ((match = ifLetRegex.exec(masked)) !== null) {
+          const openParenIdx = match.index + match[0].length - 1;
+          const closeParenIdx = findMatchingClose(masked, openParenIdx, "(", ")");
+          if (closeParenIdx === -1) continue;
+          const openBraceIdx = masked.indexOf("{", closeParenIdx);
+          if (openBraceIdx === -1) continue;
+          const closeBraceIdx = findMatchingClose(masked, openBraceIdx, "{", "}");
+          if (closeBraceIdx !== -1) {
+            const body = masked.substring(openBraceIdx + 1, closeBraceIdx).replace(/;/g, "").trim();
+            const lineNum = getLineNumFromIndex(masked, match.index);
+            if (suppressions.isIgnored("QED003", lineNum)) continue;
+
+            if (body.length === 0) {
+              const snippet = rawLines[lineNum - 1] || match[0];
+              this.addViolation(
+                "QED003/EMPTY_CATCH",
+                "[AST Verified] Empty Err handler silently swallows Result errors without recovery.",
+                filePath,
+                lineNum,
+                snippet,
+                "Propagate error with '?' or handle with fallback/recovery."
+              );
+            }
+          }
+        }
+
+        // Pattern 2: match arm (Result::)?Err(...) => {} or ()
+        const matchErrRegex = /(?:^|[^a-zA-Z0-9_])(?:Result::)?Err\s*\(/g;
+        while ((match = matchErrRegex.exec(masked)) !== null) {
+          const openParenIdx = match.index + match[0].length - 1;
+          const closeParenIdx = findMatchingClose(masked, openParenIdx, "(", ")");
+          if (closeParenIdx === -1) continue;
+          const afterClose = masked.substring(closeParenIdx + 1);
+          const arrowMatch = afterClose.match(/^\s*=>\s*/);
+          if (arrowMatch) {
+            const targetIdx = closeParenIdx + 1 + arrowMatch[0].length;
+            const nextChar = masked[targetIdx];
+            let armBody = null;
+            if (nextChar === "{") {
+              const armCloseBrace = findMatchingClose(masked, targetIdx, "{", "}");
+              if (armCloseBrace !== -1) {
+                armBody = masked.substring(targetIdx + 1, armCloseBrace).replace(/;/g, "").trim();
+              }
+            } else if (nextChar === "(") {
+              const armCloseParen = findMatchingClose(masked, targetIdx, "(", ")");
+              if (armCloseParen !== -1) {
+                armBody = masked.substring(targetIdx + 1, armCloseParen).replace(/;/g, "").trim();
+              }
+            }
+
+            if (armBody !== null && (armBody.length === 0 || armBody === "()")) {
+              const lineNum = getLineNumFromIndex(masked, match.index);
+              if (suppressions.isIgnored("QED003", lineNum)) continue;
+              const snippet = rawLines[lineNum - 1] || match[0];
+              this.addViolation(
+                "QED003/EMPTY_CATCH",
+                "[AST Verified] Empty Err match arm silently swallows Result errors without recovery.",
+                filePath,
+                lineNum,
+                snippet,
+                "Propagate error with '?' or handle with fallback/recovery."
+              );
+            }
+          }
+        }
+      }
+
+      // --- QED004: UNSAFE_CAST ---
+      if (!this.isRelaxedInContext("QED004", filePath)) {
+        const transmuteRegex = /(?:^|[^a-zA-Z0-9_\.])(?:(?:std|core)::)?(?:mem::)?transmute\b/g;
+        let match;
+        while ((match = transmuteRegex.exec(masked)) !== null) {
+          let pos = match.index + match[0].length;
+          while (pos < masked.length && /\s/.test(masked[pos])) pos++;
+          if (masked.startsWith("::<", pos)) {
+            const angleOpen = pos + 2;
+            const angleClose = findMatchingClose(masked, angleOpen, "<", ">");
+            if (angleClose !== -1) {
+              pos = angleClose + 1;
+              while (pos < masked.length && /\s/.test(masked[pos])) pos++;
+            }
+          }
+          if (masked[pos] === "(") {
+            const lineNum = getLineNumFromIndex(masked, match.index);
+            if (suppressions.isIgnored("QED004", lineNum)) continue;
+            this.addViolation(
+              "QED004/UNSAFE_CAST",
+              "[AST Verified] mem::transmute bypasses Rust type safety and causes undefined behavior.",
+              filePath,
+              lineNum,
+              rawLines[lineNum - 1] || match[0],
+              "Use safe conversion traits (From/Into, TryFrom/TryInto) or bytemuck."
+            );
+          }
+        }
+      }
+
+      // --- QED005: MISSING_TIMEOUT ---
+      if (!this.isRelaxedInContext("QED005", filePath)) {
+        const reqwestRegex = /\breqwest(?:::blocking)?::get\s*\(/g;
+        let match;
+        while ((match = reqwestRegex.exec(masked)) !== null) {
+          const lineNum = getLineNumFromIndex(masked, match.index);
+          if (suppressions.isIgnored("QED005", lineNum)) continue;
+          this.addViolation(
+            "QED005/MISSING_TIMEOUT",
+            "[AST Verified] Naked reqwest::get without ClientBuilder timeout causes hanging requests.",
+            filePath,
+            lineNum,
+            rawLines[lineNum - 1] || match[0],
+            "Use reqwest::Client::builder().timeout(Duration::from_secs(5)).build()."
+          );
+        }
+      }
+
+      // --- QED006: UNBOUNDED_CACHE ---
+      const rustCacheRegex = /\bstatic\s+(?:mut\s+)?([A-Za-z0-9_]*cache[A-Za-z0-9_]*)\b[^=;]*=\s*[^;]*(?:HashMap::new|Mutex::new|RwLock::new)/gi;
+      let rm;
+      while ((rm = rustCacheRegex.exec(masked)) !== null) {
+        const lineNum = getLineNumFromIndex(masked, rm.index);
+        if (suppressions.isIgnored("QED006", lineNum)) continue;
+        this.addViolation(
+          "QED006/UNBOUNDED_CACHE",
+          "[AST Verified] Static unbounded HashMap cache causes memory exhaustion.",
+          filePath,
+          lineNum,
+          rawLines[lineNum - 1] || rm[0],
+          "Use a bounded cache (e.g. moka or lru crate)."
+        );
+      }
+
+      const lazyStaticRegex = /\blazy_static!\s*\{[\s\S]*?static\s+ref\s+([A-Za-z0-9_]*cache[A-Za-z0-9_]*)\b[\s\S]*?(?:HashMap::new|Mutex::new|RwLock::new)/gi;
+      while ((rm = lazyStaticRegex.exec(masked)) !== null) {
+        const lineNum = getLineNumFromIndex(masked, rm.index);
+        if (suppressions.isIgnored("QED006", lineNum)) continue;
+        this.addViolation(
+          "QED006/UNBOUNDED_CACHE",
+          "[AST Verified] Static unbounded HashMap cache causes memory exhaustion.",
+          filePath,
+          lineNum,
+          rawLines[lineNum - 1] || rm[0],
+          "Use a bounded cache (e.g. moka or lru crate)."
+        );
+      }
+    } catch {
+      handledRules.clear();
+    }
+    return handledRules;
+  }
+
   // 2. Scan Individual Source Files
   scanSourceFile(filePath) {
     let content;
@@ -678,12 +1427,18 @@ class QedLinter {
     const ext = path.extname(filePath).toLowerCase();
     const isUI = UI_EXTENSIONS.has(ext);
 
-    // 1. Dynamic TypeScript AST traversal if compiler is present in target project
+    // 1. Dynamic AST traversal: TypeScript AST if compiler present, native structural AST for Python, Go, Rust
     const ts = this.getTsCompiler();
     const isTsOrJs = ext === ".ts" || ext === ".tsx" || ext === ".js" || ext === ".jsx";
     let astHandledRules = new Set();
     if (ts && isTsOrJs) {
       astHandledRules = this.scanSourceFileWithTsAst(filePath, content, suppressions, ts);
+    } else if (ext === ".py") {
+      astHandledRules = this.scanSourceFileWithPythonAst(filePath, content, suppressions);
+    } else if (ext === ".go") {
+      astHandledRules = this.scanSourceFileWithGoAst(filePath, content, suppressions);
+    } else if (ext === ".rs") {
+      astHandledRules = this.scanSourceFileWithRustAst(filePath, content, suppressions);
     }
 
     // 2. Lexical masking for strings and non-directive comments
@@ -705,7 +1460,7 @@ class QedLinter {
       if (/^\s*(\/\/|#|\/\*|\*|<!--|--)/.test(line)) continue;
 
       // QED002: Zero-Debug Print Invariant (evaluated against masked code so console.log inside strings is ignored)
-      if (!suppressions.isIgnored("QED002", lineNum) && !this.isRelaxedInContext("QED002", filePath)) {
+      if (!astHandledRules.has("QED002") && !suppressions.isIgnored("QED002", lineNum) && !this.isRelaxedInContext("QED002", filePath)) {
         if (/console\.(log|debug|dir|trace)\s*\(/.test(maskedLine) && !line.includes("logger.")) {
           this.addViolation(
             "QED002/ZERO_DEBUG",
@@ -736,6 +1491,26 @@ class QedLinter {
             "Use logging module instead of raw print()."
           );
         }
+        if (ext === ".go" && (/(?:^|[^a-zA-Z0-9_\.])fmt\.(?:Print|Println|Printf)\s*\(/.test(maskedLine) || /(?:^|[^a-zA-Z0-9_\.])(?:println|print)\s*\(/.test(maskedLine)) && !line.includes("logger.")) {
+          this.addViolation(
+            "QED002/ZERO_DEBUG",
+            "Leftover fmt.Print* statement found in Go source.",
+            filePath,
+            lineNum,
+            line,
+            "Use structured logging (log/slog or zap) instead of fmt.Print*."
+          );
+        }
+        if (ext === ".rs" && /\b(?:println|print|eprintln|eprint|dbg)\s*!\s*[\(\{\[]/.test(maskedLine) && !line.includes("logger.")) {
+          this.addViolation(
+            "QED002/ZERO_DEBUG",
+            "Leftover debug macro found in Rust source.",
+            filePath,
+            lineNum,
+            line,
+            "Use tracing or log crate instead of println!/dbg!."
+          );
+        }
       }
 
       // QED004: Anti-`as any` Cast (skipped if AST already verified this rule)
@@ -750,10 +1525,40 @@ class QedLinter {
             "Use typed interfaces, unknown with type-guards, or Zod schema validation."
           );
         }
+        if (ext === ".py" && /\b(?:typing\.)?cast\s*\(\s*(?:typing\.)?Any\b/.test(maskedLine)) {
+          this.addViolation(
+            "QED004/UNSAFE_CAST",
+            "Loose 'cast(Any, ...)' cast bypasses static type safety.",
+            filePath,
+            lineNum,
+            line,
+            "Use typed interfaces, TypedDict, or TypeVar instead of casting to Any."
+          );
+        }
+        if (ext === ".go" && /\bunsafe\.Pointer\s*\(/.test(maskedLine)) {
+          this.addViolation(
+            "QED004/UNSAFE_CAST",
+            "Unsafe pointer cast bypasses Go type and memory safety.",
+            filePath,
+            lineNum,
+            line,
+            "Use safe type assertions or standard types instead of unsafe.Pointer."
+          );
+        }
+        if (ext === ".rs" && /\b(?:(?:std::)?mem::)?transmute\s*(?:::<[^>]+>)?\s*\(/.test(maskedLine)) {
+          this.addViolation(
+            "QED004/UNSAFE_CAST",
+            "mem::transmute bypasses Rust type safety and causes undefined behavior.",
+            filePath,
+            lineNum,
+            line,
+            "Use safe conversion traits (From/Into, TryFrom/TryInto) or bytemuck."
+          );
+        }
       }
 
       // QED006: Unbounded Module-Level Cache (evaluated against masked line)
-      if (!suppressions.isIgnored("QED006", lineNum)) {
+      if (!astHandledRules.has("QED006") && !suppressions.isIgnored("QED006", lineNum)) {
         if (/(?:export\s+(?:const|let|var)\s+([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*=\s*new\s+Map\s*\(\s*\))/i.test(maskedLine)) {
           this.addViolation(
             "QED006/UNBOUNDED_CACHE",
@@ -762,6 +1567,36 @@ class QedLinter {
             lineNum,
             line,
             "Use a bounded cache with maxSize and TTL (e.g. LRU cache)."
+          );
+        }
+        if (ext === ".py" && (/^\s*@(?:functools\.)?cache\b/.test(maskedLine) || /^\s*@(?:functools\.)?lru_cache\s*\(\s*(?:maxsize\s*=\s*)?None\s*\)/.test(maskedLine) || /^([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*=\s*(?:\{\}|dict\(\))\s*$/i.test(maskedLine))) {
+          this.addViolation(
+            "QED006/UNBOUNDED_CACHE",
+            "Unbounded cache causes memory leaks in long-running processes.",
+            filePath,
+            lineNum,
+            line,
+            "Use a bounded cache with maxSize and TTL (e.g. cachetools.LRUCache)."
+          );
+        }
+        if (ext === ".go" && /\bvar\s+([a-zA-Z0-9_]*cache[a-zA-Z0-9_]*)\s*=\s*(?:make\s*\(\s*map\b|sync\.Map\s*\{|&\s*sync\.Map\s*\{)/i.test(maskedLine)) {
+          this.addViolation(
+            "QED006/UNBOUNDED_CACHE",
+            "Package-level unbounded map cache causes memory leaks.",
+            filePath,
+            lineNum,
+            line,
+            "Use a bounded cache with maxSize and eviction (e.g. golang-lru)."
+          );
+        }
+        if (ext === ".rs" && /\bstatic\s+(?:mut\s+)?([A-Za-z0-9_]*cache[A-Za-z0-9_]*)\s*:\s*.*=\s*.*(?:HashMap::new|Mutex::new|RwLock::new)/i.test(maskedLine)) {
+          this.addViolation(
+            "QED006/UNBOUNDED_CACHE",
+            "Static unbounded HashMap cache causes memory exhaustion.",
+            filePath,
+            lineNum,
+            line,
+            "Use a bounded cache (e.g. moka or lru crate)."
           );
         }
       }
@@ -892,8 +1727,8 @@ class QedLinter {
       }
     }
 
-    // Python empty except
-    if (ext === ".py") {
+    // Python empty except fallback
+    if (!astHandledRules.has("QED003") && ext === ".py") {
       const emptyExceptRegex = /except(?:\s+[a-zA-Z0-9_]+)?\s*:\s*\n\s*pass/g;
       let match;
       while ((match = emptyExceptRegex.exec(maskedContent)) !== null) {
@@ -912,23 +1747,111 @@ class QedLinter {
       }
     }
 
-    // QED005: Missing Fetch Deadline (if not handled by AST)
-    if (!astHandledRules.has("QED005") && (ext === ".ts" || ext === ".js" || ext === ".tsx")) {
-      const nakedFetchRegex = /(?:^|[^\w$.])fetch\s*\(\s*([^,\n\)]+)\s*\)/g;
+    // Go empty if err != nil {} fallback
+    if (!astHandledRules.has("QED003") && ext === ".go") {
+      const ifErrRegex = /\bif\s+(?:[^;{]+;\s*)?(?:err|error|err[0-9A-Za-z_]*|e)\s*!=\s*nil\s*\{\s*\}/g;
       let match;
-      while ((match = nakedFetchRegex.exec(maskedContent)) !== null) {
+      while ((match = ifErrRegex.exec(maskedContent)) !== null) {
         const lineNum = maskedContent.substring(0, match.index).split("\n").length;
-        if (suppressions.isIgnored("QED005", lineNum)) continue;
-        if (this.isRelaxedInContext("QED005", filePath)) continue;
-
+        if (suppressions.isIgnored("QED003", lineNum)) continue;
+        if (this.isRelaxedInContext("QED003", filePath)) continue;
         this.addViolation(
-          "QED005/MISSING_TIMEOUT",
-          "Naked fetch() without AbortSignal timeout causes hanging connections.",
+          "QED003/EMPTY_CATCH",
+          "Empty error handling block silently swallows error without recovery.",
           filePath,
           lineNum,
-          match[0].trim(),
-          "Pass AbortSignal.timeout(ms) in options: fetch(url, { signal: AbortSignal.timeout(5000) })."
+          match[0],
+          "Handle error, return err, or log with context."
         );
+      }
+    }
+
+    // Rust empty Err handler fallback
+    if (!astHandledRules.has("QED003") && ext === ".rs") {
+      const rustEmptyErrRegex = /(?:\bif\s+let\s+Err\s*\([^)]*\)\s*=\s*[^\{]+\{\s*\}|\bErr\s*\([^)]*\)\s*=>\s*(?:\{\s*\}|\(\s*\)))/g;
+      let match;
+      while ((match = rustEmptyErrRegex.exec(maskedContent)) !== null) {
+        const lineNum = maskedContent.substring(0, match.index).split("\n").length;
+        if (suppressions.isIgnored("QED003", lineNum)) continue;
+        if (this.isRelaxedInContext("QED003", filePath)) continue;
+        this.addViolation(
+          "QED003/EMPTY_CATCH",
+          "Empty Err handler silently swallows Result errors without recovery.",
+          filePath,
+          lineNum,
+          match[0],
+          "Propagate error with '?' or handle with fallback/recovery."
+        );
+      }
+    }
+
+    // QED005: Missing Fetch / HTTP Timeout (if not handled by AST)
+    if (!astHandledRules.has("QED005")) {
+      if (ext === ".ts" || ext === ".js" || ext === ".tsx") {
+        const nakedFetchRegex = /(?:^|[^\w$.])fetch\s*\(\s*([^,\n\)]+)\s*\)/g;
+        let match;
+        while ((match = nakedFetchRegex.exec(maskedContent)) !== null) {
+          const lineNum = maskedContent.substring(0, match.index).split("\n").length;
+          if (suppressions.isIgnored("QED005", lineNum)) continue;
+          if (this.isRelaxedInContext("QED005", filePath)) continue;
+
+          this.addViolation(
+            "QED005/MISSING_TIMEOUT",
+            "Naked fetch() without AbortSignal timeout causes hanging connections.",
+            filePath,
+            lineNum,
+            match[0].trim(),
+            "Pass AbortSignal.timeout(ms) in options: fetch(url, { signal: AbortSignal.timeout(5000) })."
+          );
+        }
+      } else if (ext === ".py") {
+        const pyHttpRegex = /(?:^|[^\w$.])(?:requests\.(?:get|post|put|delete|patch|head|request)|httpx\.(?:get|post|put|delete|patch|head|request)|urllib\.request\.urlopen)\s*\(\s*([^,\n\)]+)\s*\)/g;
+        let match;
+        while ((match = pyHttpRegex.exec(maskedContent)) !== null) {
+          const lineNum = maskedContent.substring(0, match.index).split("\n").length;
+          if (suppressions.isIgnored("QED005", lineNum)) continue;
+          if (this.isRelaxedInContext("QED005", filePath)) continue;
+          this.addViolation(
+            "QED005/MISSING_TIMEOUT",
+            "HTTP request without timeout parameter causes hanging connections.",
+            filePath,
+            lineNum,
+            match[0].trim(),
+            "Pass timeout parameter in seconds: requests.get(url, timeout=5.0)."
+          );
+        }
+      } else if (ext === ".go") {
+        const goHttpRegex = /\bhttp\.(?:Get|Post|Head|PostForm)\s*\(/g;
+        let match;
+        while ((match = goHttpRegex.exec(maskedContent)) !== null) {
+          const lineNum = maskedContent.substring(0, match.index).split("\n").length;
+          if (suppressions.isIgnored("QED005", lineNum)) continue;
+          if (this.isRelaxedInContext("QED005", filePath)) continue;
+          this.addViolation(
+            "QED005/MISSING_TIMEOUT",
+            "Default http.Get/Post without timeout causes hanging connections.",
+            filePath,
+            lineNum,
+            match[0].trim(),
+            "Use &http.Client{Timeout: 5 * time.Second} or http.NewRequestWithContext(ctx, ...)."
+          );
+        }
+      } else if (ext === ".rs") {
+        const rsHttpRegex = /\breqwest(?:::blocking)?::get\s*\(/g;
+        let match;
+        while ((match = rsHttpRegex.exec(maskedContent)) !== null) {
+          const lineNum = maskedContent.substring(0, match.index).split("\n").length;
+          if (suppressions.isIgnored("QED005", lineNum)) continue;
+          if (this.isRelaxedInContext("QED005", filePath)) continue;
+          this.addViolation(
+            "QED005/MISSING_TIMEOUT",
+            "Naked reqwest::get without ClientBuilder timeout causes hanging requests.",
+            filePath,
+            lineNum,
+            match[0].trim(),
+            "Use reqwest::Client::builder().timeout(Duration::from_secs(5)).build()."
+          );
+        }
       }
     }
 
@@ -971,7 +1894,7 @@ class QedLinter {
     }
 
     const referencedVars = new Set();
-    const envVarRegex = /(?:process\.env\.([A-Z0-9_]+)|os\.(?:environ\["|Getenv\(")([A-Z0-9_]+))/g;
+    const envVarRegex = /(?:process\.env\.([A-Z0-9_]+)|(?:os\.environ\s*\[\s*|os\.environ\.get\s*\(\s*|os\.getenv\s*\(\s*|os\.Getenv\s*\(\s*|os\.LookupEnv\s*\(\s*|(?:(?:std|dotenv)::)?env::var(?:_os)?\s*\(\s*)['"]([A-Z0-9_]+)['"])/g;
 
     for (const filePath of files) {
       let content = "";
@@ -1480,11 +2403,13 @@ function runDoctor(targetDir) {
 
   // 6. AST Engine Availability
   const tsCompiler = linter.getTsCompiler();
+  const engines = ["Native Structural AST (Python, Go, Rust)"];
   if (tsCompiler) {
-    report("pass", "AST Analysis Engine", `Active via project TypeScript (${tsCompiler.version || "compiler"})`);
+    engines.push(`Project TypeScript (${tsCompiler.version || "compiler"})`);
   } else {
-    report("pass", "AST Analysis Engine", "Active via native zero-dependency lexical masking engine");
+    engines.push("Native JS Lexical Masker (TS/JS)");
   }
+  report("pass", "AST Analysis Engine", `Active [${engines.join(", ")}]`);
 
   // 7. Remote GitHub Actions CI Status
   const ghProbe = spawnSync("gh", ["--version"], { encoding: "utf8" });

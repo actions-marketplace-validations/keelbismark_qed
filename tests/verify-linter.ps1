@@ -246,6 +246,172 @@ try {
         "src/docs.ts" = "export const guide = 'Never use as any or console.log in production';`n// Tip: also avoid catch {} without cause"
     } -ExpectedRule "" -ShouldPass $true
 
+    # 30. Python AST: Rule QED002 Zero-Debug print()
+    Assert-LinterRule -TestName "Python AST: Rule QED002 print()" -Files @{
+        "src/calc.py" = "def compute(x):`n    print('debug x', x)`n    return x * 2"
+    } -ExpectedRule "QED002" -ShouldPass $false
+
+    # 31. Python AST: Rule QED003 Empty except block
+    Assert-LinterRule -TestName "Python AST: Rule QED003 Empty except block" -Files @{
+        "src/fetch.py" = "def load():`n    try:`n        risky_call()`n    except Exception:`n        pass"
+    } -ExpectedRule "QED003" -ShouldPass $false
+
+    # 32. Python AST: Rule QED003 Handled except passes
+    Assert-LinterRule -TestName "Python AST: Rule QED003 Handled except passes" -Files @{
+        "src/safe.py" = "def load():`n    try:`n        risky_call()`n    except Exception as e:`n        logger.error('failed', e)`n        return None"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 33. Python AST: Rule QED004 Loose cast(Any)
+    Assert-LinterRule -TestName "Python AST: Rule QED004 cast(Any)" -Files @{
+        "src/types.py" = "from typing import cast, Any`nx = cast(Any, get_raw_data())"
+    } -ExpectedRule "QED004" -ShouldPass $false
+
+    # 34. Python AST: Rule QED004 Safe cast(int) passes
+    Assert-LinterRule -TestName "Python AST: Rule QED004 Safe cast(int) passes" -Files @{
+        "src/types.py" = "from typing import cast`nx = cast(int, get_raw_data())"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 35. Python AST: Rule QED005 Missing timeout on requests.get()
+    Assert-LinterRule -TestName "Python AST: Rule QED005 Missing timeout on requests.get()" -Files @{
+        "src/client.py" = "import requests`nresp = requests.get('https://api.internal/data')"
+    } -ExpectedRule "QED005" -ShouldPass $false
+
+    # 36. Python AST: Rule QED005 requests.get with timeout passes
+    Assert-LinterRule -TestName "Python AST: Rule QED005 requests.get with timeout passes" -Files @{
+        "src/client.py" = "import requests`nresp = requests.get('https://api.internal/data', timeout=5.0)"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 37. Python AST: Rule QED006 Unbounded @cache decorator
+    Assert-LinterRule -TestName "Python AST: Rule QED006 Unbounded @cache decorator" -Files @{
+        "src/memo.py" = "from functools import cache`n@cache`ndef fib(n): return n if n < 2 else fib(n-1) + fib(n-2)"
+    } -ExpectedRule "QED006" -ShouldPass $false
+
+    # 38. Python AST: Docstring immunity (print inside docstrings)
+    Assert-LinterRule -TestName "Python AST: Docstring immunity" -Files @{
+        "src/docs.py" = '"""`nModule documentation showing print(123) in example.`n"""`ndef worker(): pass'
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 39. Go AST: Rule QED002 Zero-Debug fmt.Println()
+    Assert-LinterRule -TestName "Go AST: Rule QED002 fmt.Println()" -Files @{
+        "pkg/service.go" = "package pkg`nimport ""fmt""`nfunc Run() { fmt.Println(""debugging"") }"
+    } -ExpectedRule "QED002" -ShouldPass $false
+
+    # 40. Go AST: Rule QED003 Empty if err != nil
+    Assert-LinterRule -TestName "Go AST: Rule QED003 Empty if err != nil" -Files @{
+        "pkg/client.go" = "package pkg`nfunc Query() {`n    if err != nil {`n    }`n}"
+    } -ExpectedRule "QED003" -ShouldPass $false
+
+    # 41. Go AST: Rule QED003 Handled error passes
+    Assert-LinterRule -TestName "Go AST: Rule QED003 Handled error passes" -Files @{
+        "pkg/client.go" = "package pkg`nfunc Query() error {`n    if err != nil {`n        return err`n    }`n    return nil`n}"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 42. Go AST: Rule QED004 unsafe.Pointer()
+    Assert-LinterRule -TestName "Go AST: Rule QED004 unsafe.Pointer()" -Files @{
+        "pkg/mem.go" = "package pkg`nimport ""unsafe""`nfunc Cast(p *int) { ptr := unsafe.Pointer(p) }"
+    } -ExpectedRule "QED004" -ShouldPass $false
+
+    # 43. Go AST: Rule QED005 Naked http.Get() without timeout
+    Assert-LinterRule -TestName "Go AST: Rule QED005 Naked http.Get()" -Files @{
+        "pkg/api.go" = "package pkg`nimport ""net/http""`nfunc Fetch() { resp, _ := http.Get(""https://api.com"") }"
+    } -ExpectedRule "QED005" -ShouldPass $false
+
+    # 44. Go AST: Rule QED006 Package-level unbounded cache map
+    Assert-LinterRule -TestName "Go AST: Rule QED006 Package-level unbounded cache map" -Files @{
+        "pkg/cache.go" = "package pkg`nvar userCache = make(map[string]any)"
+    } -ExpectedRule "QED006" -ShouldPass $false
+
+    # 45. Go AST: Relaxed rules in _test.go files
+    Assert-LinterRule -TestName "Go AST: Relaxed rules in _test.go files" -Files @{
+        "pkg/service_test.go" = "package pkg`nimport ""fmt""`nfunc TestRun() { fmt.Println(""test log"") }"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 46. Rust AST: Rule QED002 Zero-Debug println!()
+    Assert-LinterRule -TestName "Rust AST: Rule QED002 println!()" -Files @{
+        "src/lib.rs" = "pub fn execute() { println!(""debug msg""); }"
+    } -ExpectedRule "QED002" -ShouldPass $false
+
+    # 47. Rust AST: Rule QED003 Empty if let Err
+    Assert-LinterRule -TestName "Rust AST: Rule QED003 Empty if let Err" -Files @{
+        "src/lib.rs" = "pub fn work(res: Result<(), ()>) { if let Err(_) = res {} }"
+    } -ExpectedRule "QED003" -ShouldPass $false
+
+    # 48. Rust AST: Rule QED003 Handled Err passes
+    Assert-LinterRule -TestName "Rust AST: Rule QED003 Handled Err passes" -Files @{
+        "src/lib.rs" = "pub fn work(res: Result<(), ()>) -> Result<(), ()> { if let Err(e) = res { return Err(e); } Ok(()) }"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 49. Rust AST: Rule QED004 mem::transmute()
+    Assert-LinterRule -TestName "Rust AST: Rule QED004 mem::transmute()" -Files @{
+        "src/lib.rs" = "use std::mem; pub unsafe fn cast(x: u32) -> f32 { mem::transmute(x) }"
+    } -ExpectedRule "QED004" -ShouldPass $false
+
+    # 50. Rust AST: Rule QED005 Naked reqwest::get()
+    Assert-LinterRule -TestName "Rust AST: Rule QED005 Naked reqwest::get()" -Files @{
+        "src/lib.rs" = "pub async fn load() { let _ = reqwest::get(""https://api.com"").await; }"
+    } -ExpectedRule "QED005" -ShouldPass $false
+
+    # 51. Rust AST: Lifetime annotation immunity
+    Assert-LinterRule -TestName "Rust AST: Lifetime annotation immunity" -Files @{
+        "src/lib.rs" = "pub fn process<'a, 'b>(x: &'a str, y: &'b str) -> &'a str { x }"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 52. Rule QED008: Multi-language ENV_SYNC (Python os.getenv missing)
+    Assert-LinterRule -TestName "Rule QED008: Multi-language ENV_SYNC missing" -Files @{
+        ".env.example" = "EXISTING_VAR=1"
+        "src/app.py" = "import os`nkey = os.getenv('MISSING_PY_SECRET')"
+    } -ExpectedRule "QED008" -ShouldPass $false
+
+    # 53. Python AST: Multiline cast(Any) is caught
+    Assert-LinterRule -TestName "Python AST: Multiline cast(Any) is caught" -Files @{
+        "src/types.py" = "from typing import cast, Any`nx = cast(`n    Any,`n    fetch_data()`n)"
+    } -ExpectedRule "QED004" -ShouldPass $false
+
+    # 54. Python AST: requests.get with timeout=None is caught
+    Assert-LinterRule -TestName "Python AST: requests.get with timeout=None is caught" -Files @{
+        "src/client.py" = "import requests`nresp = requests.get('https://api.com', timeout=None)"
+    } -ExpectedRule "QED005" -ShouldPass $false
+
+    # 55. Python AST: Python 3.11+ except* Exception: pass is caught
+    Assert-LinterRule -TestName "Python AST: except* ValueError: pass is caught" -Files @{
+        "src/tasks.py" = "try:`n    run()`nexcept* ValueError:`n    pass"
+    } -ExpectedRule "QED003" -ShouldPass $false
+
+    # 56. Python AST: Handled except with comment at column 0 passes
+    Assert-LinterRule -TestName "Python AST: Handled except with col 0 comment passes" -Files @{
+        "src/safe.py" = "try:`n    run()`nexcept Exception:`n# col 0 comment`n    logger.error('handled')`n    return None"
+    } -ExpectedRule "" -ShouldPass $true
+
+    # 57. Go AST: Error check with parseErr != nil is caught
+    Assert-LinterRule -TestName "Go AST: parseErr != nil empty block is caught" -Files @{
+        "pkg/parser.go" = "package pkg`nfunc Parse() {`n    if parseErr != nil {`n    }`n}"
+    } -ExpectedRule "QED003" -ShouldPass $false
+
+    # 58. Go AST: Error check with Yoda nil != err is caught
+    Assert-LinterRule -TestName "Go AST: Yoda nil != err empty block is caught" -Files @{
+        "pkg/client.go" = "package pkg`nfunc Query() {`n    if nil != err {`n    }`n}"
+    } -ExpectedRule "QED003" -ShouldPass $false
+
+    # 59. Go AST: Package-level var () block cache is caught
+    Assert-LinterRule -TestName "Go AST: var () block cache is caught" -Files @{
+        "pkg/cache.go" = "package pkg`nvar (`n    userCache = make(map[string]any)`n)"
+    } -ExpectedRule "QED006" -ShouldPass $false
+
+    # 60. Rust AST: Nested pattern if let Err(Custom(_)) is caught
+    Assert-LinterRule -TestName "Rust AST: Nested if let Err(Custom(_)) is caught" -Files @{
+        "src/lib.rs" = "pub fn work(res: Result<(), ()>) { if let Err(Custom(_)) = res {} }"
+    } -ExpectedRule "QED003" -ShouldPass $false
+
+    # 61. Rust AST: Match arm Err(Custom(_)) => () is caught
+    Assert-LinterRule -TestName "Rust AST: Match arm Err(Custom(_)) => () is caught" -Files @{
+        "src/lib.rs" = "pub fn work(res: Result<(), ()>) { match res { Err(Custom(_)) => (), Ok(_) => () } }"
+    } -ExpectedRule "QED003" -ShouldPass $false
+
+    # 62. Rust AST: Multiline mem::transmute is caught
+    Assert-LinterRule -TestName "Rust AST: Multiline mem::transmute is caught" -Files @{
+        "src/lib.rs" = "use std::mem; pub unsafe fn cast(x: u32) -> f32 { mem::transmute::<`n    u32,`n    f32`n>(x) }"
+    } -ExpectedRule "QED004" -ShouldPass $false
+
 } finally {
     Remove-Item -Path $fixtureDir -Recurse -Force -ErrorAction SilentlyContinue
 }

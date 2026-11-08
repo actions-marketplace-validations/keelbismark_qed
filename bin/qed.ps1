@@ -62,7 +62,7 @@ function Invoke-QedCheck {
     if ($rootViolations -eq 0) { Write-Host " [PASS]" -ForegroundColor Green } else { Write-Host " [FAIL]" -ForegroundColor Red }
 
     # Collect source files
-    $sourceFiles = Get-ChildItem -Path $Dir -Recurse -File -Include "*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.go", "*.sql" -ErrorAction SilentlyContinue | Where-Object {
+    $sourceFiles = Get-ChildItem -Path $Dir -Recurse -File -Include "*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.go", "*.rs", "*.sql" -ErrorAction SilentlyContinue | Where-Object {
         $path = $_.FullName
         $excluded = $false
         foreach ($ex in $excludeDirs) {
@@ -90,21 +90,42 @@ function Invoke-QedCheck {
                 $violations += "QED002/ZERO_DEBUG: Leftover debugger in ${rel}:${lineNum} -> $($line.Trim())"
                 $debugCount++
             }
+            if ($file.Extension -eq ".py" -and $line -match '\bprint\s*\(' -and $line -notmatch 'logger\.') {
+                $rel = Resolve-Path -Path $file.FullName -Relative
+                $violations += "QED002/ZERO_DEBUG: Leftover print() in ${rel}:${lineNum} -> $($line.Trim())"
+                $debugCount++
+            }
+            if ($file.Extension -eq ".go" -and $line -match '(?:fmt\.(Print|Println|Printf)|\bprintln|\bprint)\s*\(' -and $line -notmatch 'logger\.') {
+                $rel = Resolve-Path -Path $file.FullName -Relative
+                $violations += "QED002/ZERO_DEBUG: Leftover fmt.Print* in ${rel}:${lineNum} -> $($line.Trim())"
+                $debugCount++
+            }
+            if ($file.Extension -eq ".rs" -and $line -match '(?:println|print|eprintln|eprint|dbg)\s*!\s*[\(\{\[]' -and $line -notmatch 'logger\.') {
+                $rel = Resolve-Path -Path $file.FullName -Relative
+                $violations += "QED002/ZERO_DEBUG: Leftover debug macro in ${rel}:${lineNum} -> $($line.Trim())"
+                $debugCount++
+            }
             $lineNum++
         }
     }
     if ($debugCount -eq 0) { Write-Host " [PASS]" -ForegroundColor Green } else { Write-Host " [FAIL]" -ForegroundColor Red }
 
-    # QED004: Anti-`as any`
-    Write-Host "[-] Checking Type Safety (Anti-as any)..." -NoNewline
+    # QED004: Anti-unsafe cast
+    Write-Host "[-] Checking Type Safety (Anti-unsafe cast)..." -NoNewline
     $castViolations = 0
-    foreach ($file in ($sourceFiles | Where-Object { $_.Extension -in @(".ts", ".tsx") })) {
+    foreach ($file in ($sourceFiles | Where-Object { $_.Extension -in @(".ts", ".tsx", ".py", ".go", ".rs") })) {
         $lines = Get-Content $file.FullName -ErrorAction SilentlyContinue
         $lineNum = 1
         foreach ($line in $lines) {
-            if ($line -match '\bas\s+any\b' -and $line -notmatch 'qed-ignore') {
+            $isCast = $false
+            if ($file.Extension -in @(".ts", ".tsx") -and $line -match '\bas\s+any\b') { $isCast = $true }
+            if ($file.Extension -eq ".py" -and $line -match '\b(?:typing\.)?cast\s*\(\s*(?:typing\.)?Any\b') { $isCast = $true }
+            if ($file.Extension -eq ".go" -and $line -match '\bunsafe\.Pointer\s*\(') { $isCast = $true }
+            if ($file.Extension -eq ".rs" -and $line -match '\b(?:(?:std|core)::)?(?:mem::)?transmute\b') { $isCast = $true }
+
+            if ($isCast -and $line -notmatch 'qed-ignore') {
                 $rel = Resolve-Path -Path $file.FullName -Relative
-                $violations += "QED004/UNSAFE_CAST: Loose 'as any' cast in ${rel}:${lineNum} -> $($line.Trim())"
+                $violations += "QED004/UNSAFE_CAST: Unsafe cast in ${rel}:${lineNum} -> $($line.Trim())"
                 $castViolations++
             }
             $lineNum++

@@ -39,7 +39,7 @@ if [ "$COMMAND" = "check" ]; then
 
     # QED002: Check Zero-Debug Invariant
     echo -n "[-] Checking Zero-Debug Print Invariant... "
-    DEBUG_HITS=$(grep -rnE "(console\.(log|debug|dir)\(|debugger;|\bprint\(|fmt\.Println\()" "$TARGET_DIR" \
+    DEBUG_HITS=$(grep -rnE "(console\.(log|debug|dir)\(|debugger;|\bprint\(|fmt\.(Print|Println|Printf)\(|println!|dbg!)" "$TARGET_DIR" \
         --exclude-dir={.git,node_modules,dist,build,vendor,.next,.cache,tests,scripts,bin,adapters} \
         --include=\*.{ts,js,py,go,rs} 2>/dev/null | grep -v "logger\." | grep -v "qed-ignore" || true)
 
@@ -53,11 +53,11 @@ if [ "$COMMAND" = "check" ]; then
         echo "[PASS]"
     fi
 
-    # QED004: Check Type Safety (as any)
-    echo -n "[-] Checking Type Safety (Anti-as any)... "
-    CAST_HITS=$(grep -rnE "\bas[[:space:]]+any\b" "$TARGET_DIR" \
+    # QED004: Check Type Safety (Anti-as any / unsafe casts)
+    echo -n "[-] Checking Type Safety (Anti-unsafe cast)... "
+    CAST_HITS=$(grep -rnE "(\bas[[:space:]]+any\b|\bcast\(Any\b|\bunsafe\.Pointer\(|transmute\b)" "$TARGET_DIR" \
         --exclude-dir={.git,node_modules,dist,build,vendor,.next,.cache,tests,scripts,bin,adapters} \
-        --include=\*.{ts,tsx} 2>/dev/null | grep -v "qed-ignore" || true)
+        --include=\*.{ts,tsx,py,go,rs} 2>/dev/null | grep -v "qed-ignore" || true)
 
     if [ -n "$CAST_HITS" ]; then
         echo "[FAIL]"

@@ -194,6 +194,12 @@ node bin/qed-engine.js test
 
 无需编译应用。请让变更聚焦于单一目标，为行为修复提供复现，并说明实际运行的检查。问题和提案请提交到 [issues](https://github.com/keelbismark/qed/issues)，代码修改请通过 [pull requests](https://github.com/keelbismark/qed/pulls) 提交。
 
+## 致谢
+
+Q.E.D. 借鉴并基于开源社区的成果与理念构建：
+- [Awesome-REA](https://github.com/reacher-z/Awesome-REA) 与 [`rea-agents`](https://www.npmjs.com/package/rea-agents) — 提供逆向工程全景图与契约提取工具链。
+- [Awesome-CUA](https://github.com/reacher-z/Awesome-CUA) — 提供计算机使用智能体 (Computer-Use Agents) 基准与界面落地验证参考。
+
 ---
 
 **Q.E.D.** — *Quod erat demonstrandum*，即“证毕”。  

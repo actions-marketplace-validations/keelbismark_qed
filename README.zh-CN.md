@@ -8,7 +8,7 @@
 
 [CI 状态](https://github.com/keelbismark/qed/actions/workflows/ci.yml) · [npm 软件包](https://www.npmjs.com/package/qed-standard) · [MIT 许可证](LICENSE)
 
-[快速开始](#快速开始) · [工作流程](#工作流程) · [CLI 命令](#cli-命令) · [文档导航](#文档导航)
+[快速开始](#快速开始) · [新手指南](docs/GETTING_STARTED.zh-CN.md) · [工作流程](#工作流程) · [CLI 命令](#cli-命令) · [文档导航](#文档导航)
 
 ---
 
@@ -39,6 +39,8 @@ CLI 检测缺少 timeout/signal 的模式，但这**不能证明**接口安全�
 | **验证 CLI** | 检测特定反模式，并提供测试运行和 Git 钩子命令。 |
 
 ## 快速开始
+
+> 需要从零开始、涵盖安装到 Mode A 严格结对编程的完整分步指南？阅读 **[快速上手指南](docs/GETTING_STARTED.zh-CN.md)**。
 
 ### 1. 检查你的项目
 
@@ -166,10 +168,9 @@ Cursor · Claude Code · Antigravity · Gemini CLI · Codex · Kimi Code · Pi �
 
 ## 文档导航
 
-以下详细指南目前主要使用英文。
-
 | 你想要…… | 从这里开始 |
 | :--- | :--- |
+| 从零开始 (新手分步演练) | [快速上手指南](docs/GETTING_STARTED.zh-CN.md) |
 | 理解基础规则 | [工程宪章](core/CONSTITUTION.md) |
 | 配置编辑器或智能体 | [环境集成指南](docs/harnesses.md) |
 | 了解完整任务流程 | [生命周期演练](examples/full-lifecycle-walkthrough.md) |

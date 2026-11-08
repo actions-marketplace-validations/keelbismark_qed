@@ -45,6 +45,7 @@ Before modifying code or making architectural assertions:
 
 ## Skill Routing
 
+- **Investigating bugs, test failures, or crashes** → `qed:qed-debug` or `qed:systematic-debugging` (empirical facts, backward data tracing, reproduction test first).
 - **Entering an unfamiliar repository** → `qed:qed-reconnaissance` (explore entrypoints, debt, anti-duplication map).
 - **Planning changes to shared contracts** → `qed:qed-blast-radius` (identify callers & affected boundaries).
 - **Deep engineering task or complex refactor** → `qed:qed-boost` (iterative design, red-green loop, rigor).

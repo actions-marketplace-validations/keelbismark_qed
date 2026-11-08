@@ -18,7 +18,7 @@ This specification defines the non-negotiable engineering invariants for AI codi
 4. **Dual Execution Modes**:
    - **Mode A (Default: Quality > Speed)**: Full TDD, Blast Radius analysis, 4 Mandatory States, Verification Gate.
    - **Mode B (On-Demand: Speed > Quality)**: Active only when user explicitly asks ("быстро", "quick", "draft", "prototype"). Delivers fast POC with an explicit report detailing all shortcuts taken and technical debt created.
-5. **The Leash Invariant (Subagents)**: Subagents are bounded leaf workers, never autonomous architects. The parent agent bears 100% liability. Hard churn budget ($\le 100$ lines); zero unilateral architecture changes; zero latency/memory regressions. Overreaching subagent output must be rolled back immediately.
+5. **The Leash Invariant (Subagents)**: Subagents are bounded leaf workers, never autonomous architects. The parent agent bears 100% liability. Strict scope bounds (leaf tasks only); zero unilateral architecture changes; zero latency/memory regressions. Overreaching subagent output must be rolled back immediately.
 
 ---
 

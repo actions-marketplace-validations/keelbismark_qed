@@ -46,9 +46,9 @@ Under the **Q.E.D. Engineering Standard**, subagents are strictly governed tools
   * Implementing a leaf function whose signature, inputs, outputs, and edge cases were already specified by the parent agent.
 - **Strict Prohibition**: Subagents are strictly forbidden from making architectural choices, restructuring directories, introducing new external dependencies, or inventing bespoke parsers/frameworks.
 
-### Law 2: The Churn & Blast Radius Budget
-- Every delegated task MUST define an explicit **Churn Budget** ($\le 100$ lines of diff by default).
-- If a subagent discovers that solving the assigned task requires exceeding the churn budget or modifying files outside the specified blast radius, it **MUST NOT** proceed with code edits. It must stop immediately and return an architectural plan / RFC for parent and human review.
+### Law 2: The Scope & Blast Radius Budget
+- Every delegated task MUST define an explicit **Scope Budget** (allowed files and contract boundaries).
+- If a subagent discovers that solving the assigned task requires modifying files outside the specified blast radius or restructuring architecture, it **MUST NOT** proceed with code edits. It must stop immediately and return an architectural plan / RFC for parent and human review.
 
 ### Law 3: Zero Performance & Resource Regression
 - Subagents cannot degrade physical runtime baselines:
@@ -73,8 +73,7 @@ When delegating any task to a subagent, the parent agent MUST frame the prompt w
 **Task**: [Atomic, bounded leaf assignment]
 
 **Physical Constraints & Budgets**:
-- Churn Budget: Maximum ±[N] lines of total diff.
-- Allowed Files: Modify ONLY [specific file paths]. Modifying other files is strictly forbidden.
+- Scope Budget: Modify ONLY [specific file paths]. Modifying unassigned files or contracts is strictly forbidden.
 - Zero Reinvention: Use standard library and existing project abstractions. Do NOT introduce new parsers, dependencies, or architectures.
 - Performance Budget: Verification suite must execute in <[X] ms.
 - If you find that satisfying the requirements violates any of these constraints, STOP immediately and return a design plan without modifying code.
@@ -84,7 +83,7 @@ When delegating any task to a subagent, the parent agent MUST frame the prompt w
 
 ## 4. Remediation: What to Do When a Subagent Overreaches
 
-If a subagent returns an overengineered solution, introduces unneeded complexity, or blows past its churn budget:
+If a subagent returns an overengineered solution, introduces unneeded complexity, or breaches its assigned scope budget:
 1. **Never Accept Out of Convenience**: Do not merge or preserve bloat simply because tests are green.
 2. **Immediate Rollback**: Revert the subagent's changes cleanly via `git restore` or `git revert`.
 3. **Decompose & Rescope**: Break the problem down into a smaller leaf unit, or discuss the architectural trade-off directly with the human engineer.

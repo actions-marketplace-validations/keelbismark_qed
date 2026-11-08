@@ -74,6 +74,6 @@ Whenever the user mentions "qed", "Q.E.D.", "по qed", or requests standard com
 
 ## 8. Subagent Governance & Delegation (The Leash Invariant)
 - **Laborers, Not Architects**: Subagents are restricted to bounded leaf-level tasks (reproduction tests, benchmarks, isolated leaf functions). Subagents are strictly forbidden from deciding architecture, restructuring topologies, inventing homegrown parsers, or adding external dependencies.
-- **Hard Churn Budget**: Enforce a strict limit ($\le 100$ lines of diff). If a subagent attempts a broader rewrite, reject and revert immediately.
+- **Strict Scope Bounds**: Subagents operate strictly within their assigned leaf file and task boundaries. If a subagent attempts a broader rewrite or modifies unassigned contracts, reject and revert immediately.
 - **Vicarious Liability & Adversarial Audit**: The parent agent is 100% liable for all subagent output. Never relay blindly. Audit for AI-slop, overengineering, and test weakening before presenting to the human.
 - **Zero Performance Regression**: Any subagent diff that degrades verification speed (e.g. slowing `qed check` beyond 60ms) or bloats memory is rejected without discussion.

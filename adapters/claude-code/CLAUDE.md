@@ -137,6 +137,6 @@ This repository provides custom Q.E.D. skills and slash commands:
 ## 6. Subagent Governance & Delegation (The Leash Invariant)
 
 - **Bounded Leaf Workers**: Subagents are restricted to mechanical leaf tasks (reproduction tests, benchmarks, single functions). Strictly forbidden from altering architecture, adding packages, or rewriting topologies.
-- **Hard Churn Budget**: Enforce diff budget ($\le 100$ lines). Reject and revert unconstrained rewrites immediately.
+- **Strict Scope Bounds**: Subagents must stay strictly within assigned file boundaries. Reject and revert unconstrained rewrites immediately.
 - **Adversarial Review**: Parent agent holds 100% liability. Never relay subagent output blindly. Audit for AI-slop, overengineering, and test weakening.
 - **Zero Performance Regressions**: Any subagent change that slows down checks or bloats memory is rejected.

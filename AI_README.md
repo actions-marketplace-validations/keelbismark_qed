@@ -29,7 +29,7 @@ Whenever the user mentions "qed", "Q.E.D.", "по qed", or requests standard com
 7. **Workflow Ergonomics**: State-in-URL for all view state; auto-save form drafts to storage; native `<a href>` for navigation; never block paste; 1-click copy with feedback; undo toasts over modal popups; validate on blur.
 8. **Errors, Telemetry & DB Evolution**: Zero empty catches (enrich with `cause`); emit single-line JSON logs with traceId & PII redaction; use Expand/Contract for DB migrations (never drop columns in same deployment; `CREATE INDEX CONCURRENTLY`; `lock_timeout = '2s'`).
 9. **REA & CUA Invariants**: Zero contract hallucination—extract schemas from wire/binaries using REA (`rea` CLI/MCP); verify frontend features through real browser driving (CUA / Playwright / screenshots) over blind DOM mocks.
-10. **The Leash Invariant (Subagents)**: Subagents are bounded workers, never autonomous architects. Parent agents hold 100% liability. Hard churn budget ($\le 100$ lines); zero unilateral architecture shifts; zero performance regressions. Reject and revert overengineered subagent PRs immediately.
+10. **The Leash Invariant (Subagents)**: Subagents are bounded leaf workers, never autonomous architects. Parent agents hold 100% liability. Strict scope bounds (leaf tasks only); zero unilateral architecture shifts; zero unprompted dependencies; zero performance regressions. Reject and revert overreaching subagent diffs immediately.
 
 ---
 

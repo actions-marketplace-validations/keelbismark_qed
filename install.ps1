@@ -153,6 +153,15 @@ if ($Harness -eq "all" -or $Harness -eq "antigravity") {
         Install-File "adapters\antigravity\GEMINI.lite.md" $destLite
     }
     Install-File "adapters\antigravity\.antigravity-plugin\plugin.json" (Join-Path $baseDir ".antigravity-plugin\plugin.json")
+    if ($Target -eq "global") {
+        $globalPluginDir = Join-Path $userHome ".gemini\config\plugins\qed"
+        Install-File "plugins\qed\plugin.json" (Join-Path $globalPluginDir "plugin.json")
+        Install-File "plugins\qed\hooks\hooks.json" (Join-Path $globalPluginDir "hooks\hooks.json")
+        Install-File "plugins\qed\hooks\run-hook.cmd" (Join-Path $globalPluginDir "hooks\run-hook.cmd")
+        Install-File "plugins\qed\hooks\session-start" (Join-Path $globalPluginDir "hooks\session-start")
+        Install-File "plugins\qed\skills\using-qed\SKILL.md" (Join-Path $globalPluginDir "skills\using-qed\SKILL.md")
+        Install-File "plugins\qed\skills\qed-reconnaissance\SKILL.md" (Join-Path $globalPluginDir "skills\qed-reconnaissance\SKILL.md")
+    }
 }
 
 # 2. Gemini CLI

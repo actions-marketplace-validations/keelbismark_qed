@@ -452,6 +452,38 @@ if ($updatedContent -match "Leash Invariant" -and $updatedContent -match "TRIGGE
     $results += [PSCustomObject]@{ Test = "qed-update"; Status = "FAIL" }
 }
 
+# --- SECTION 6: qed init & Project Onboarding Tests ---
+Write-Host "`n--- Section 6: qed init & Project Onboarding Tests ---" -ForegroundColor Yellow
+$initTestDir = Join-Path $testRunDir "init-test"
+New-Item -ItemType Directory -Path $initTestDir -Force | Out-Null
+Set-Content -Path (Join-Path $initTestDir "package.json") -Value '{"name":"init-demo","scripts":{"test":"node --test"}}'
+Set-Content -Path (Join-Path $initTestDir "README.md") -Value "# Init Demo Repo`nProject details here.`n"
+New-Item -ItemType Directory -Path (Join-Path $initTestDir "src\utils") -Force | Out-Null
+Set-Content -Path (Join-Path $initTestDir "src\utils\math.js") -Value "export function clamp(v, min, max) { return Math.min(Math.max(v, min), max); }"
+New-Item -ItemType Directory -Path (Join-Path $initTestDir ".git\hooks") -Force | Out-Null
+
+& node $enginePath init $initTestDir | Out-Null
+
+$briefPath = Join-Path $initTestDir ".qed\BRIEF.md"
+$qedrcPath = Join-Path $initTestDir ".qedrc.json"
+$hookPath = Join-Path $initTestDir ".git\hooks\pre-commit"
+$readmeContent = Get-Content -Path (Join-Path $initTestDir "README.md") -Raw
+
+if ((Test-Path $briefPath) -and (Test-Path $qedrcPath) -and (Test-Path $hookPath) -and ($readmeContent -match "keelbismark/qed")) {
+    $briefContent = Get-Content -Path $briefPath -Raw
+    if ($briefContent -match "Anti-Duplication Atlas" -and $briefContent -match "clamp") {
+        Write-Host "  [PASS] qed-init-onboarding (BRIEF.md, .qedrc.json, Anti-Duplication Atlas, and hooks verified)" -ForegroundColor Green
+        $results += [PSCustomObject]@{ Test = "qed-init"; Status = "PASS" }
+    } else {
+        Write-Host "  [FAIL] qed-init-onboarding (BRIEF.md missing Anti-Duplication Atlas or helpers)" -ForegroundColor Red
+        $results += [PSCustomObject]@{ Test = "qed-init"; Status = "FAIL" }
+    }
+} else {
+    Write-Host "  [FAIL] qed-init-onboarding (Expected onboarding artifacts not created)" -ForegroundColor Red
+    $results += [PSCustomObject]@{ Test = "qed-init"; Status = "FAIL" }
+}
+
+
 # Cleanup
 Remove-Item -Path $testRunDir -Recurse -Force -ErrorAction SilentlyContinue
 

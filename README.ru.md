@@ -89,6 +89,7 @@ cd C:\path\to\your-project
 ### 3. Сделайте проверку привычкой
 
 ```bash
+qed init           # Авторизовать проект: стек, Earned Complexity Tier, атлас хелперов, BRIEF.md и хуки
 qed check          # Проверить текущий проект
 qed hook           # Установить проверки pre-commit и pre-push
 qed doctor         # Проверить репозиторий, хуки, синхронизацию адаптеров и доступность CI
@@ -141,6 +142,8 @@ bash /path/to/qed/install.sh --lite cursor
 
 | Команда | Назначение |
 | :--- | :--- |
+| `qed init [path]` | Инициализация и разведка проекта: стек, Earned Complexity Tier, атлас хелперов, BRIEF.md и хуки |
+| `qed init --explore` | Инициализация и вывод полного брифа разведки агента прямо в stdout |
 | `qed check [path]` | Проверить текущий каталог или указанный проект |
 | `qed check --strict` | Считать предупреждения ошибками проверки |
 | `qed check --json` | Получить машиночитаемый результат |

@@ -342,5 +342,35 @@ mkdir -p "$UPDATE_TEST_DIR"
     fi
 )
 
+echo "--- Section 8: qed init & Project Onboarding Tests ---"
+INIT_TEST_DIR="$TEST_DIR/init-test"
+mkdir -p "$INIT_TEST_DIR/src/utils" "$INIT_TEST_DIR/.git/hooks"
+cat << 'EOF' > "$INIT_TEST_DIR/package.json"
+{"name":"init-demo","scripts":{"test":"node --test"}}
+EOF
+cat << 'EOF' > "$INIT_TEST_DIR/README.md"
+# Init Demo Repo
+Project details here.
+EOF
+cat << 'EOF' > "$INIT_TEST_DIR/src/utils/math.js"
+export function clamp(v, min, max) { return Math.min(Math.max(v, min), max); }
+EOF
+
+(
+    cd "$INIT_TEST_DIR"
+    node "$REPO_ROOT/bin/qed-engine.js" init . >/dev/null 2>&1
+    if [ -f ".qed/BRIEF.md" ] && [ -f ".qedrc.json" ] && [ -f ".git/hooks/pre-commit" ] && grep -q "keelbismark/qed" "README.md"; then
+        if grep -q "Anti-Duplication Atlas" ".qed/BRIEF.md" && grep -q "clamp" ".qed/BRIEF.md"; then
+            echo -e "  \033[0;32m[PASS]\033[0m qed-init-onboarding (BRIEF.md, .qedrc.json, Anti-Duplication Atlas, and hooks verified)"
+        else
+            echo -e "  \033[0;31m[FAIL]\033[0m qed-init-onboarding (BRIEF.md missing Anti-Duplication Atlas or helpers)"
+            exit 1
+        fi
+    else
+        echo -e "  \033[0;31m[FAIL]\033[0m qed-init-onboarding (Expected onboarding artifacts not created)"
+        exit 1
+    fi
+)
+
 echo ""
 echo "All Bash verification tests PASSED successfully!"

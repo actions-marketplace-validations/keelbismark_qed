@@ -1858,6 +1858,855 @@ function runDoctor(targetDir) {
   }
 }
 
+// -------------------------------------------------------------
+// Q.E.D. Project Authorization, Profiler & Onboarding Engine
+// -------------------------------------------------------------
+
+const ADAPTER_CATALOG = {
+  antigravity: {
+    name: "Google Antigravity",
+    files: [
+      { src: "adapters/antigravity/GEMINI.md", liteSrc: "adapters/antigravity/GEMINI.lite.md", dest: "GEMINI.md" },
+      { src: "adapters/antigravity/.antigravity-plugin/plugin.json", dest: ".antigravity-plugin/plugin.json" },
+      { src: "plugins/qed/skills/using-qed/SKILL.md", dest: ".gemini/skills/using-qed/SKILL.md" },
+      { src: "plugins/qed/skills/qed-reconnaissance/SKILL.md", dest: ".gemini/skills/qed-reconnaissance/SKILL.md" },
+      { src: "plugins/qed/skills/qed-blast-radius/SKILL.md", dest: ".gemini/skills/qed-blast-radius/SKILL.md" },
+      { src: "plugins/qed/skills/qed-verify/SKILL.md", dest: ".gemini/skills/qed-verify/SKILL.md" },
+      { src: "plugins/qed/skills/qed-boost/SKILL.md", dest: ".gemini/skills/qed-boost/SKILL.md" },
+      { src: "plugins/qed/skills/qed-review/SKILL.md", dest: ".gemini/skills/qed-review/SKILL.md" }
+    ]
+  },
+  cursor: {
+    name: "Cursor IDE",
+    files: [
+      { src: "adapters/cursor/.cursorrules", liteSrc: "adapters/cursor/.cursorrules.lite", dest: ".cursorrules" },
+      { src: "adapters/cursor/.cursor-plugin/plugin.json", dest: ".cursor-plugin/plugin.json" },
+      { src: "adapters/cursor/.cursor/rules/00-constitution.mdc", liteSrc: "adapters/cursor/.cursor/rules/00-constitution.lite.mdc", dest: ".cursor/rules/00-constitution.mdc" },
+      { src: "adapters/cursor/.cursor/rules/01-blast-radius.mdc", dest: ".cursor/rules/01-blast-radius.mdc" },
+      { src: "adapters/cursor/.cursor/rules/02-anti-duplication.mdc", dest: ".cursor/rules/02-anti-duplication.mdc" },
+      { src: "adapters/cursor/.cursor/rules/03-tdd-discipline.mdc", dest: ".cursor/rules/03-tdd-discipline.mdc" },
+      { src: "adapters/cursor/.cursor/rules/04-three-am-readability.mdc", dest: ".cursor/rules/04-three-am-readability.mdc" },
+      { src: "adapters/cursor/.cursor/rules/05-verification-gate.mdc", dest: ".cursor/rules/05-verification-gate.mdc" },
+      { src: "adapters/cursor/.cursor/rules/06-documentation-and-visuals.mdc", dest: ".cursor/rules/06-documentation-and-visuals.mdc" },
+      { src: "adapters/cursor/.cursor/rules/07-context-economics.mdc", dest: ".cursor/rules/07-context-economics.mdc" }
+    ]
+  },
+  claude: {
+    name: "Claude Code",
+    files: [
+      { src: "adapters/claude-code/CLAUDE.md", liteSrc: "adapters/claude-code/CLAUDE.lite.md", dest: "CLAUDE.md" },
+      { src: "adapters/claude-code/.claude-plugin/plugin.json", dest: ".claude-plugin/plugin.json" },
+      { src: "adapters/claude-code/.claude-plugin/marketplace.json", dest: ".claude-plugin/marketplace.json" },
+      { src: "plugins/qed/skills/using-qed/SKILL.md", dest: ".claude/skills/using-qed/SKILL.md" },
+      { src: "plugins/qed/skills/qed-reconnaissance/SKILL.md", dest: ".claude/skills/qed-reconnaissance/SKILL.md" },
+      { src: "adapters/claude-code/.claude/skills/qed-verify/SKILL.md", dest: ".claude/skills/qed-verify/SKILL.md" },
+      { src: "adapters/claude-code/.claude/skills/qed-boost/SKILL.md", dest: ".claude/skills/qed-boost/SKILL.md" },
+      { src: "adapters/claude-code/.claude/skills/qed-review/SKILL.md", dest: ".claude/skills/qed-review/SKILL.md" },
+      { src: "adapters/claude-code/.claude/skills/qed-blast-radius/SKILL.md", dest: ".claude/skills/qed-blast-radius/SKILL.md" },
+      { src: "adapters/claude-code/.claude/commands/boost.md", dest: ".claude/commands/boost.md" },
+      { src: "adapters/claude-code/.claude/commands/qed-boost.md", dest: ".claude/commands/qed-boost.md" },
+      { src: "adapters/claude-code/.claude/commands/qed-verify.md", dest: ".claude/commands/qed-verify.md" },
+      { src: "adapters/claude-code/.claude/commands/qed-review.md", dest: ".claude/commands/qed-review.md" },
+      { src: "adapters/claude-code/.claude/commands/qed-blast-radius.md", dest: ".claude/commands/qed-blast-radius.md" }
+    ]
+  },
+  cline: {
+    name: "Cline",
+    files: [
+      { src: "adapters/cline/.clinerules", liteSrc: "adapters/cline/.clinerules.lite", dest: ".clinerules" }
+    ]
+  },
+  roo: {
+    name: "Roo Code",
+    files: [
+      { src: "adapters/roo-code/.roomodes", liteSrc: "adapters/roo-code/.roomodes.lite", dest: ".roomodes" }
+    ]
+  },
+  windsurf: {
+    name: "Windsurf",
+    files: [
+      { src: "adapters/windsurf/.windsurfrules", liteSrc: "adapters/windsurf/.windsurfrules.lite", dest: ".windsurfrules" },
+      { src: "adapters/windsurf/.windsurf/workflows/qed-boost.md", dest: ".windsurf/workflows/qed-boost.md" },
+      { src: "adapters/windsurf/.windsurf/workflows/qed-verify.md", dest: ".windsurf/workflows/qed-verify.md" }
+    ]
+  },
+  copilot: {
+    name: "GitHub Copilot",
+    files: [
+      { src: "adapters/copilot/.github/copilot-instructions.md", liteSrc: "adapters/copilot/.github/copilot-instructions.lite.md", dest: ".github/copilot-instructions.md" },
+      { src: "adapters/copilot/.github/prompts/qed-boost.prompt.md", dest: ".github/prompts/qed-boost.prompt.md" },
+      { src: "adapters/copilot/.github/prompts/qed-verify.prompt.md", dest: ".github/prompts/qed-verify.prompt.md" },
+      { src: "adapters/copilot/.github/prompts/qed-tdd.prompt.md", dest: ".github/prompts/qed-tdd.prompt.md" },
+      { src: "adapters/copilot/.github/prompts/qed-spec.prompt.md", dest: ".github/prompts/qed-spec.prompt.md" }
+    ]
+  },
+  codex: {
+    name: "Codex & AGENTS.md",
+    files: [
+      { src: "adapters/codex/CODEX.md", liteSrc: "adapters/codex/CODEX.lite.md", dest: "CODEX.md" },
+      { src: "adapters/codex/AGENTS.md", liteSrc: "adapters/codex/AGENTS.lite.md", dest: "AGENTS.md" },
+      { src: "adapters/codex/.codex-plugin/plugin.json", dest: ".codex-plugin/plugin.json" }
+    ]
+  },
+  deepseek: {
+    name: "DeepSeek & Continue.dev",
+    files: [
+      { src: "adapters/deepseek/DEEPSEEK.md", liteSrc: "adapters/deepseek/DEEPSEEK.lite.md", dest: "DEEPSEEK.md" },
+      { src: "adapters/deepseek/.deepseekrules", liteSrc: "adapters/deepseek/.deepseekrules.lite", dest: ".deepseekrules" }
+    ]
+  },
+  opencode: {
+    name: "OpenCode",
+    files: [
+      { src: "adapters/opencode/opencode.json", dest: "opencode.json" },
+      { src: "adapters/opencode/.opencode/plugins/qed.js", dest: ".opencode/plugins/qed.js" }
+    ]
+  },
+  aider: {
+    name: "Aider",
+    files: [
+      { src: "adapters/aider/.aider.conf.yml", dest: ".aider.conf.yml" },
+      { src: "adapters/aider/.aider.conventions.md", liteSrc: "adapters/aider/.aider.conventions.lite.md", dest: ".aider.conventions.md" }
+    ]
+  },
+  kimi: {
+    name: "Kimi",
+    files: [
+      { src: "adapters/kimi/KIMI.md", liteSrc: "adapters/kimi/KIMI.lite.md", dest: "KIMI.md" },
+      { src: "adapters/kimi/.kimirules", liteSrc: "adapters/kimi/.kimirules.lite", dest: ".kimirules" },
+      { src: "adapters/kimi/.kimi/config.json", dest: ".kimi/config.json" }
+    ]
+  },
+  pi: {
+    name: "Pi Agent",
+    files: [
+      { src: "adapters/pi/PI.md", liteSrc: "adapters/pi/PI.lite.md", dest: "PI.md" },
+      { src: "adapters/pi/.pi/config.json", dest: ".pi/config.json" },
+      { src: "adapters/pi/.pi/extensions/qed.ts", dest: ".pi/extensions/qed.ts" }
+    ]
+  },
+  hermes: {
+    name: "Hermes Agent",
+    files: [
+      { src: "adapters/hermes/HERMES.md", liteSrc: "adapters/hermes/HERMES.lite.md", dest: "HERMES.md" },
+      { src: "adapters/hermes/.hermes-plugin/plugin.yaml", dest: ".hermes-plugin/plugin.yaml" },
+      { src: "adapters/hermes/.hermes-plugin/__init__.py", dest: ".hermes-plugin/__init__.py" }
+    ]
+  },
+  muse: {
+    name: "Muse Agent",
+    files: [
+      { src: "adapters/muse/MUSE.md", liteSrc: "adapters/muse/MUSE.lite.md", dest: "MUSE.md" },
+      { src: "adapters/muse/.muse-plugin/plugin.json", dest: ".muse-plugin/plugin.json" },
+      { src: "adapters/muse/.muse-plugin/marketplace.json", dest: ".muse-plugin/marketplace.json" }
+    ]
+  },
+  devin: {
+    name: "Devin",
+    files: [
+      { src: "adapters/devin/DEVIN.md", liteSrc: "adapters/devin/DEVIN.lite.md", dest: "DEVIN.md" },
+      { src: "adapters/devin/.devin-plugin/plugin.json", dest: ".devin-plugin/plugin.json" },
+      { src: "adapters/devin/.devin/config.json", dest: ".devin/config.json" }
+    ]
+  },
+  droid: {
+    name: "Factory Droid",
+    files: [
+      { src: "adapters/droid/DROID.md", liteSrc: "adapters/droid/DROID.lite.md", dest: "DROID.md" },
+      { src: "adapters/droid/.droid/config.json", dest: ".droid/config.json" },
+      { src: "adapters/droid/.agents/plugins/marketplace.json", dest: ".agents/plugins/marketplace.json" }
+    ]
+  },
+  grok: {
+    name: "Grok",
+    files: [
+      { src: "adapters/grok/GROK.md", liteSrc: "adapters/grok/GROK.lite.md", dest: "GROK.md" },
+      { src: "adapters/grok/.grok-plugin/plugin.json", dest: ".grok-plugin/plugin.json" },
+      { src: "adapters/grok/.grok/config.json", dest: ".grok/config.json" }
+    ]
+  },
+  qwen: {
+    name: "Qwen",
+    files: [
+      { src: "adapters/qwen/QWEN.md", liteSrc: "adapters/qwen/QWEN.lite.md", dest: "QWEN.md" },
+      { src: "adapters/qwen/.qwenrules", liteSrc: "adapters/qwen/.qwenrules.lite", dest: ".qwenrules" },
+      { src: "adapters/qwen/.qwen/config.json", dest: ".qwen/config.json" }
+    ]
+  }
+};
+
+const HARNESS_ALIASES = {
+  gemini: "antigravity",
+  "gemini-cli": "antigravity",
+  "claude-code": "claude",
+  "roo-code": "roo",
+  "github-copilot": "copilot",
+  dsh: "deepseek",
+  "deepseek-harness": "deepseek",
+  "kimi-code": "kimi",
+  "hermes-agent": "hermes",
+  "devin-cli": "devin",
+  "factory-droid": "droid",
+  "grok-build": "grok",
+  "qwen-code": "qwen"
+};
+
+function resolveHarnessName(name) {
+  const n = (name || "").toLowerCase().trim();
+  return HARNESS_ALIASES[n] || n;
+}
+
+function detectProjectStack(targetDir) {
+  const stack = {
+    languages: [],
+    packageManager: null,
+    frameworks: [],
+    testRunners: [],
+    entrypoints: [],
+    ignorePatterns: ["dist/**", "build/**", "coverage/**", "vendor/**"]
+  };
+
+  const has = (f) => fs.existsSync(path.join(targetDir, f));
+
+  // Node / TS / JS
+  if (has("package.json")) {
+    const hasTs = has("tsconfig.json") || has("tsconfig.base.json");
+    stack.languages.push(hasTs ? "TypeScript" : "JavaScript");
+    stack.ignorePatterns.push("node_modules/**", ".next/**", ".nuxt/**", ".turbo/**");
+
+    if (has("pnpm-lock.yaml")) stack.packageManager = "pnpm";
+    else if (has("yarn.lock")) stack.packageManager = "yarn";
+    else if (has("bun.lock") || has("bun.lockb")) stack.packageManager = "bun";
+    else if (has("package-lock.json")) stack.packageManager = "npm";
+
+    try {
+      const pkg = JSON.parse(fs.readFileSync(path.join(targetDir, "package.json"), "utf8"));
+      const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+      if (deps["next"]) stack.frameworks.push("Next.js");
+      if (deps["vite"]) stack.frameworks.push("Vite");
+      if (deps["react"]) stack.frameworks.push("React");
+      if (deps["vue"]) stack.frameworks.push("Vue");
+      if (deps["svelte"]) stack.frameworks.push("Svelte");
+      if (deps["@angular/core"]) stack.frameworks.push("Angular");
+      if (deps["express"]) stack.frameworks.push("Express");
+      if (deps["nestjs"] || deps["@nestjs/core"]) stack.frameworks.push("NestJS");
+      if (deps["fastify"]) stack.frameworks.push("Fastify");
+      if (deps["hono"]) stack.frameworks.push("Hono");
+
+      if (deps["vitest"]) stack.testRunners.push("Vitest");
+      if (deps["jest"]) stack.testRunners.push("Jest");
+      if (deps["@playwright/test"]) stack.testRunners.push("Playwright");
+      if (deps["cypress"]) stack.testRunners.push("Cypress");
+      if (deps["mocha"]) stack.testRunners.push("Mocha");
+
+      if (pkg.scripts && pkg.scripts.test) {
+        const testScript = pkg.scripts.test;
+        if (testScript.includes("node --test") && !stack.testRunners.includes("Node Test Runner")) {
+          stack.testRunners.push("Node Test Runner");
+        }
+      }
+
+      if (pkg.main) stack.entrypoints.push(pkg.main);
+      if (pkg.bin) {
+        if (typeof pkg.bin === "string") stack.entrypoints.push(pkg.bin);
+        else Object.values(pkg.bin).forEach((b) => stack.entrypoints.push(b));
+      }
+    } catch {}
+  }
+
+  // Go
+  if (has("go.mod")) {
+    stack.languages.push("Go");
+    stack.testRunners.push("go test");
+    if (has("main.go")) stack.entrypoints.push("main.go");
+  }
+
+  // Rust
+  if (has("Cargo.toml")) {
+    stack.languages.push("Rust");
+    stack.ignorePatterns.push("target/**");
+    stack.testRunners.push("cargo test");
+    if (has("src/main.rs")) stack.entrypoints.push("src/main.rs");
+    if (has("src/lib.rs")) stack.entrypoints.push("src/lib.rs");
+  }
+
+  // Python
+  if (has("pyproject.toml") || has("requirements.txt") || has("Pipfile") || has("setup.py")) {
+    stack.languages.push("Python");
+    stack.ignorePatterns.push(".venv/**", "venv/**", "__pycache__/**", "*.pyc", ".pytest_cache/**");
+    if (has("poetry.lock")) stack.packageManager = "poetry";
+    else if (has("Pipfile.lock")) stack.packageManager = "pipenv";
+    else if (has("requirements.txt")) stack.packageManager = "pip";
+
+    if (has("pytest.ini") || has(".pytest_cache") || has("tests")) stack.testRunners.push("pytest");
+    if (has("main.py")) stack.entrypoints.push("main.py");
+    if (has("app.py")) stack.entrypoints.push("app.py");
+    if (has("app/main.py")) stack.entrypoints.push("app/main.py");
+  }
+
+  // Conventional entrypoints fallback
+  if (stack.entrypoints.length === 0) {
+    const candidates = [
+      "src/index.ts", "src/index.js", "src/main.ts", "src/main.js", "src/App.tsx",
+      "index.ts", "index.js", "main.py", "app.py", "main.go"
+    ];
+    for (const c of candidates) {
+      if (has(c)) {
+        stack.entrypoints.push(c);
+        break;
+      }
+    }
+  }
+
+  return stack;
+}
+
+function detectProjectHarnesses(targetDir) {
+  const os = require("node:os");
+  const localHarnesses = [];
+  const checks = [
+    { harness: "antigravity", file: "GEMINI.md" },
+    { harness: "cursor", file: ".cursorrules" },
+    { harness: "claude", file: "CLAUDE.md" },
+    { harness: "cline", file: ".clinerules" },
+    { harness: "roo", file: ".roomodes" },
+    { harness: "windsurf", file: ".windsurfrules" },
+    { harness: "copilot", file: ".github/copilot-instructions.md" },
+    { harness: "codex", file: "CODEX.md" },
+    { harness: "codex", file: "AGENTS.md" },
+    { harness: "deepseek", file: ".deepseekrules" },
+    { harness: "opencode", file: "opencode.json" },
+    { harness: "aider", file: ".aider.conf.yml" },
+    { harness: "kimi", file: "KIMI.md" },
+    { harness: "pi", file: "PI.md" },
+    { harness: "hermes", file: "HERMES.md" },
+    { harness: "muse", file: "MUSE.md" },
+    { harness: "devin", file: "DEVIN.md" },
+    { harness: "droid", file: "DROID.md" },
+    { harness: "grok", file: "GROK.md" },
+    { harness: "qwen", file: "QWEN.md" }
+  ];
+
+  for (const c of checks) {
+    if (fs.existsSync(path.join(targetDir, c.file)) && !localHarnesses.includes(c.harness)) {
+      localHarnesses.push(c.harness);
+    }
+  }
+
+  const globalHarnesses = [];
+  const home = os.homedir();
+  if (fs.existsSync(path.join(home, ".gemini", "GEMINI.md"))) globalHarnesses.push("antigravity");
+  if (fs.existsSync(path.join(home, ".cursorrules")) || fs.existsSync(path.join(home, ".cursor"))) globalHarnesses.push("cursor");
+  if (fs.existsSync(path.join(home, ".claude", "CLAUDE.md")) || fs.existsSync(path.join(home, ".claude.json"))) globalHarnesses.push("claude");
+  if (fs.existsSync(path.join(home, ".codex"))) globalHarnesses.push("codex");
+
+  return { localHarnesses, globalHarnesses };
+}
+
+function discoverExistingHelpers(targetDir) {
+  const HELPER_DIR_NAMES = new Set(["utils", "util", "helpers", "helper", "lib", "common", "shared", "pkg", "tools"]);
+  const CODE_EXTS = new Set([".ts", ".js", ".tsx", ".jsx", ".go", ".py", ".rs"]);
+  const helpers = [];
+
+  function scan(currentDir, depth) {
+    if (depth > 4 || helpers.length >= 25) return;
+    let entries = [];
+    try {
+      entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+
+    for (const ent of entries) {
+      if (ent.isDirectory()) {
+        const dName = ent.name.toLowerCase();
+        if (dName.startsWith(".") || ["node_modules", "dist", "build", "target", "vendor", ".git", ".venv"].includes(dName)) continue;
+
+        if (HELPER_DIR_NAMES.has(dName)) {
+          collectHelperFiles(path.join(currentDir, ent.name));
+        } else {
+          scan(path.join(currentDir, ent.name), depth + 1);
+        }
+      }
+    }
+  }
+
+  function collectHelperFiles(dir) {
+    let entries = [];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+
+    for (const ent of entries) {
+      if (helpers.length >= 25) break;
+      if (ent.isFile()) {
+        const ext = path.extname(ent.name);
+        if (CODE_EXTS.has(ext) && !ent.name.includes(".test.") && !ent.name.includes(".spec.")) {
+          const fullPath = path.join(dir, ent.name);
+          const relPath = path.relative(targetDir, fullPath).replace(/\\/g, "/");
+          const symbols = extractSymbols(fullPath, ext);
+          if (symbols.length > 0) {
+            helpers.push({ file: relPath, symbols });
+          }
+        }
+      }
+    }
+  }
+
+  function extractSymbols(filePath, ext) {
+    const symbols = [];
+    try {
+      const content = fs.readFileSync(filePath, "utf8");
+      const lines = content.split("\n");
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (ext === ".ts" || ext === ".js" || ext === ".tsx" || ext === ".jsx") {
+          const fnMatch = trimmed.match(/^export\s+(?:async\s+)?function\s+([A-Za-z0-9_]+)/);
+          if (fnMatch) symbols.push(fnMatch[1]);
+          const constMatch = trimmed.match(/^export\s+const\s+([A-Za-z0-9_]+)\s*=\s*(?:async\s*)?\(/);
+          if (constMatch) symbols.push(constMatch[1]);
+          const classMatch = trimmed.match(/^export\s+class\s+([A-Za-z0-9_]+)/);
+          if (classMatch) symbols.push(classMatch[1]);
+        } else if (ext === ".py") {
+          const pyMatch = trimmed.match(/^def\s+([A-Za-z0-9_]+)\s*\(/);
+          if (pyMatch && !pyMatch[1].startsWith("_")) symbols.push(pyMatch[1]);
+        } else if (ext === ".go") {
+          const goMatch = trimmed.match(/^func\s+([A-Z][A-Za-z0-9_]+)\s*\(/);
+          if (goMatch) symbols.push(goMatch[1]);
+        } else if (ext === ".rs") {
+          const rsMatch = trimmed.match(/^pub\s+(?:async\s+)?fn\s+([A-Za-z0-9_]+)/);
+          if (rsMatch) symbols.push(rsMatch[1]);
+        }
+        if (symbols.length >= 10) break;
+      }
+    } catch {}
+    return symbols;
+  }
+
+  scan(targetDir, 0);
+  return helpers;
+}
+
+function analyzeComplexityAndDebt(targetDir, stack) {
+  const CODE_EXTS = new Set([".ts", ".js", ".tsx", ".jsx", ".go", ".py", ".rs", ".c", ".cpp", ".h", ".java"]);
+  const IGNORE_DIRS = new Set([
+    "node_modules", "dist", "build", "target", "vendor", ".git", ".venv", "venv", "__pycache__",
+    "coverage", ".next", ".nuxt", ".turbo", ".cache"
+  ]);
+
+  let totalFiles = 0;
+  let totalSloc = 0;
+  let maxDepth = 0;
+  let testFilesCount = 0;
+  let largestFile = { relPath: "", lines: 0 };
+  const enterpriseDirs = [];
+
+  function scan(currentDir, currentDepth) {
+    if (currentDepth > maxDepth) maxDepth = currentDepth;
+    let entries = [];
+    try {
+      entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+
+    for (const ent of entries) {
+      if (ent.isDirectory()) {
+        const dName = ent.name.toLowerCase();
+        if (IGNORE_DIRS.has(dName) || dName.startsWith(".")) continue;
+
+        if (["repositories", "usecases", "domain", "factories", "controllers", "entities"].includes(dName)) {
+          enterpriseDirs.push(dName);
+        }
+
+        scan(path.join(currentDir, ent.name), currentDepth + 1);
+      } else if (ent.isFile()) {
+        const ext = path.extname(ent.name);
+        const isTest = ent.name.includes(".test.") || ent.name.includes(".spec.") || ent.name.startsWith("test_");
+        if (isTest) testFilesCount++;
+
+        if (CODE_EXTS.has(ext)) {
+          totalFiles++;
+          const fullPath = path.join(currentDir, ent.name);
+          try {
+            const content = fs.readFileSync(fullPath, "utf8");
+            const lines = content.split("\n").filter((l) => l.trim().length > 0).length;
+            totalSloc += lines;
+            if (lines > largestFile.lines) {
+              largestFile = { relPath: path.relative(targetDir, fullPath).replace(/\\/g, "/"), lines };
+            }
+          } catch {}
+        }
+      }
+    }
+  }
+
+  scan(targetDir, 0);
+
+  let tier = "tier1-utility";
+  let tierName = "Tier 1 (Utility / CLI / Script)";
+  let tierMaxLines = 600;
+
+  if (totalSloc > 20000) {
+    tier = "tier3-platform";
+    tierName = "Tier 3 (Core Platform / Multi-tenant)";
+    tierMaxLines = 1500;
+  } else if (totalSloc > 1500) {
+    tier = "tier2-service";
+    tierName = "Tier 2 (Service / Application / Modular Library)";
+    tierMaxLines = 1000;
+  }
+
+  const findings = [];
+  const avgSloc = totalFiles > 0 ? Math.round(totalSloc / totalFiles) : 0;
+
+  if (tier === "tier1-utility" && (maxDepth >= 4 || enterpriseDirs.length > 0)) {
+    findings.push({
+      type: "bloat",
+      severity: "warn",
+      title: "Unearned Enterprise Bloat",
+      detail: `Small codebase (${totalSloc} SLOC across ${totalFiles} files) contains premature layers (${enterpriseDirs.join(", ") || "depth " + maxDepth}). Violates Invariant 2 (Earned Complexity). Suggestion: flatten into simple functions before creating abstract hierarchies.`
+    });
+  }
+
+  if (largestFile.lines > 1000) {
+    findings.push({
+      type: "god-file",
+      severity: "warn",
+      title: "Oversized Monolith Module",
+      detail: `'${largestFile.relPath}' contains ${largestFile.lines} lines. Violates 3 AM test readability. Suggestion: decouple into focused leaf modules or subcomponents.`
+    });
+  } else if (largestFile.lines > 500 && totalSloc > 0 && (largestFile.lines / totalSloc) > 0.4) {
+    findings.push({
+      type: "god-file",
+      severity: "warn",
+      title: "God-File Concentration",
+      detail: `'${largestFile.relPath}' holds ${Math.round((largestFile.lines / totalSloc) * 100)}% of the entire codebase logic (${largestFile.lines} lines). Decouple core logic from routes/wrappers.`
+    });
+  }
+
+  if (totalSloc > 300 && testFilesCount === 0) {
+    findings.push({
+      type: "test-gap",
+      severity: "warn",
+      title: "Zero Test Verification Net",
+      detail: `No automated test files detected for ${totalSloc} SLOC. Violates Invariant 5 (Verification Gate). Suggestion: add failing reproduction tests before editing business contracts.`
+    });
+  }
+
+  return {
+    tier,
+    tierName,
+    tierMaxLines,
+    totalFiles,
+    totalSloc,
+    avgSloc,
+    maxDepth,
+    largestFile,
+    testFilesCount,
+    findings
+  };
+}
+
+function generateProjectBrief(targetDir, stack, complexity, helpers, harnesses) {
+  const briefLines = [];
+  briefLines.push("# Project Reconnaissance Brief & Topology");
+  briefLines.push(`> Generated by **Q.E.D. Onboarding Engine** on ${new Date().toISOString().split("T")[0]}`);
+  briefLines.push(`> Target: \`${path.resolve(targetDir)}\``);
+  briefLines.push("");
+
+  briefLines.push("## 1. Project Identity & Stack Telemetry");
+  briefLines.push(`- **Languages**: ${stack.languages.join(", ") || "Generic / Polyglot"}`);
+  if (stack.packageManager) briefLines.push(`- **Package Manager**: \`${stack.packageManager}\``);
+  if (stack.frameworks.length > 0) briefLines.push(`- **Frameworks**: ${stack.frameworks.join(", ")}`);
+  if (stack.entrypoints.length > 0) {
+    briefLines.push(`- **Discovered Entrypoints**: \`${stack.entrypoints.join("`, `")}\``);
+  }
+  briefLines.push(`- **Active AI Harnesses**: ${harnesses.map((h) => ADAPTER_CATALOG[h]?.name || h).join(", ")}`);
+  briefLines.push("");
+
+  briefLines.push("## 2. Earned Complexity Profile");
+  briefLines.push(`- **Classified Tier**: **${complexity.tierName}**`);
+  briefLines.push(`- **Total Code Volume (SLOC)**: ${complexity.totalSloc.toLocaleString()} lines across ${complexity.totalFiles} code files`);
+  briefLines.push(`- **Code Density**: ~${complexity.avgSloc} lines/file (Max directory depth: ${complexity.maxDepth})`);
+  briefLines.push(`- **Largest Source File**: \`${complexity.largestFile.relPath}\` (${complexity.largestFile.lines} lines)`);
+  briefLines.push(`- **Recommended File Churn / Size Ceiling**: $\\le ${complexity.tierMaxLines}$ lines`);
+  briefLines.push("");
+
+  briefLines.push("## 3. Pre-Q.E.D. Debt & Architectural Findings");
+  if (complexity.findings.length === 0) {
+    briefLines.push("✓ **Clean Baseline**: No god-files, unearned enterprise layers, or severe structural debt detected.");
+  } else {
+    for (const f of complexity.findings) {
+      briefLines.push(`- **[!WARN] ${f.title}**: ${f.detail}`);
+    }
+  }
+  briefLines.push("");
+
+  briefLines.push("## 4. Anti-Duplication Atlas (Existing Helpers & Utilities)");
+  briefLines.push("> [!IMPORTANT]");
+  briefLines.push("> **SEARCH BEFORE YOU CREATE**: Check this inventory before creating any new helper, utility function, or wrapper. Never duplicate existing abstractions.");
+  briefLines.push("");
+  if (helpers.length === 0) {
+    briefLines.push("*No centralized utility modules detected. Keep new helpers strictly flat and idiomatic.*");
+  } else {
+    for (const h of helpers) {
+      briefLines.push(`### \`${h.file}\``);
+      briefLines.push(`- Symbols: \`${h.symbols.join("`, `")}\``);
+    }
+  }
+  briefLines.push("");
+
+  briefLines.push("## 5. Verification Gate & Mechanical Enforcement");
+  if (stack.testRunners.length > 0) {
+    briefLines.push(`- **Detected Test Runner**: ${stack.testRunners.join(", ")} (${complexity.testFilesCount} test file(s))`);
+  } else {
+    briefLines.push(`- **Test Files**: ${complexity.testFilesCount} test file(s) found`);
+  }
+  briefLines.push("- **Mechanical Verification Gate**: `qed check` (or `node bin/qed-engine.js check`)");
+  briefLines.push("- **Full Health Check**: `qed doctor`");
+  briefLines.push("");
+
+  briefLines.push("## 6. Mandatory Agent Flight Protocol (Mode A Invariant)");
+  briefLines.push("1. **Turn-0 Ambient Priming**: Always ground yourself in this brief before writing code.");
+  briefLines.push("2. **Zero Speculation**: Never assume contracts or APIs. Grep callers and trace runtime schemas.");
+  briefLines.push("3. **Reproduction First (Red -> Green)**: Write a failing reproduction test before modifying contracts.");
+  briefLines.push("4. **Root Cause Only**: No empty catch blocks, no arbitrary timeouts, no loose `any` casts.");
+  briefLines.push("5. **Empirical Gate**: Run `qed check` in the terminal and provide real stdout before marking completion.");
+  briefLines.push("");
+
+  return briefLines.join("\n");
+}
+
+function injectReadmeBadge(targetDir) {
+  const readmePath = path.join(targetDir, "README.md");
+  if (!fs.existsSync(readmePath)) return false;
+
+  try {
+    const content = fs.readFileSync(readmePath, "utf8");
+    if (content.includes("keelbismark/qed")) return false;
+
+    const badge = "[![Q.E.D. Standard](https://img.shields.io/badge/Q.E.D.-Quality%20%3E%20Speed-000000?style=flat&logo=target)](https://github.com/keelbismark/qed)";
+    const lines = content.split("\n");
+    let inserted = false;
+    const newLines = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      newLines.push(lines[i]);
+      if (!inserted && lines[i].startsWith("# ")) {
+        newLines.push("");
+        newLines.push(badge);
+        inserted = true;
+      }
+    }
+
+    if (!inserted) {
+      newLines.unshift(badge + "\n");
+    }
+
+    fs.writeFileSync(readmePath, newLines.join("\n"), "utf8");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function writeQedrc(targetDir, stack, complexity, options = {}) {
+  const configPath = path.join(targetDir, ".qedrc.json");
+  if (fs.existsSync(configPath) && !options.force) {
+    return { created: false, path: configPath };
+  }
+
+  const qedrc = {
+    $schema: "https://raw.githubusercontent.com/keelbismark/qed/main/schema/qedrc.schema.json",
+    tier: complexity.tier,
+    stack: {
+      languages: stack.languages,
+      packageManager: stack.packageManager,
+      frameworks: stack.frameworks
+    },
+    ignorePatterns: stack.ignorePatterns,
+    rules: {
+      QED001: "error",
+      QED002: "error",
+      QED003: "error",
+      QED004: "error",
+      QED005: "error",
+      QED006: "error",
+      QED007: "error",
+      QED008: "error",
+      QED009: "error",
+      QED010: "error",
+      QED011: "error",
+      QED012: "error"
+    }
+  };
+
+  fs.writeFileSync(configPath, JSON.stringify(qedrc, null, 2) + "\n", "utf8");
+  return { created: true, path: configPath };
+}
+
+function installMatchingAdapters(targetDir, harnesses, options = {}) {
+  const qedRoot = path.resolve(__dirname, "..");
+  const installedFiles = [];
+
+  for (const h of harnesses) {
+    const entry = ADAPTER_CATALOG[h];
+    if (!entry) continue;
+
+    for (const file of entry.files) {
+      const srcRel = options.lite && file.liteSrc ? file.liteSrc : file.src;
+      const fullSrc = path.join(qedRoot, srcRel);
+      const fullDest = path.join(targetDir, file.dest);
+
+      if (!fs.existsSync(fullSrc)) continue;
+
+      fs.mkdirSync(path.dirname(fullDest), { recursive: true });
+      fs.copyFileSync(fullSrc, fullDest);
+      installedFiles.push(file.dest);
+    }
+  }
+
+  return installedFiles;
+}
+
+function runInit(targetDir, options = {}) {
+  const { performance } = require("node:perf_hooks");
+  const t0 = performance.now();
+  const absTarget = path.resolve(targetDir);
+
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.cyan(" Q.E.D. Project Authorization & Onboarding Engine"));
+  console.log(colors.gray(" Quod Erat Demonstrandum: Evidence Before Assertions"));
+  console.log(colors.cyan("=========================================================="));
+  console.log(colors.gray(`Target: ${absTarget}\n`));
+
+  // 1. Stack Telemetry
+  const stack = detectProjectStack(absTarget);
+  console.log(colors.bold("[1/6] Stack Telemetry"));
+  console.log(`  Languages: ${stack.languages.join(", ") || "Generic / Polyglot"}`);
+  if (stack.packageManager) console.log(`  Package Manager: ${stack.packageManager}`);
+  if (stack.frameworks.length > 0) console.log(`  Frameworks: ${stack.frameworks.join(", ")}`);
+  if (stack.entrypoints.length > 0) console.log(`  Discovered Entrypoint: ${stack.entrypoints.join(", ")}`);
+
+  // 2. Earned Complexity Profile
+  const complexity = analyzeComplexityAndDebt(absTarget, stack);
+  console.log(`\n${colors.bold("[2/6] Earned Complexity Profile")}`);
+  console.log(`  Classified Tier: ${colors.cyan(complexity.tierName)}`);
+  console.log(`  Code Volume: ${complexity.totalSloc.toLocaleString()} SLOC across ${complexity.totalFiles} files`);
+  console.log(`  Code Density: ~${complexity.avgSloc} SLOC/file (Max Nesting Depth: ${complexity.maxDepth})`);
+  console.log(`  Recommended Churn Ceiling: <= ${complexity.tierMaxLines} lines`);
+
+  // 3. Pre-Q.E.D. Debt Findings
+  console.log(`\n${colors.bold("[3/6] Pre-Q.E.D. Architectural Findings")}`);
+  if (complexity.findings.length === 0) {
+    console.log(colors.green("  ✓ Clean Baseline: No god-files or premature layer bloat detected."));
+  } else {
+    for (const f of complexity.findings) {
+      console.log(`  ${colors.yellow("[!WARN]")} ${colors.bold(f.title)}: ${f.detail}`);
+    }
+  }
+
+  // 4. Anti-Duplication Atlas
+  const helpers = discoverExistingHelpers(absTarget);
+  console.log(`\n${colors.bold("[4/6] Anti-Duplication Atlas")}`);
+  if (helpers.length === 0) {
+    console.log(colors.gray("  No centralized utility modules detected. New helpers must be kept flat."));
+  } else {
+    console.log(`  Discovered ${helpers.length} utility module(s) with reusable helpers:`);
+    for (const h of helpers.slice(0, 5)) {
+      const symList = h.symbols.slice(0, 3).join(", ") + (h.symbols.length > 3 ? `... (+${h.symbols.length - 3})` : "");
+      console.log(`    - ${colors.cyan(h.file)}: ${symList}`);
+    }
+  }
+
+  // 5. Harness Discovery & Adapter Installation
+  const harnessProbe = detectProjectHarnesses(absTarget);
+  let selectedHarnesses = [];
+
+  if (options.harness) {
+    const resolved = resolveHarnessName(options.harness);
+    if (resolved === "all") {
+      selectedHarnesses = Object.keys(ADAPTER_CATALOG);
+    } else if (ADAPTER_CATALOG[resolved]) {
+      selectedHarnesses = [resolved];
+    }
+  }
+
+  if (selectedHarnesses.length === 0) {
+    if (harnessProbe.localHarnesses.length > 0) {
+      selectedHarnesses = harnessProbe.localHarnesses;
+    } else if (harnessProbe.globalHarnesses.length > 0) {
+      selectedHarnesses = harnessProbe.globalHarnesses;
+    } else {
+      selectedHarnesses = ["antigravity", "cursor", "claude"];
+    }
+  }
+
+  console.log(`\n${colors.bold("[5/6] Reconnaissance Brief & Configuration")}`);
+  if (options.dryRun) {
+    console.log(colors.yellow("  [DRY RUN] Skipping file writes."));
+  } else {
+    // Generate .qed/BRIEF.md
+    const qedDir = path.join(absTarget, ".qed");
+    fs.mkdirSync(qedDir, { recursive: true });
+    const briefContent = generateProjectBrief(absTarget, stack, complexity, helpers, selectedHarnesses);
+    fs.writeFileSync(path.join(qedDir, "BRIEF.md"), briefContent, "utf8");
+    console.log(colors.green("  [+] Generated: .qed/BRIEF.md (Situational awareness armed for AI agents at Turn 0)"));
+
+    // Generate .qedrc.json
+    const qedrcRes = writeQedrc(absTarget, stack, complexity, options);
+    if (qedrcRes.created) {
+      console.log(colors.green(`  [+] Created: .qedrc.json (Configured for ${complexity.tier})`));
+    } else {
+      console.log(colors.yellow(`  [!] Preserved existing: .qedrc.json (use --force to overwrite)`));
+    }
+
+    // Install Adapters
+    const installed = installMatchingAdapters(absTarget, selectedHarnesses, options);
+    for (const h of selectedHarnesses) {
+      const cat = ADAPTER_CATALOG[h];
+      if (cat) console.log(colors.green(`  [+] Installed Adapter: ${cat.name}`));
+    }
+
+    // README Badge
+    const badgeAdded = injectReadmeBadge(absTarget);
+    if (badgeAdded) {
+      console.log(colors.green("  [+] Updated: README.md with Q.E.D. Standard verification badge"));
+    }
+  }
+
+  // 6. Git Verification Gate
+  console.log(`\n${colors.bold("[6/6] Git Verification Gate")}`);
+  const gitDir = path.join(absTarget, ".git");
+  if (fs.existsSync(gitDir)) {
+    if (!options.dryRun) {
+      const hooksDir = path.join(gitDir, "hooks");
+      installGitHooks(hooksDir);
+      console.log(colors.green("  [+] Installed: .git/hooks/pre-commit (qed check)"));
+      console.log(colors.green("  [+] Installed: .git/hooks/pre-push (qed test)"));
+    } else {
+      console.log(colors.yellow("  [DRY RUN] Git hooks installation skipped."));
+    }
+  } else {
+    console.log(colors.gray("  Git repository not detected; git hooks skipped (run 'git init && qed hook' later)"));
+  }
+
+  const duration = (performance.now() - t0).toFixed(1);
+  console.log("\n----------------------------------------------------------");
+  console.log(colors.green(`✓ Q.E.D. Initialized successfully in ${duration}ms.`));
+  console.log(colors.gray("  Run 'qed check' or 'qed doctor' to verify repository health."));
+
+  if (options.explore) {
+    const briefContent = generateProjectBrief(absTarget, stack, complexity, helpers, selectedHarnesses);
+    console.log("\n" + colors.cyan("=== .qed/BRIEF.md ===") + "\n");
+    console.log(briefContent);
+  }
+}
+
 // CLI Execution Entrypoint
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -1958,31 +2807,22 @@ if (require.main === module) {
     }
     process.exit(1);
   } else if (command === "init") {
-    const configPath = path.join(path.resolve(targetDir), ".qedrc.json");
-    if (fs.existsSync(configPath)) {
-      console.log(colors.yellow(`Config file already exists at: ${configPath}`));
-      process.exit(0);
-    }
-    const starterConfig = {
-      $schema: "https://raw.githubusercontent.com/keelbismark/qed/main/schema/qedrc.schema.json",
-      ignorePatterns: ["dist/**", "build/**", "coverage/**", "vendor/**"],
-      rules: {
-        QED001: "error",
-        QED002: "error",
-        QED003: "error",
-        QED004: "error",
-        QED005: "error",
-        QED006: "error",
-        QED007: "error",
-        QED008: "error",
-        QED009: "error",
-        QED010: "error",
-        QED011: "error",
-        QED012: "error",
-      },
-    };
-    fs.writeFileSync(configPath, JSON.stringify(starterConfig, null, 2) + "\n", "utf8");
-    console.log(colors.green(`[+] Initialized Q.E.D. configuration at: ${configPath}`));
+    const isLite = args.includes("--lite");
+    const isYes = args.includes("-y") || args.includes("--yes");
+    const isForce = args.includes("-f") || args.includes("--force");
+    const isExplore = args.includes("--explore");
+    const isDryRun = args.includes("--dry-run");
+    const harnessIdx = args.indexOf("--harness");
+    const explicitHarness = harnessIdx !== -1 && args[harnessIdx + 1] ? args[harnessIdx + 1] : null;
+
+    runInit(targetDir, {
+      lite: isLite,
+      yes: isYes,
+      force: isForce,
+      explore: isExplore,
+      dryRun: isDryRun,
+      harness: explicitHarness,
+    });
     process.exit(0);
   } else if (command === "hook") {
     const gitDir = path.join(path.resolve(targetDir), ".git");

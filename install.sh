@@ -158,6 +158,12 @@ if [ "$HARNESS" = "all" ] || [ "$HARNESS" = "antigravity" ]; then
             install_file "adapters/antigravity/GEMINI.lite.md" "$HOME/.gemini/GEMINI.lite.md"
         fi
         install_file "adapters/antigravity/.antigravity-plugin/plugin.json" "$BASE_DIR/.antigravity-plugin/plugin.json"
+        mkdir -p "$HOME/.gemini/config/plugins/qed/hooks" "$HOME/.gemini/config/plugins/qed/skills/using-qed" "$HOME/.gemini/config/plugins/qed/skills/qed-reconnaissance"
+        install_file "plugins/qed/plugin.json" "$HOME/.gemini/config/plugins/qed/plugin.json"
+        install_file "plugins/qed/hooks/hooks.json" "$HOME/.gemini/config/plugins/qed/hooks/hooks.json"
+        install_file "plugins/qed/hooks/session-start" "$HOME/.gemini/config/plugins/qed/hooks/session-start"
+        install_file "plugins/qed/skills/using-qed/SKILL.md" "$HOME/.gemini/config/plugins/qed/skills/using-qed/SKILL.md"
+        install_file "plugins/qed/skills/qed-reconnaissance/SKILL.md" "$HOME/.gemini/config/plugins/qed/skills/qed-reconnaissance/SKILL.md"
     else
         install_file "$src" "./GEMINI.md"
         if [ "$LITE" -eq 1 ]; then

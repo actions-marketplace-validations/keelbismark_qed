@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# SessionStart hook for Q.E.D. Engineering Standard plugin
+
+set -euo pipefail
+
+case "$0" in
+  */*|*\\*) SCRIPT_DIR="${0%[/\\]*}" ;;
+  *) SCRIPT_DIR="." ;;
+esac
+PLUGIN_ROOT="${SCRIPT_DIR}/.."
+
+skill_md="${PLUGIN_ROOT}/skills/using-qed/SKILL.md"
+using_qed_content="Error reading using-qed skill"
+if [ -r "$skill_md" ]; then
+  IFS= read -r -d '' using_qed_content < "$skill_md" || true
+  while [[ $using_qed_content == *$'\n' ]]; do
+    using_qed_content="${using_qed_content%$'\n'}"
+  done
+fi
+
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    using_qed_escaped="$s"
+}
+
+escape_for_json "$using_qed_content"
+session_context="<EXTREMELY_IMPORTANT>\nYou are permanently governed by the Q.E.D. High-Assurance Runtime (Quod Erat Demonstrandum: Evidence Before Assertions).\n\n**Below is the full content of your 'qed:using-qed' skill - your primary operating standard. For any software development, debugging, or code modification task, you MUST follow this protocol:**\n\n${using_qed_escaped}\n</EXTREMELY_IMPORTANT>"
+
+emit_json() {
+  trap '' PIPE
+  printf "$@" 2>/dev/null || true
+}
+
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  emit_json '{\n  "additional_context": "%s"\n}\n' "$session_context"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ] && [ -z "${MUSE_PLUGIN_ROOT:-}" ]; then
+  emit_json '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+elif [ -n "${MUSE_PLUGIN_ROOT:-}" ]; then
+  emit_json '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  emit_json '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0

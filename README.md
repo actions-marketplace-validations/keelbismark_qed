@@ -89,6 +89,7 @@ Replace `cursor` with `claude`, `codex`, `copilot`, `roo`, or another [supported
 ### 3. Make verification routine
 
 ```bash
+qed init           # Onboard project: detect stack, complexity tier, Anti-Duplication Atlas, BRIEF.md, and hooks
 qed check          # Inspect the current project
 qed hook           # Install pre-commit and pre-push verification hooks
 qed doctor         # Check repository, hooks, adapter drift, and CI availability
@@ -141,6 +142,8 @@ After a global installation, use `qed`; from this cloned repository, use `node b
 
 | Command | Purpose |
 | :--- | :--- |
+| `qed init [path]` | Onboard project: detect stack, Earned Complexity Tier, Anti-Duplication Atlas, BRIEF.md, and hooks |
+| `qed init --explore` | Onboard and display full Agent Reconnaissance Brief directly to stdout |
 | `qed check [path]` | Scan the current directory or an explicit project path |
 | `qed check --strict` | Treat warnings as failures too |
 | `qed check --json` | Produce machine-readable results |

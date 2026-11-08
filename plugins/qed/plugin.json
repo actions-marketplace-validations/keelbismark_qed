@@ -1,0 +1,29 @@
+{
+  "name": "qed",
+  "displayName": "Q.E.D. Engineering Standard",
+  "version": "1.0.4",
+  "description": "High-Assurance Engineering Standard (Quod Erat Demonstrandum: Evidence Before Assertions). Enforces Mode A, Zero Speculation, Reconnaissance Walk, and Mechanical Gates.",
+  "logo": "https://raw.githubusercontent.com/keelbismark/qed/main/assets/qed-badge.svg",
+  "suggestedPrompts": [
+    "Run Q.E.D. reconnaissance on this codebase",
+    "Verify blast radius and run Q.E.D. mechanical verification gate"
+  ],
+  "category": "Developer Tools",
+  "keywords": [
+    "qed",
+    "engineering-standard",
+    "tdd",
+    "blast-radius",
+    "anti-duplication",
+    "verification-gate",
+    "mode-a",
+    "reconnaissance"
+  ],
+  "author": {
+    "name": "Keel Bismarck",
+    "url": "https://github.com/keelbismark/qed"
+  },
+  "homepage": "https://github.com/keelbismark/qed",
+  "repository": "https://github.com/keelbismark/qed",
+  "license": "MIT"
+}

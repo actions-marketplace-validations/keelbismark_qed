@@ -2437,7 +2437,7 @@ function generateProjectBrief(targetDir, stack, complexity, helpers, harnesses) 
   briefLines.push(`- **Total Code Volume (SLOC)**: ${complexity.totalSloc.toLocaleString()} lines across ${complexity.totalFiles} code files`);
   briefLines.push(`- **Code Density**: ~${complexity.avgSloc} lines/file (Max directory depth: ${complexity.maxDepth})`);
   briefLines.push(`- **Largest Source File**: \`${complexity.largestFile.relPath}\` (${complexity.largestFile.lines} lines)`);
-  briefLines.push(`- **Recommended File Churn / Size Ceiling**: $\\le ${complexity.tierMaxLines}$ lines`);
+  briefLines.push(`- **Recommended File Churn / Size Ceiling**: <= ${complexity.tierMaxLines} lines`);
   briefLines.push("");
 
   briefLines.push("## 3. Pre-Q.E.D. Debt & Architectural Findings");
@@ -2445,7 +2445,7 @@ function generateProjectBrief(targetDir, stack, complexity, helpers, harnesses) 
     briefLines.push("✓ **Clean Baseline**: No god-files, unearned enterprise layers, or severe structural debt detected.");
   } else {
     for (const f of complexity.findings) {
-      briefLines.push(`- **[!WARN] ${f.title}**: ${f.detail}`);
+      briefLines.push(`- **[WARN] ${f.title}**: ${f.detail}`);
     }
   }
   briefLines.push("");
@@ -2483,6 +2483,77 @@ function generateProjectBrief(targetDir, stack, complexity, helpers, harnesses) 
   briefLines.push("");
 
   return briefLines.join("\n");
+}
+
+function printBriefForConsole(targetDir, stack, complexity, helpers, harnesses) {
+  console.log("\n" + colors.cyan("=========================================================="));
+  console.log(colors.cyan(" Q.E.D. Codebase Reconnaissance Brief & Topology"));
+  console.log(colors.gray(` Target: ${path.resolve(targetDir)}`));
+  console.log(colors.cyan("=========================================================="));
+
+  // 1. Stack Telemetry
+  console.log(`\n${colors.bold("1. Project Identity & Stack Telemetry")}`);
+  console.log(`   Languages:             ${stack.languages.join(", ") || "Generic / Polyglot"}`);
+  if (stack.packageManager) {
+    console.log(`   Package Manager:       ${stack.packageManager}`);
+  }
+  if (stack.frameworks.length > 0) {
+    console.log(`   Frameworks:            ${stack.frameworks.join(", ")}`);
+  }
+  if (stack.entrypoints.length > 0) {
+    console.log(`   Discovered Entrypoint: ${stack.entrypoints.join(", ")}`);
+  }
+  const harnessNames = harnesses.map((h) => ADAPTER_CATALOG[h]?.name || h).join(", ");
+  console.log(`   Active AI Harnesses:   ${harnessNames}`);
+
+  // 2. Earned Complexity Profile
+  console.log(`\n${colors.bold("2. Earned Complexity Profile")}`);
+  console.log(`   Classified Tier:       ${colors.cyan(complexity.tierName)}`);
+  console.log(`   Code Volume:           ${complexity.totalSloc.toLocaleString()} SLOC across ${complexity.totalFiles} code files`);
+  console.log(`   Code Density:          ~${complexity.avgSloc} SLOC/file (Max nesting depth: ${complexity.maxDepth})`);
+  console.log(`   Largest Source File:   ${complexity.largestFile.relPath} (${complexity.largestFile.lines} lines)`);
+  console.log(`   Recommended Ceiling:   <= ${complexity.tierMaxLines} lines per module`);
+
+  // 3. Pre-Q.E.D. Debt Findings
+  console.log(`\n${colors.bold("3. Pre-Q.E.D. Architectural Findings")}`);
+  if (complexity.findings.length === 0) {
+    console.log(colors.green("   ✓ Clean Baseline: No god-files or premature layer bloat detected."));
+  } else {
+    for (const f of complexity.findings) {
+      console.log(`   ${colors.yellow("[!WARN]")} ${colors.bold(f.title)}:`);
+      console.log(`          ${f.detail}`);
+    }
+  }
+
+  // 4. Anti-Duplication Atlas
+  console.log(`\n${colors.bold("4. Anti-Duplication Atlas (Existing Helpers)")}`);
+  if (helpers.length === 0) {
+    console.log(colors.gray("   No centralized utility modules detected. Keep new helpers strictly flat and idiomatic."));
+  } else {
+    for (const h of helpers) {
+      const symList = h.symbols.join(", ");
+      console.log(`   - ${colors.cyan(h.file)}: ${symList}`);
+    }
+  }
+
+  // 5. Verification Gate
+  console.log(`\n${colors.bold("5. Verification Gate & Mechanical Enforcement")}`);
+  if (stack.testRunners.length > 0) {
+    console.log(`   Detected Test Runner:  ${stack.testRunners.join(", ")} (${complexity.testFilesCount} test file(s))`);
+  } else {
+    console.log(`   Test Files:            ${complexity.testFilesCount} test file(s) found`);
+  }
+  console.log(`   Mechanical Gate:       ${colors.cyan("qed check")} (or node bin/qed-engine.js check)`);
+  console.log(`   Full Health Check:     ${colors.cyan("qed doctor")}`);
+
+  // 6. Mandatory Flight Protocol
+  console.log(`\n${colors.bold("6. Mandatory Agent Flight Protocol (Mode A Invariant)")}`);
+  console.log(`   1. ${colors.bold("Turn-0 Ambient Priming")}: Always ground in .qed/BRIEF.md before writing code.`);
+  console.log(`   2. ${colors.bold("Zero Speculation")}:       Never assume contracts or APIs. Grep callers & trace wire.`);
+  console.log(`   3. ${colors.bold("Reproduction First")}:     Write a failing reproduction test before modifying contracts.`);
+  console.log(`   4. ${colors.bold("Root Cause Only")}:        No empty catch blocks, no loose 'any' casts.`);
+  console.log(`   5. ${colors.bold("Empirical Gate")}:         Run 'qed check' in terminal and show real stdout as proof.`);
+  console.log(colors.cyan("==========================================================\n"));
 }
 
 function injectReadmeBadge(targetDir) {
@@ -2705,9 +2776,7 @@ function runInit(targetDir, options = {}) {
   console.log(colors.gray("  Run 'qed check' or 'qed doctor' to verify repository health."));
 
   if (options.explore) {
-    const briefContent = generateProjectBrief(absTarget, stack, complexity, helpers, selectedHarnesses);
-    console.log("\n" + colors.cyan("=== .qed/BRIEF.md ===") + "\n");
-    console.log(briefContent);
+    printBriefForConsole(absTarget, stack, complexity, helpers, selectedHarnesses);
   }
 }
 

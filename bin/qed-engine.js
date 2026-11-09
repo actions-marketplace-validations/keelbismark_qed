@@ -1867,7 +1867,6 @@ const ADAPTER_CATALOG = {
     name: "Google Antigravity",
     files: [
       { src: "adapters/antigravity/GEMINI.md", liteSrc: "adapters/antigravity/GEMINI.lite.md", dest: "GEMINI.md" },
-      { src: "adapters/antigravity/.antigravity-plugin/plugin.json", dest: ".antigravity-plugin/plugin.json" },
       { src: "plugins/qed/skills/using-qed/SKILL.md", dest: ".gemini/skills/using-qed/SKILL.md" },
       { src: "plugins/qed/skills/qed-debug/SKILL.md", dest: ".gemini/skills/qed-debug/SKILL.md" },
       { src: "plugins/qed/skills/systematic-debugging/SKILL.md", dest: ".gemini/skills/systematic-debugging/SKILL.md" },
@@ -1882,7 +1881,6 @@ const ADAPTER_CATALOG = {
     name: "Cursor IDE",
     files: [
       { src: "adapters/cursor/.cursorrules", liteSrc: "adapters/cursor/.cursorrules.lite", dest: ".cursorrules" },
-      { src: "adapters/cursor/.cursor-plugin/plugin.json", dest: ".cursor-plugin/plugin.json" },
       { src: "adapters/cursor/.cursor/rules/00-constitution.mdc", liteSrc: "adapters/cursor/.cursor/rules/00-constitution.lite.mdc", dest: ".cursor/rules/00-constitution.mdc" },
       { src: "adapters/cursor/.cursor/rules/01-blast-radius.mdc", dest: ".cursor/rules/01-blast-radius.mdc" },
       { src: "adapters/cursor/.cursor/rules/02-anti-duplication.mdc", dest: ".cursor/rules/02-anti-duplication.mdc" },
@@ -1897,8 +1895,6 @@ const ADAPTER_CATALOG = {
     name: "Claude Code",
     files: [
       { src: "adapters/claude-code/CLAUDE.md", liteSrc: "adapters/claude-code/CLAUDE.lite.md", dest: "CLAUDE.md" },
-      { src: "adapters/claude-code/.claude-plugin/plugin.json", dest: ".claude-plugin/plugin.json" },
-      { src: "adapters/claude-code/.claude-plugin/marketplace.json", dest: ".claude-plugin/marketplace.json" },
       { src: "plugins/qed/skills/using-qed/SKILL.md", dest: ".claude/skills/using-qed/SKILL.md" },
       { src: "plugins/qed/skills/qed-debug/SKILL.md", dest: ".claude/skills/qed-debug/SKILL.md" },
       { src: "plugins/qed/skills/systematic-debugging/SKILL.md", dest: ".claude/skills/systematic-debugging/SKILL.md" },
@@ -1948,8 +1944,7 @@ const ADAPTER_CATALOG = {
     name: "Codex & AGENTS.md",
     files: [
       { src: "adapters/codex/CODEX.md", liteSrc: "adapters/codex/CODEX.lite.md", dest: "CODEX.md" },
-      { src: "adapters/codex/AGENTS.md", liteSrc: "adapters/codex/AGENTS.lite.md", dest: "AGENTS.md" },
-      { src: "adapters/codex/.codex-plugin/plugin.json", dest: ".codex-plugin/plugin.json" }
+      { src: "adapters/codex/AGENTS.md", liteSrc: "adapters/codex/AGENTS.lite.md", dest: "AGENTS.md" }
     ]
   },
   deepseek: {
@@ -1992,24 +1987,19 @@ const ADAPTER_CATALOG = {
   hermes: {
     name: "Hermes Agent",
     files: [
-      { src: "adapters/hermes/HERMES.md", liteSrc: "adapters/hermes/HERMES.lite.md", dest: "HERMES.md" },
-      { src: "adapters/hermes/.hermes-plugin/plugin.yaml", dest: ".hermes-plugin/plugin.yaml" },
-      { src: "adapters/hermes/.hermes-plugin/__init__.py", dest: ".hermes-plugin/__init__.py" }
+      { src: "adapters/hermes/HERMES.md", liteSrc: "adapters/hermes/HERMES.lite.md", dest: "HERMES.md" }
     ]
   },
   muse: {
     name: "Muse Agent",
     files: [
-      { src: "adapters/muse/MUSE.md", liteSrc: "adapters/muse/MUSE.lite.md", dest: "MUSE.md" },
-      { src: "adapters/muse/.muse-plugin/plugin.json", dest: ".muse-plugin/plugin.json" },
-      { src: "adapters/muse/.muse-plugin/marketplace.json", dest: ".muse-plugin/marketplace.json" }
+      { src: "adapters/muse/MUSE.md", liteSrc: "adapters/muse/MUSE.lite.md", dest: "MUSE.md" }
     ]
   },
   devin: {
     name: "Devin",
     files: [
       { src: "adapters/devin/DEVIN.md", liteSrc: "adapters/devin/DEVIN.lite.md", dest: "DEVIN.md" },
-      { src: "adapters/devin/.devin-plugin/plugin.json", dest: ".devin-plugin/plugin.json" },
       { src: "adapters/devin/.devin/config.json", dest: ".devin/config.json" }
     ]
   },
@@ -2025,7 +2015,6 @@ const ADAPTER_CATALOG = {
     name: "Grok",
     files: [
       { src: "adapters/grok/GROK.md", liteSrc: "adapters/grok/GROK.lite.md", dest: "GROK.md" },
-      { src: "adapters/grok/.grok-plugin/plugin.json", dest: ".grok-plugin/plugin.json" },
       { src: "adapters/grok/.grok/config.json", dest: ".grok/config.json" }
     ]
   },
@@ -2648,6 +2637,91 @@ function installMatchingAdapters(targetDir, harnesses, options = {}) {
   return installedFiles;
 }
 
+function runClean(targetDir) {
+  const absTarget = path.resolve(targetDir);
+  console.log(`\n==========================================================`);
+  console.log(` Q.E.D. Root Hygiene & Adapter Pruning Engine`);
+  console.log(` Evidence Before Assertions`);
+  console.log(`==========================================================`);
+  console.log(`Target: ${absTarget}\n`);
+
+  const STRAY_DIRS = [
+    ".antigravity-plugin",
+    ".claude-plugin",
+    ".cursor-plugin",
+    ".codex-plugin",
+    ".hermes-plugin",
+    ".muse-plugin",
+    ".devin-plugin",
+    ".grok-plugin",
+    ".cursor",
+    ".claude",
+    ".gemini",
+    ".droid",
+    ".kimi",
+    ".pi",
+    ".windsurf",
+    ".opencode"
+  ];
+  const STRAY_FILES = [
+    ".cursorrules",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CODEX.md",
+    "GEMINI.md",
+    "DEEPSEEK.md",
+    ".deepseekrules",
+    ".clinerules",
+    ".roomodes",
+    ".windsurfrules",
+    "KIMI.md",
+    ".kimirules",
+    "PI.md",
+    "HERMES.md",
+    "MUSE.md",
+    "DEVIN.md",
+    "DROID.md",
+    "GROK.md",
+    "QWEN.md",
+    "opencode.json",
+    ".aider.conf.yml",
+    ".aider.conventions.md"
+  ];
+
+  let prunedCount = 0;
+  for (const d of STRAY_DIRS) {
+    const fullPath = path.join(absTarget, d);
+    if (fs.existsSync(fullPath)) {
+      try {
+        fs.rmSync(fullPath, { recursive: true, force: true });
+        console.log(colors.yellow(`  [-] Pruned directory: ${d}/`));
+        prunedCount++;
+      } catch (err) {
+        console.log(colors.red(`  [!] Failed to prune ${d}/: ${err.message}`));
+      }
+    }
+  }
+  for (const f of STRAY_FILES) {
+    const fullPath = path.join(absTarget, f);
+    if (fs.existsSync(fullPath)) {
+      try {
+        fs.unlinkSync(fullPath);
+        console.log(colors.yellow(`  [-] Pruned file: ${f}`));
+        prunedCount++;
+      } catch (err) {
+        console.log(colors.red(`  [!] Failed to prune ${f}: ${err.message}`));
+      }
+    }
+  }
+
+  if (prunedCount === 0) {
+    console.log(colors.green(`✓ Root is already pristine. Zero stray adapter clutter found.`));
+  } else {
+    console.log(colors.green(`\n✓ Successfully pruned ${prunedCount} stray adapter artifact(s).`));
+    console.log(colors.gray(`  Kept intact: .qed/BRIEF.md, .qedrc.json, and git hooks.`));
+  }
+}
+
 function runInit(targetDir, options = {}) {
   const { performance } = require("node:perf_hooks");
   const t0 = performance.now();
@@ -2743,9 +2817,10 @@ function runInit(targetDir, options = {}) {
   if (selectedHarnesses.length === 0) {
     if (harnessProbe.localHarnesses.length > 0) {
       selectedHarnesses = harnessProbe.localHarnesses;
-    } else if (harnessProbe.globalHarnesses.length > 0) {
-      selectedHarnesses = harnessProbe.globalHarnesses;
     } else {
+      // Pristine Root Invariant: Do not spray adapters for all globally installed IDEs into a fresh local project.
+      // Global profiles (~/.gemini, ~/.cursorrules, etc.) already cover this machine.
+      // Only install project-level adapters if explicitly passed via --harness <name>.
       selectedHarnesses = [];
     }
   }
@@ -2771,7 +2846,8 @@ function runInit(targetDir, options = {}) {
 
     // Install Adapters
     if (selectedHarnesses.length === 0) {
-      console.log(colors.gray("  No active AI coding harness detected (pass --harness <name>, e.g. cursor, claude, antigravity, deepseek). Skipping adapter files."));
+      console.log(colors.gray("  No local AI harness files detected in project."));
+      console.log(colors.gray("  (Global user profile adapters are active; pass --harness <name> for project-level overrides)"));
     } else {
       const installed = installMatchingAdapters(absTarget, selectedHarnesses, options);
       for (const h of selectedHarnesses) {
@@ -2964,6 +3040,9 @@ if (require.main === module) {
     const isGlobal = args.includes("--global") || args.includes("-g");
     runUpdate(targetDir, { global: isGlobal });
     process.exit(0);
+  } else if (command === "clean" || command === "prune") {
+    runClean(targetDir);
+    process.exit(0);
   } else if (command === "doctor") {
     runDoctor(targetDir);
   } else if (command === "test") {
@@ -2977,7 +3056,7 @@ if (require.main === module) {
   } else {
     console.log(colors.red(`Unknown command: ${command}`));
     console.log(
-      "Usage: node bin/qed-engine.js [check | test | doctor | update | ci | exec | tokens | init | hook] [target_dir] [--global] [--compact] [--json] [--strict] [--config <path>]"
+      "Usage: node bin/qed-engine.js [check | test | doctor | update | clean | ci | exec | tokens | init | hook] [target_dir] [--global] [--compact] [--json] [--strict] [--config <path>]"
     );
     process.exit(1);
   }

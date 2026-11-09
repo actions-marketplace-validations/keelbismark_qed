@@ -498,6 +498,38 @@ if (-not (Test-Path (Join-Path $exploreTestDir ".qed")) -and -not (Test-Path (Jo
     $results += [PSCustomObject]@{ Test = "qed-explore-readonly"; Status = "FAIL" }
 }
 
+# Verify clean and zero adapter spam in clean projects
+$cleanTestDir = Join-Path $testRunDir "clean-test"
+New-Item -ItemType Directory -Path $cleanTestDir -Force | Out-Null
+& node $enginePath init $cleanTestDir | Out-Null
+
+$strayFiles = @(".cursorrules", "GEMINI.md", "CLAUDE.md", "CODEX.md", ".antigravity-plugin", ".cursor-plugin")
+$hasSpam = $false
+foreach ($sf in $strayFiles) {
+    if (Test-Path (Join-Path $cleanTestDir $sf)) { $hasSpam = $true; break }
+}
+
+if (-not $hasSpam -and (Test-Path (Join-Path $cleanTestDir ".qed")) -and (Test-Path (Join-Path $cleanTestDir ".qedrc.json"))) {
+    Write-Host "  [PASS] qed-init-pristine-root (Zero blind adapter spam in fresh projects)" -ForegroundColor Green
+    $results += [PSCustomObject]@{ Test = "qed-init-pristine-root"; Status = "PASS" }
+} else {
+    Write-Host "  [FAIL] qed-init-pristine-root (Found unwanted adapter spam in clean repo)" -ForegroundColor Red
+    $results += [PSCustomObject]@{ Test = "qed-init-pristine-root"; Status = "FAIL" }
+}
+
+# Test qed clean functionality
+New-Item -ItemType Directory -Path (Join-Path $cleanTestDir ".cursor-plugin") -Force | Out-Null
+Set-Content -Path (Join-Path $cleanTestDir ".cursorrules") -Value "test"
+& node $enginePath clean $cleanTestDir | Out-Null
+
+if (-not (Test-Path (Join-Path $cleanTestDir ".cursorrules")) -and -not (Test-Path (Join-Path $cleanTestDir ".cursor-plugin")) -and (Test-Path (Join-Path $cleanTestDir ".qed"))) {
+    Write-Host "  [PASS] qed-clean-prune (Successfully pruned stray adapter clutter)" -ForegroundColor Green
+    $results += [PSCustomObject]@{ Test = "qed-clean-prune"; Status = "PASS" }
+} else {
+    Write-Host "  [FAIL] qed-clean-prune (Failed to prune adapter clutter)" -ForegroundColor Red
+    $results += [PSCustomObject]@{ Test = "qed-clean-prune"; Status = "FAIL" }
+}
+
 # Cleanup
 Remove-Item -Path $testRunDir -Recurse -Force -ErrorAction SilentlyContinue
 

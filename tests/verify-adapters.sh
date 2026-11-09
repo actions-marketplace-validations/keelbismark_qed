@@ -386,5 +386,28 @@ echo '{"name":"explore-demo"}' > "$EXPLORE_TEST_DIR/package.json"
     fi
 )
 
+CLEAN_TEST_DIR="$TEST_DIR/clean-test"
+mkdir -p "$CLEAN_TEST_DIR"
+(
+    cd "$CLEAN_TEST_DIR"
+    node "$REPO_ROOT/bin/qed-engine.js" init . >/dev/null 2>&1
+    if [ ! -f ".cursorrules" ] && [ ! -f "GEMINI.md" ] && [ ! -f "CLAUDE.md" ] && [ ! -d ".cursor-plugin" ] && [ -d ".qed" ] && [ -f ".qedrc.json" ]; then
+        echo -e "  \033[0;32m[PASS]\033[0m qed-init-pristine-root (Zero blind adapter spam in fresh projects)"
+    else
+        echo -e "  \033[0;31m[FAIL]\033[0m qed-init-pristine-root (Found unwanted adapter spam in clean repo)"
+        exit 1
+    fi
+
+    mkdir -p ".cursor-plugin"
+    touch ".cursorrules"
+    node "$REPO_ROOT/bin/qed-engine.js" clean . >/dev/null 2>&1
+    if [ ! -f ".cursorrules" ] && [ ! -d ".cursor-plugin" ] && [ -d ".qed" ]; then
+        echo -e "  \033[0;32m[PASS]\033[0m qed-clean-prune (Successfully pruned stray adapter clutter)"
+    else
+        echo -e "  \033[0;31m[FAIL]\033[0m qed-clean-prune (Failed to prune adapter clutter)"
+        exit 1
+    fi
+)
+
 echo ""
 echo "All Bash verification tests PASSED successfully!"

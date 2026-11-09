@@ -2784,7 +2784,15 @@ function runInit(targetDir, options = {}) {
 if (require.main === module) {
   const args = process.argv.slice(2);
   const command = args[0] || "check";
-  const targetDir = args.find((a) => !a.startsWith("-") && a !== command) || process.cwd();
+  const flagsWithValue = new Set(["--config", "-c", "--harness", "--target", "-t"]);
+  const skipIndices = new Set([0]);
+  for (let i = 0; i < args.length; i++) {
+    if (flagsWithValue.has(args[i]) && i + 1 < args.length) {
+      skipIndices.add(i + 1);
+    }
+  }
+  const positionalTarget = args.find((a, idx) => !skipIndices.has(idx) && !a.startsWith("-"));
+  const targetDir = positionalTarget || process.cwd();
   const strict = args.includes("--strict");
   const jsonMode = args.includes("--json");
   const compactMode = args.includes("--compact") || args.includes("--ai");

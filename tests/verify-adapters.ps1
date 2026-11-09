@@ -462,7 +462,7 @@ New-Item -ItemType Directory -Path (Join-Path $initTestDir "src\utils") -Force |
 Set-Content -Path (Join-Path $initTestDir "src\utils\math.js") -Value "export function clamp(v, min, max) { return Math.min(Math.max(v, min), max); }"
 New-Item -ItemType Directory -Path (Join-Path $initTestDir ".git\hooks") -Force | Out-Null
 
-& node $enginePath init $initTestDir | Out-Null
+& node $enginePath init --badge --harness cursor $initTestDir | Out-Null
 
 $briefPath = Join-Path $initTestDir ".qed\BRIEF.md"
 $qedrcPath = Join-Path $initTestDir ".qedrc.json"
@@ -483,6 +483,20 @@ if ((Test-Path $briefPath) -and (Test-Path $qedrcPath) -and (Test-Path $hookPath
     $results += [PSCustomObject]@{ Test = "qed-init"; Status = "FAIL" }
 }
 
+
+# Verify explore is strictly read-only
+$exploreTestDir = Join-Path $testRunDir "explore-test"
+New-Item -ItemType Directory -Path $exploreTestDir -Force | Out-Null
+Set-Content -Path (Join-Path $exploreTestDir "package.json") -Value '{"name":"explore-demo"}'
+& node $enginePath explore $exploreTestDir | Out-Null
+
+if (-not (Test-Path (Join-Path $exploreTestDir ".qed")) -and -not (Test-Path (Join-Path $exploreTestDir ".qedrc.json"))) {
+    Write-Host "  [PASS] qed-explore-readonly (Reconnaissance is strictly read-only, zero disk mutation)" -ForegroundColor Green
+    $results += [PSCustomObject]@{ Test = "qed-explore-readonly"; Status = "PASS" }
+} else {
+    Write-Host "  [FAIL] qed-explore-readonly (Explore mutated disk files)" -ForegroundColor Red
+    $results += [PSCustomObject]@{ Test = "qed-explore-readonly"; Status = "FAIL" }
+}
 
 # Cleanup
 Remove-Item -Path $testRunDir -Recurse -Force -ErrorAction SilentlyContinue

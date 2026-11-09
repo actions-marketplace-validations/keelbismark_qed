@@ -2653,6 +2653,35 @@ function runInit(targetDir, options = {}) {
   const t0 = performance.now();
   const absTarget = path.resolve(targetDir);
 
+  if (options.explore) {
+    // 100% Read-Only Reconnaissance: zero disk mutation
+    const stack = detectProjectStack(absTarget);
+    const complexity = analyzeComplexityAndDebt(absTarget, stack);
+    const helpers = discoverExistingHelpers(absTarget);
+    const harnessProbe = detectProjectHarnesses(absTarget);
+    let selectedHarnesses = [];
+
+    if (options.harness) {
+      const resolved = resolveHarnessName(options.harness);
+      if (resolved === "all") {
+        selectedHarnesses = Object.keys(ADAPTER_CATALOG);
+      } else if (ADAPTER_CATALOG[resolved]) {
+        selectedHarnesses = [resolved];
+      }
+    }
+
+    if (selectedHarnesses.length === 0) {
+      selectedHarnesses = harnessProbe.localHarnesses.length > 0
+        ? harnessProbe.localHarnesses
+        : harnessProbe.globalHarnesses;
+    }
+
+    printBriefForConsole(absTarget, stack, complexity, helpers, selectedHarnesses);
+    console.log(colors.gray("  [READ-ONLY RECONNAISSANCE] No disk files or git state were modified."));
+    console.log(colors.gray("  Run 'qed init' to apply configuration, install matching adapters, and enable hooks.\n"));
+    return;
+  }
+
   console.log(colors.cyan("=========================================================="));
   console.log(colors.cyan(" Q.E.D. Project Authorization & Onboarding Engine"));
   console.log(colors.gray(" Quod Erat Demonstrandum: Evidence Before Assertions"));
@@ -2717,7 +2746,7 @@ function runInit(targetDir, options = {}) {
     } else if (harnessProbe.globalHarnesses.length > 0) {
       selectedHarnesses = harnessProbe.globalHarnesses;
     } else {
-      selectedHarnesses = ["antigravity", "cursor", "claude"];
+      selectedHarnesses = [];
     }
   }
 
@@ -2741,16 +2770,22 @@ function runInit(targetDir, options = {}) {
     }
 
     // Install Adapters
-    const installed = installMatchingAdapters(absTarget, selectedHarnesses, options);
-    for (const h of selectedHarnesses) {
-      const cat = ADAPTER_CATALOG[h];
-      if (cat) console.log(colors.green(`  [+] Installed Adapter: ${cat.name}`));
+    if (selectedHarnesses.length === 0) {
+      console.log(colors.gray("  No active AI coding harness detected (pass --harness <name>, e.g. cursor, claude, antigravity, deepseek). Skipping adapter files."));
+    } else {
+      const installed = installMatchingAdapters(absTarget, selectedHarnesses, options);
+      for (const h of selectedHarnesses) {
+        const cat = ADAPTER_CATALOG[h];
+        if (cat) console.log(colors.green(`  [+] Installed Adapter: ${cat.name}`));
+      }
     }
 
-    // README Badge
-    const badgeAdded = injectReadmeBadge(absTarget);
-    if (badgeAdded) {
-      console.log(colors.green("  [+] Updated: README.md with Q.E.D. Standard verification badge"));
+    // README Badge (Opt-in via --badge)
+    if (options.badge) {
+      const badgeAdded = injectReadmeBadge(absTarget);
+      if (badgeAdded) {
+        console.log(colors.green("  [+] Updated: README.md with Q.E.D. Standard verification badge"));
+      }
     }
   }
 
@@ -2774,9 +2809,8 @@ function runInit(targetDir, options = {}) {
   console.log("\n----------------------------------------------------------");
   console.log(colors.green(`✓ Q.E.D. Initialized successfully in ${duration}ms.`));
   console.log(colors.gray("  Run 'qed check' or 'qed doctor' to verify repository health."));
-
-  if (options.explore) {
-    printBriefForConsole(absTarget, stack, complexity, helpers, selectedHarnesses);
+  if (!options.badge) {
+    console.log(colors.gray("  Tip: Pass --badge to display the Q.E.D. verification shield in README.md."));
   }
 }
 
@@ -2893,6 +2927,7 @@ if (require.main === module) {
     const isForce = args.includes("-f") || args.includes("--force");
     const isExplore = args.includes("--explore");
     const isDryRun = args.includes("--dry-run");
+    const isBadge = args.includes("--badge");
     const harnessIdx = args.indexOf("--harness");
     const explicitHarness = harnessIdx !== -1 && args[harnessIdx + 1] ? args[harnessIdx + 1] : null;
 
@@ -2902,6 +2937,16 @@ if (require.main === module) {
       force: isForce,
       explore: isExplore,
       dryRun: isDryRun,
+      badge: isBadge,
+      harness: explicitHarness,
+    });
+    process.exit(0);
+  } else if (command === "explore") {
+    const harnessIdx = args.indexOf("--harness");
+    const explicitHarness = harnessIdx !== -1 && args[harnessIdx + 1] ? args[harnessIdx + 1] : null;
+    runInit(targetDir, {
+      explore: true,
+      dryRun: true,
       harness: explicitHarness,
     });
     process.exit(0);

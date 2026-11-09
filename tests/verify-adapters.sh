@@ -358,7 +358,7 @@ EOF
 
 (
     cd "$INIT_TEST_DIR"
-    node "$REPO_ROOT/bin/qed-engine.js" init . >/dev/null 2>&1
+    node "$REPO_ROOT/bin/qed-engine.js" init --badge --harness cursor . >/dev/null 2>&1
     if [ -f ".qed/BRIEF.md" ] && [ -f ".qedrc.json" ] && [ -f ".git/hooks/pre-commit" ] && grep -q "keelbismark/qed" "README.md"; then
         if grep -q "Anti-Duplication Atlas" ".qed/BRIEF.md" && grep -q "clamp" ".qed/BRIEF.md"; then
             echo -e "  \033[0;32m[PASS]\033[0m qed-init-onboarding (BRIEF.md, .qedrc.json, Anti-Duplication Atlas, and hooks verified)"
@@ -368,6 +368,20 @@ EOF
         fi
     else
         echo -e "  \033[0;31m[FAIL]\033[0m qed-init-onboarding (Expected onboarding artifacts not created)"
+        exit 1
+    fi
+)
+
+EXPLORE_TEST_DIR="$TEST_DIR/explore-test"
+mkdir -p "$EXPLORE_TEST_DIR"
+echo '{"name":"explore-demo"}' > "$EXPLORE_TEST_DIR/package.json"
+(
+    cd "$EXPLORE_TEST_DIR"
+    node "$REPO_ROOT/bin/qed-engine.js" explore . >/dev/null 2>&1
+    if [ ! -d ".qed" ] && [ ! -f ".qedrc.json" ]; then
+        echo -e "  \033[0;32m[PASS]\033[0m qed-explore-readonly (Reconnaissance is strictly read-only, zero disk mutation)"
+    else
+        echo -e "  \033[0;31m[FAIL]\033[0m qed-explore-readonly (Explore mutated disk files)"
         exit 1
     fi
 )
